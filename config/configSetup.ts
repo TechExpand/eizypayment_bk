@@ -61,7 +61,8 @@ const getConfig = (): Config => {
 			'/api/user/forget',
 			'/api/user/verify',
 			"/api/user/send-otp",
-			"/api/user/network"
+			"/api/user/network",
+			"/api/user/webhook"
 
 
 

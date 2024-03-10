@@ -1,7 +1,7 @@
 // Import packages
 import { Router } from 'express';
 import { changePassword, login, register, testApi, verifyOtp } from '../controllers/auth';
-import { createInvoice, fetchAllNetwork, fetchInvoice, fetchSignleInvoice } from '../controllers/invoice';
+import { createInvoice, fetchAllNetwork, fetchInvoice, fetchSignleInvoice, webhook } from '../controllers/invoice';
 
 
 const routes = Router();
@@ -20,6 +20,8 @@ routes.post('/user/invoice', createInvoice);
 routes.get('/user/invoice', fetchInvoice);
 routes.get('/user/invoice/:id', fetchSignleInvoice);
 routes.get('/user/network', fetchAllNetwork);
+routes.get('/user/webhook', webhook);
+
 
 routes.get('/test', testApi);
 

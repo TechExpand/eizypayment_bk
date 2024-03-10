@@ -140,3 +140,12 @@ export const fetchAllNetwork = async (req: Request, res: Response) => {
   return successResponse(res, "Successful", network);
 
 }
+
+
+
+
+export const webhook = async (req: Request, res: Response) => {
+  const body = req.body;
+  console.log(body)
+  return successResponse(res, "Successful");
+}
