@@ -20,7 +20,7 @@ routes.post('/user/invoice', createInvoice);
 routes.get('/user/invoice', fetchInvoice);
 routes.get('/user/invoice/:id', fetchSignleInvoice);
 routes.get('/user/network', fetchAllNetwork);
-routes.get('/user/webhook', webhook);
+routes.post('/user/webhook', webhook);
 
 
 routes.get('/test', testApi);
