@@ -175,7 +175,8 @@ export const webhook = async (req: Request, res: Response) => {
 
   if (body.eventType == "managedPayment") {
     if (body.radomData.invoice) {
-      const invoice = await Invoice.findOne({ where: { id: body.radomData.invoice.invoiceId } })
+      const invoice = await Invoice.findOne({ where: { randoId: body.radomData.invoice.invoiceId, status: "pending" } })
+      if (!invoice) return res.sendStatus(200)
       const response = await axios({
         method: 'GET',
         url: `https://api.radom.network/invoice/${body.radomData.invoice.invoiceId}`,
@@ -206,11 +207,11 @@ export const webhook = async (req: Request, res: Response) => {
         const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
         if (userToken) {
           await userToken.update({ balance: amountToCredit })
-          res.sendStatus(200)
+          return res.sendStatus(200)
         } else {
           const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
           await userToken.update({ balance: amountToCredit })
-          res.sendStatus(200)
+          return res.sendStatus(200)
         }
       } else {
         const response = await axios({
@@ -229,20 +230,20 @@ export const webhook = async (req: Request, res: Response) => {
         const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
         if (userToken) {
           await userToken.update({ balance: amountToCredit })
-          res.sendStatus(200)
+          return res.sendStatus(200)
         } else {
           const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
           await userToken.update({ balance: amountToCredit })
-          res.sendStatus(200)
+          return res.sendStatus(200)
         }
       }
 
 
 
     } else {
-      res.sendStatus(200)
+      return res.sendStatus(200)
     }
   } else {
-    res.sendStatus(200)
+    return res.sendStatus(200)
   }
 }
