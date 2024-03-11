@@ -22,6 +22,7 @@ type Config = {
 	MAIL_FROM_NAME: string | undefined;
 	LOGO: string | undefined;
 	WEBSITE: string | undefined;
+	VERIFICATIONKEY: string | undefined;
 	BASE_API_URL: string | undefined;
 	REDIS_INSTANCE_URL: string | undefined;
 	PUBLIC_ROUTES: string[] | [];
@@ -38,6 +39,7 @@ const getConfig = (): Config => {
 		DBNAME: process.env.DBNAME,
 		DBUSERNAME: process.env.DBUSERNAME,
 		RADON: process.env.RADON,
+		VERIFICATIONKEY: process.env.VERIFICATIONKEY,
 		DBPASSWORD: process.env.DBPASSWORD,
 		DBHOST: process.env.DBHOST,
 		DBPORT: Number(process.env.DBPORT),

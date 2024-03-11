@@ -10,12 +10,7 @@ import { sign } from "jsonwebtoken";
 import { compareTwoStrings } from 'string-similarity';
 
 // yarn add stream-chat
-import { StreamChat } from 'stream-chat';
-import { Sequelize } from "sequelize-typescript";
-import { Verify } from "../models/Verify";
-import { sendEmail } from "../services/sms";
-import { templateEmail } from "../config/template";
-import { Tokens } from "../models/Token";
+const util = require('util')
 import { Invoice } from "../models/Invoice";
 const fs = require("fs");
 const axios = require('axios')
@@ -26,6 +21,7 @@ const axios = require('axios')
 export const createInvoice = async (req: Request, res: Response) => {
   const { id } = req.user;
   const { lineItems, overdueAt, network, customerId } = req.body;
+  const user = await Users.findOne({ where: { id } })
   try {
     const response = await axios({
       method: 'POST',
@@ -60,7 +56,10 @@ export const createInvoice = async (req: Request, res: Response) => {
         ],
         lineItems: lineItems,
         overdueAt: new Date(overdueAt).toISOString(),
-        inputData: [],
+        inputData: [{
+          "label": "name",
+          "value": user?.email
+        }],
         memo: null,
         gateway: {
           managed: { methods: [{ network, token: null, discountPercentOff: null }] }
@@ -146,6 +145,11 @@ export const fetchAllNetwork = async (req: Request, res: Response) => {
 
 export const webhook = async (req: Request, res: Response) => {
   const body = req.body;
-  console.log(body)
-  return successResponse(res, "Successful");
+  if (req.headers["radom-verification-key"] != config.VERIFICATIONKEY) {
+    return res.sendStatus(401)
+  }
+
+  console.log(util.inspect(req.body, false, null, true /* enable colors */))
+
+  res.sendStatus(200)
 }
