@@ -12,6 +12,8 @@ import { compareTwoStrings } from 'string-similarity';
 // yarn add stream-chat
 const util = require('util')
 import { Invoice } from "../models/Invoice";
+import { Tokens } from "../models/Token";
+import { UserTokens } from "../models/UserToken";
 const fs = require("fs");
 const axios = require('axios')
 
@@ -57,7 +59,7 @@ export const createInvoice = async (req: Request, res: Response) => {
         lineItems: lineItems,
         overdueAt: new Date(overdueAt).toISOString(),
         inputData: [{
-          "label": "name",
+          "key": "name",
           "value": user?.email
         }],
         memo: null,
@@ -114,14 +116,32 @@ export const fetchInvoice = async (req: Request, res: Response) => {
 export const fetchSignleInvoice = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = await Users.findOne({ where: { id } })
+  const invoice = await Invoice.findOne({ where: { randoId: id } })
   try {
     const response = await axios({
       method: 'GET',
       url: `https://api.radom.network/invoice/${id}`,
       headers: { 'Content-Type': 'application/json', Authorization: `${config.RADON}` },
     })
-    console.log(response.data);
-    return successResponse(res, "Successful", response.data);
+    await invoice!.update({
+      organizationId: response.data.organizationId,
+      seller: response.data.seller,
+      customer: response.data.customer,
+      gateway: response.data.gateway,
+      products: response.data.products,
+      lineItems: response.data.lineItems,
+      issuedAt: response.data.issuedAt,
+      paidAt: response.data.paidAt,
+      voidedAt: response.data.voidedAt,
+      overdueAt: response.data.overdueAt,
+      inputData: response.data.inputData,
+      status: response.data.status,
+      memo: response.data.memo,
+      url: response.data.url,
+      payment: response.data.payment,
+    })
+    const newInvoice = await Invoice.findOne({ where: { randoId: id } })
+    return successResponse(res, "Successful", newInvoice);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       return successResponse(res, "Failed", error.response.data);
@@ -149,7 +169,80 @@ export const webhook = async (req: Request, res: Response) => {
     return res.sendStatus(401)
   }
 
+
+
   console.log(util.inspect(req.body, false, null, true /* enable colors */))
 
-  res.sendStatus(200)
+  if (body.eventType == "managedPayment") {
+    if (body.radomData.invoice) {
+      const invoice = await Invoice.findOne({ where: { id: body.radomData.invoice.invoiceId } })
+      const response = await axios({
+        method: 'GET',
+        url: `https://api.radom.network/invoice/${body.radomData.invoice.invoiceId}`,
+        headers: { 'Content-Type': 'application/json', Authorization: `${config.RADON}` },
+      })
+      await invoice!.update({
+        organizationId: response.data.organizationId,
+        seller: response.data.seller,
+        customer: response.data.customer,
+        gateway: response.data.gateway,
+        products: response.data.products,
+        lineItems: response.data.lineItems,
+        issuedAt: response.data.issuedAt,
+        paidAt: response.data.paidAt,
+        voidedAt: response.data.voidedAt,
+        overdueAt: response.data.overdueAt,
+        inputData: response.data.inputData,
+        status: response.data.status,
+        memo: response.data.memo,
+        url: response.data.url,
+        payment: response.data.payment,
+      })
+      const newInvoice = await Invoice.findOne({ where: { randoId: body.radomData.invoice.invoiceId } })
+      let token = newInvoice?.payment.managed.conversionRates[0].to
+      let amountToCredit = body.radomData.managedPayment.amount
+      let getToken = await Tokens.findOne({ where: { currency: token } })
+      if (getToken) {
+        const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
+        if (userToken) {
+          await userToken.update({ balance: amountToCredit })
+          res.sendStatus(200)
+        } else {
+          const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
+          await userToken.update({ balance: amountToCredit })
+          res.sendStatus(200)
+        }
+      } else {
+        const response = await axios({
+          method: 'GET',
+          url: `https://api.coinranking.com/v2/coins`,
+          headers: { 'Content-Type': 'application/json' },
+        })
+        const coinObject = response.data.coins.find((obj: any) => obj.symbol == token);
+
+        let getToken = await Tokens.create({
+          currency: token,
+          symbol: token,
+          url: coinObject.iconUrl
+
+        })
+        const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
+        if (userToken) {
+          await userToken.update({ balance: amountToCredit })
+          res.sendStatus(200)
+        } else {
+          const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
+          await userToken.update({ balance: amountToCredit })
+          res.sendStatus(200)
+        }
+      }
+
+
+
+    } else {
+      res.sendStatus(200)
+    }
+  } else {
+    res.sendStatus(200)
+  }
 }

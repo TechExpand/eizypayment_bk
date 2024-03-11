@@ -85,7 +85,7 @@ export class Invoice extends Model {
 
     @AllowNull(true)
     @Column(DataType.STRING)
-    overdueAt!: string;
+    overdueAt!: any;
 
 
 
@@ -117,7 +117,7 @@ export class Invoice extends Model {
 
     @AllowNull(true)
     @Column(DataType.JSON)
-    payment!: string;
+    payment!: any;
 
 
     @ForeignKey(() => Users)
