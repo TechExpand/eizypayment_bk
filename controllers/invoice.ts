@@ -202,8 +202,8 @@ export const webhook = async (req: Request, res: Response) => {
       const newInvoice = await Invoice.findOne({ where: { randoId: body.radomData.invoice.invoiceId } })
       let y = JSON.parse(JSON.stringify(newInvoice?.dataValues.payment))
       let x = JSON.parse(JSON.stringify(newInvoice?.payment))
-      console.log(y)
-      console.log(x)
+      console.log(typeof y)
+      console.log(typeof x)
       let token = newInvoice?.dataValues.payment.managed.conversionRates[0].to
 
       let amountToCredit = body.eventData.managedPayment.amount
