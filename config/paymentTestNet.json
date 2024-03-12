@@ -1,0 +1,78 @@
+[
+    {
+      "asset": "BTC",
+      "tokens": [
+        {
+          "network": "BitcoinTestnet",
+          "token_address": "-"
+        }
+      ]
+    },
+    {
+      "asset": "ETH",
+      "tokens": [
+        {
+          "network": "SepoliaTestnet",
+          "token_address": "-"
+        }
+      ]
+    },
+    {
+      "asset": "BNB",
+      "tokens": [
+        {
+          "network": "BNB Smart Chain Testnet",
+          "token_address": "-"
+        }
+      ]
+    },
+    {
+      "asset": "MATIC",
+      "tokens": [
+        {
+          "network": "PolygonTestnet",
+          "token_address": "-"
+        }
+      ]
+    },
+    {
+      "asset": "USDC",
+      "tokens": [
+        {
+          "network": "SepoliaTestnet",
+          "token_address": "0xa4fCE8264370437e718aE207805b4e6233638b9E"
+        },
+        {
+          "network": "PolygonTestnet",
+          "token_address": "0x8f8b1972eea072C3C228EbE8f9FEADe03927D70F"
+        }
+      ]
+    },
+    {
+      "asset": "USDT",
+      "tokens": [
+        {
+          "network": "SepoliaTestnet",
+          "token_address": "0xE50d86c6dE38F9754f6777d2925377564Bf79482"
+        },
+        {
+          "network": "PolygonTestnet",
+          "token_address": "0x70BE8802e2F3C6652B7e0814B478f66Ec52d9d88"
+        }
+      ]
+    },
+    {
+      "asset": "BAT",
+      "tokens": [
+        {
+          "network": "SepoliaTestnet",
+          "token_address": "0x5D684d37922dAf7Aa2013E65A22880a11C475e25"
+        },
+        {
+          "network": "PolygonTestnet",
+          "token_address": "0xd445cAAbb9eA6685D3A512439256866563a16E93"
+        }
+      ]
+    }
+  ]
+  
