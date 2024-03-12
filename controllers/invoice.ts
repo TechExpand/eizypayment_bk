@@ -169,7 +169,7 @@ export const webhook = async (req: Request, res: Response) => {
 
 
 
-  // console.log(util.inspect(req.body, false, null, true /* enable colors */))
+  console.log(util.inspect(req.body, false, null, true /* enable colors */))
 
   if (body.eventType == "managedPayment") {
     if (body.radomData.invoice) {
@@ -203,11 +203,6 @@ export const webhook = async (req: Request, res: Response) => {
       // let formattedJson = JSON.parse(JSON.stringify(newInvoice?.dataValues.payment))
       let formattedJson = JSON.parse(JSON.stringify(newInvoice?.payment))
       let finalFormattedJson = JSON.parse(formattedJson)
-      // let yy = JSON.parse(y)
-      // console.log(typeof yy)
-      console.log(typeof formattedJson)
-      // console.log(yy)
-      console.log(finalFormattedJson)
       let token = finalFormattedJson.managed.conversionRates[0].to
 
       let amountToCredit = body.eventData.managedPayment.amount
