@@ -76,6 +76,12 @@ export class Invoice extends Model {
     paidAt!: string;
 
 
+    @Default(false)
+    @AllowNull(true)
+    @Column(DataType.BOOLEAN)
+    processed!: boolean;
+
+
 
     @AllowNull(true)
     @Column(DataType.STRING)

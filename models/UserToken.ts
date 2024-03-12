@@ -29,7 +29,7 @@ export class UserTokens extends Model {
 
     @Default(0.0)
     @AllowNull(true)
-    @Column(DataType.DECIMAL)
+    @Column(DataType.FLOAT)
     balance!: any;
 
     @ForeignKey(() => Tokens)

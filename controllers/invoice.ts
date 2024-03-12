@@ -173,8 +173,9 @@ export const webhook = async (req: Request, res: Response) => {
 
   if (body.eventType == "managedPayment") {
     if (body.radomData.invoice) {
-      const invoice = await Invoice.findOne({ where: { randoId: body.radomData.invoice.invoiceId, status: "pending" } })
+      const invoice = await Invoice.findOne({ where: { randoId: body.radomData.invoice.invoiceId } })
       if (!invoice) return res.sendStatus(200)
+      if (invoice?.processed) return res.sendStatus(200)
       const response = await axios({
         method: 'GET',
         url: `https://api.radom.network/invoice/${body.radomData.invoice.invoiceId}`,
@@ -200,25 +201,29 @@ export const webhook = async (req: Request, res: Response) => {
       })
       const newInvoice = await Invoice.findOne({ where: { randoId: body.radomData.invoice.invoiceId } })
       let token = newInvoice?.payment.managed.conversionRates[0].to
-      let amountToCredit = body.radomData.managedPayment.amount
+      let amountToCredit = body.eventData.managedPayment.amount
       let getToken = await Tokens.findOne({ where: { currency: token } })
       if (getToken) {
         const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
         if (userToken) {
-          await userToken.update({ balance: amountToCredit })
+          await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+          await invoice.update({ processed: true })
           return res.sendStatus(200)
         } else {
           const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
-          await userToken.update({ balance: amountToCredit })
+          await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+          await invoice.update({ processed: true })
           return res.sendStatus(200)
         }
       } else {
+
         const response = await axios({
           method: 'GET',
           url: `https://api.coinranking.com/v2/coins`,
           headers: { 'Content-Type': 'application/json' },
         })
-        const coinObject = response.data.coins.find((obj: any) => obj.symbol == token);
+
+        const coinObject = response.data.data.coins.find((obj: any) => obj.symbol == token);
 
         let getToken = await Tokens.create({
           currency: token,
@@ -226,15 +231,12 @@ export const webhook = async (req: Request, res: Response) => {
           url: coinObject.iconUrl
 
         })
-        const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
-        if (userToken) {
-          await userToken.update({ balance: amountToCredit })
-          return res.sendStatus(200)
-        } else {
-          const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
-          await userToken.update({ balance: amountToCredit })
-          return res.sendStatus(200)
-        }
+
+        const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
+        await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+        await invoice.update({ processed: true })
+        return res.sendStatus(200)
+
       }
 
 
