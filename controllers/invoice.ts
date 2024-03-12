@@ -169,7 +169,7 @@ export const webhook = async (req: Request, res: Response) => {
 
 
 
-  console.log(util.inspect(req.body, false, null, true /* enable colors */))
+  // console.log(util.inspect(req.body, false, null, true /* enable colors */))
 
   if (body.eventType == "managedPayment") {
     if (body.radomData.invoice) {
@@ -200,7 +200,9 @@ export const webhook = async (req: Request, res: Response) => {
         payment: data.payment,
       })
       const newInvoice = await Invoice.findOne({ where: { randoId: body.radomData.invoice.invoiceId } })
+      console.log(util.inspect(newInvoice, false, null, true /* enable colors */))
       let token = newInvoice?.payment.managed.conversionRates[0].to
+
       let amountToCredit = body.eventData.managedPayment.amount
       let getToken = await Tokens.findOne({ where: { currency: token } })
       if (getToken) {
