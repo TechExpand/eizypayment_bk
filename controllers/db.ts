@@ -9,6 +9,8 @@ import { Tokens } from '../models/Token';
 import { Customers } from '../models/Customers';
 import { Invoice } from '../models/Invoice';
 import { UserTokens } from '../models/UserToken';
+import { Withdrawal } from '../models/Withdrawal';
+import { PaymentRequests } from '../models/Payment';
 
 
 // // Import models
@@ -33,7 +35,9 @@ const sequelize = new Sequelize(config.DBNAME, config.DBUSERNAME, config.DBPASSW
 		Tokens,
 		UserTokens,
 		Customers,
-		Invoice
+		PaymentRequests,
+		Invoice,
+		Withdrawal
 	],
 });
 

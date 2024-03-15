@@ -2,6 +2,7 @@
 import { Router } from 'express';
 import { changePassword, login, register, testApi, verifyOtp } from '../controllers/auth';
 import { createInvoice, fetchAllNetwork, fetchInvoice, fetchSignleInvoice, sendInvoiceReminder, updateInvoiceStatus, webhook } from '../controllers/invoice';
+import { createPaymentLink, fetchPaymenntRequest, fetchSignlePaymenntRequest } from '../controllers/paymentLink';
 
 
 const routes = Router();
@@ -16,14 +17,9 @@ API CALL START
 // routes.get('/user/price', fetchPrice);
 // routes.get('/user/number', fetchNewNumber);
 // routes.get('/user/status', fetchNumberStatus);
-routes.post('/user/invoice', createInvoice);
-routes.get('/user/invoice', fetchInvoice);
-routes.get('/user/invoice/:id', fetchSignleInvoice);
-routes.get('/user/network', fetchAllNetwork);
-routes.post('/user/update-invoice', updateInvoiceStatus);
-routes.post('/user/update-invoice', sendInvoiceReminder);
-routes.post('/user/webhook', webhook);
-
+routes.post('/user/payment', createPaymentLink);
+routes.get('/user/payment', fetchPaymenntRequest);
+routes.get('/user/payment/:id', fetchSignlePaymenntRequest);
 
 routes.get('/test', testApi);
 

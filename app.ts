@@ -5,11 +5,14 @@ import config from './config/configSetup';
 
 import { initDB } from './controllers/db';
 import invoice from './routes/invoice';
+import withdrawal from './routes/withdrawal';
 import auth from './routes/auth';
+import paymentRequest from "./routes/paymentLink";
 import admin from './routes/admin/token';
 
 import customer from "./routes/customer";
 import { isAuthorized } from './middlewares/authorise';
+import { request } from 'http';
 
 
 
@@ -35,8 +38,11 @@ app.listen(config.PORT, () => {
 app.all('*', isAuthorized);
 app.use("/api", invoice);
 app.use("/api", auth);
+app.use("/api", paymentRequest);
 app.use("/api", admin);
 app.use("/api", customer);
+app.use("/api", withdrawal);
+
 
 
 

@@ -1,7 +1,9 @@
 // Import packages
 import { Router } from 'express';
 import { changePassword, login, register, testApi, verifyOtp } from '../controllers/auth';
-import { createInvoice, fetchAllNetwork, fetchInvoice, fetchSignleInvoice, sendInvoiceReminder, updateInvoiceStatus, webhook } from '../controllers/invoice';
+import { createInvoice, fetchInvoice, fetchSignleInvoice } from '../controllers/invoice';
+import { createCustomer, deleteCustomer, fetchCustomer } from '../controllers/customer';
+import { createWithdrawal, fetchWithdrawal } from '../controllers/withdrawal';
 
 
 const routes = Router();
@@ -16,15 +18,9 @@ API CALL START
 // routes.get('/user/price', fetchPrice);
 // routes.get('/user/number', fetchNewNumber);
 // routes.get('/user/status', fetchNumberStatus);
-routes.post('/user/invoice', createInvoice);
-routes.get('/user/invoice', fetchInvoice);
-routes.get('/user/invoice/:id', fetchSignleInvoice);
-routes.get('/user/network', fetchAllNetwork);
-routes.post('/user/update-invoice', updateInvoiceStatus);
-routes.post('/user/update-invoice', sendInvoiceReminder);
-routes.post('/user/webhook', webhook);
-
-
+routes.post('/user/withdraw', createWithdrawal);
+routes.get('/user/withdraw', fetchWithdrawal);
+// routes.delete('/user/withdraw/:id', deleteCustomer);
 routes.get('/test', testApi);
 
 

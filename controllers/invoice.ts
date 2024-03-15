@@ -17,6 +17,9 @@ import { Invoice } from "../models/Invoice";
 import { Tokens } from "../models/Token";
 import { UserTokens } from "../models/UserToken";
 import { parseJsonText } from "typescript";
+import { Withdrawal, WithdrawalStatus } from "../models/Withdrawal";
+import { sendEmail } from "../services/sms";
+import { PaymentRequests } from "../models/Payment";
 const fs = require("fs");
 const axios = require('axios')
 
@@ -27,20 +30,6 @@ export const createInvoice = async (req: Request, res: Response) => {
   const { id } = req.user;
   const { lineItems, overdueAt, network, customerId, token } = req.body;
   const user = await Users.findOne({ where: { id } })
-  console.log(util.inspect({
-    customerIds: [customerId],
-    products: [],
-    lineItems: lineItems,
-    overdueAt: new Date(overdueAt).toISOString(),
-    inputData: [{
-      "key": "name",
-      "value": user?.email
-    }],
-    memo: null,
-    gateway: {
-      managed: { methods: [{ network, token, discountPercentOff: null }] }
-    }
-  }, false, null, true /* enable colors */))
 
   try {
     const response = await axios({
@@ -83,6 +72,7 @@ export const createInvoice = async (req: Request, res: Response) => {
       payment: response.data[0].payment,
       userId: id
     })
+    await sendEmail(invoice?.customer.name, "Invoice", `<div>invoice sent</div>`);
     return successResponse(res, "Successful", invoice);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
@@ -240,15 +230,109 @@ export const webhook = async (req: Request, res: Response) => {
         await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
         await invoice.update({ processed: true })
         return res.sendStatus(200)
-
       }
+    }
+    else if (body.radomData.paymentLink) {
+      const request = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
+      if (!request) return res.sendStatus(200)
+      if (request?.processed) return res.sendStatus(200)
+      const response = await axios({
+        method: 'GET',
+        url: `https://api.radom.network/payment_link/${body.radomData.paymentLink.paymentLinkId}`,
+        headers: { 'Content-Type': 'application/json', Authorization: `${config.RADON}` },
+      })
+      const data = JSON.parse(JSON.stringify(response.data))
+      await request!.update({
+        organizationId: data.organizationId,
+        url: data.url,
+        sellerName: data.sellerName,
+        sellerLogoUrl: data.sellerLogoUrl,
+        cancelUrl: data.cancelUrl,
+        successUrl: data.successUrl,
+        products: data.products,
+        gateway: data.gateway
+      })
+      const newRequest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
+      let token = request.symbol
 
+      let amountToCredit = body.eventData.managedPayment.amount
+      let getToken = await Tokens.findOne({ where: { currency: token } })
+      if (getToken) {
+        const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: newRequest?.userId } })
+        if (userToken) {
+          await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+          await newRequest!.update({ processed: true })
+          return res.sendStatus(200)
+        } else {
+          const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
+          await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+          await newRequest!.update({ processed: true })
+          return res.sendStatus(200)
+        }
+      } else {
 
+        const response = await axios({
+          method: 'GET',
+          url: `https://api.coinranking.com/v2/coins`,
+          headers: { 'Content-Type': 'application/json' },
+        })
 
-    } else {
+        const coinObject = response.data.data.coins.find((obj: any) => obj.symbol == token);
+
+        let getToken = await Tokens.create({
+          currency: token,
+          symbol: token,
+          url: coinObject.iconUrl
+
+        })
+
+        const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
+        await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+        await newRequest!.update({ processed: true })
+        return res.sendStatus(200)
+      }
+    }
+    else {
       return res.sendStatus(200)
     }
-  } else {
+  } else if (body.eventType == "managedWithdrawal") {
+    const withdrawal = await Withdrawal.findOne({ where: { randoId: body.eventData.managedWithdrawal.withdrawalRequestId } })
+    if (!withdrawal) return res.sendStatus(200)
+    if (withdrawal?.processed) return res.sendStatus(200)
+    await withdrawal?.update({
+      status: body.eventData.managedWithdrawal.isSuccess == true ? WithdrawalStatus.COMPLETE : WithdrawalStatus.FAILED,
+      reason: body.eventData.managedWithdrawal.failureReason, processed: true
+    })
     return res.sendStatus(200)
   }
+  else {
+    return res.sendStatus(200)
+  }
+}
+
+
+
+
+export const updateInvoiceStatus = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const invoice = await Invoice.findOne({ where: { randoId: id } })
+  await invoice!.update({
+    paidAt: new Date().toISOString,
+    status: "paid",
+    processed: true
+  })
+  const newInvoice = await Invoice.findOne({ where: { randoId: id } })
+  return successResponse(res, "Successful", newInvoice);
+}
+
+
+
+
+
+export const sendInvoiceReminder = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const invoice = await Invoice.findOne({ where: { randoId: id } })
+  await sendEmail(invoice?.customer.name, "Invoice Reminder", `<div>invoice reminder</div>`);
+  const newInvoice = await Invoice.findOne({ where: { randoId: id } })
+  return successResponse(res, "Successful", newInvoice);
 }
