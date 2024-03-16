@@ -19,7 +19,7 @@ import { UserTokens } from "../models/UserToken";
 import { parseJsonText } from "typescript";
 import { Withdrawal, WithdrawalStatus } from "../models/Withdrawal";
 import { sendEmail } from "../services/sms";
-import { PaymentRequests } from "../models/Payment";
+import { PaymentRequests, TypeState } from "../models/Payment";
 const fs = require("fs");
 const axios = require('axios')
 
@@ -199,13 +199,18 @@ export const webhook = async (req: Request, res: Response) => {
       let getToken = await Tokens.findOne({ where: { currency: token } })
       if (getToken) {
         const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
+        const user = await Users.findOne({ where: { id: invoice?.userId } })
         if (userToken) {
           await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
           await invoice.update({ processed: true })
+          await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice paid by you</div>`);
+          await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
           return res.sendStatus(200)
         } else {
           const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
           await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+          await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice sent</div>`);
+          await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
           await invoice.update({ processed: true })
           return res.sendStatus(200)
         }
@@ -229,6 +234,9 @@ export const webhook = async (req: Request, res: Response) => {
         const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
         await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
         await invoice.update({ processed: true })
+        const user = await Users.findOne({ where: { id: invoice?.userId } })
+        await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice paid by you</div>`);
+        await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
         return res.sendStatus(200)
       }
     }
@@ -254,43 +262,108 @@ export const webhook = async (req: Request, res: Response) => {
       })
       const newRequest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
       let token = request.symbol
-
       let amountToCredit = body.eventData.managedPayment.amount
-      let getToken = await Tokens.findOne({ where: { currency: token } })
-      if (getToken) {
-        const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: newRequest?.userId } })
-        if (userToken) {
-          await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
-          await newRequest!.update({ processed: true })
-          return res.sendStatus(200)
+      if (request.type == TypeState.PAYMENT_LINK) {
+        let getToken = await Tokens.findOne({ where: { currency: token } })
+        if (getToken) {
+          const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: newRequest?.userId } })
+          if (userToken) {
+            await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+            await newRequest!.update({ processed: true })
+            const user = await Users.findOne({ where: { id: newRequest?.userId } })
+            await sendEmail(newRequest!.email, "Payment Successful", `<div>invoice paid by you</div>`);
+            await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
+            return res.sendStatus(200)
+          } else {
+            const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
+            await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+            await newRequest!.update({ processed: true })
+            const user = await Users.findOne({ where: { id: newRequest?.userId } })
+            await sendEmail(newRequest!.email, "Payment Successful", `<div>invoice paid by you</div>`);
+            await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
+            return res.sendStatus(200)
+          }
         } else {
+
+          const response = await axios({
+            method: 'GET',
+            url: `https://api.coinranking.com/v2/coins`,
+            headers: { 'Content-Type': 'application/json' },
+          })
+
+          const coinObject = response.data.data.coins.find((obj: any) => obj.symbol == token);
+
+          let getToken = await Tokens.create({
+            currency: token,
+            symbol: token,
+            url: coinObject.iconUrl
+
+          })
+
           const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
           await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
           await newRequest!.update({ processed: true })
+          const user = await Users.findOne({ where: { id: newRequest?.userId } })
+          await sendEmail(newRequest!.email, "Payment Successful", `<div>invoice paid by you</div>`);
+          await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
           return res.sendStatus(200)
         }
       } else {
+        let getToken = await Tokens.findOne({ where: { currency: token } })
+        if (getToken) {
+          const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: newRequest?.userId } })
+          if (userToken) {
+            await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+            await newRequest!.update({ targetReached: Number(newRequest?.targetReached) + Number(amountToCredit) })
+            const newRequestLatest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
+            await newRequestLatest!.update({ processed: Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ? true : false })
+            const user = await Users.findOne({ where: { id: newRequest?.userId } })
+            Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
+              await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
+              await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
+            return res.sendStatus(200)
+          } else {
+            const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
+            await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+            await newRequest!.update({ targetReached: Number(newRequest?.targetReached) + Number(amountToCredit) })
+            const newRequestLatest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
+            await newRequestLatest!.update({ processed: Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ? true : false })
+            const user = await Users.findOne({ where: { id: newRequest?.userId } })
+            Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
+              await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
+              await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
+            return res.sendStatus(200)
+          }
+        } else {
 
-        const response = await axios({
-          method: 'GET',
-          url: `https://api.coinranking.com/v2/coins`,
-          headers: { 'Content-Type': 'application/json' },
-        })
+          const response = await axios({
+            method: 'GET',
+            url: `https://api.coinranking.com/v2/coins`,
+            headers: { 'Content-Type': 'application/json' },
+          })
 
-        const coinObject = response.data.data.coins.find((obj: any) => obj.symbol == token);
+          const coinObject = response.data.data.coins.find((obj: any) => obj.symbol == token);
 
-        let getToken = await Tokens.create({
-          currency: token,
-          symbol: token,
-          url: coinObject.iconUrl
+          let getToken = await Tokens.create({
+            currency: token,
+            symbol: token,
+            url: coinObject.iconUrl
 
-        })
+          })
 
-        const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
-        await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
-        await newRequest!.update({ processed: true })
-        return res.sendStatus(200)
+          const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
+          await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+          await newRequest!.update({ targetReached: Number(newRequest?.targetReached) + Number(amountToCredit) })
+          const newRequestLatest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
+          await newRequestLatest!.update({ processed: Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ? true : false })
+          const user = await Users.findOne({ where: { id: newRequest?.userId } })
+          Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
+            await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
+            await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
+          return res.sendStatus(200)
+        }
       }
+
     }
     else {
       return res.sendStatus(200)
@@ -303,6 +376,8 @@ export const webhook = async (req: Request, res: Response) => {
       status: body.eventData.managedWithdrawal.isSuccess == true ? WithdrawalStatus.COMPLETE : WithdrawalStatus.FAILED,
       reason: body.eventData.managedWithdrawal.failureReason, processed: true
     })
+    const user = await Users.findOne({ where: { id: withdrawal?.userId } })
+    await sendEmail(user!.email, "Withdrawal Successful", `<div>recieved by you</div>`);
     return res.sendStatus(200)
   }
   else {

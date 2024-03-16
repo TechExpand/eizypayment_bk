@@ -29,11 +29,9 @@ const axios = require('axios')
 
 
 
-export const createPaymentLink = async (req: Request, res: Response) => {
+export const createCrowdFund= async (req: Request, res: Response) => {
     const { id } = req.user;
-    const { description, price, network, currency, token, userId, symbol } = req.body;
-    const user = await Users.findOne({ where: { id: userId } })
-
+    const { description, target, network, currency, token, symbol } = req.body;
 
     try {
         const response1 = await axios({
@@ -45,8 +43,8 @@ export const createPaymentLink = async (req: Request, res: Response) => {
                 description: description,
                 // chargingIntervalSeconds: 0,
                 currency,
-                addOns: [{ name: description, price }],
-                price,
+                addOns: [{ name: description, price: target }],
+                price: target,
                 // meteredBudget: 0,
                 // meteredChargingInterval: 0,
                 // isInventoried: true,
@@ -66,15 +64,10 @@ export const createPaymentLink = async (req: Request, res: Response) => {
                 gateway: {
                     managed: { methods: [{ network: network, token: token, discountPercentOff: 0 }] }
                 },
-                // customizations: {
-                //   leftPanelColor: 'string',
-                //   primaryButtonColor: 'string',
-                //   slantedEdge: true,
-                //   allowDiscountCodes: true
-                // },
+
                 successUrl: 'https://www.youtube.com/',
                 cancelUrl: 'https://www.youtube.com/',
-                // inputFields: [{inputLabel: 'string', isRequired: true, dataType: 'String'}],
+
                 sendEmailReceipt: false,
                 chargeCustomerNetworkFee: true
             }
@@ -82,7 +75,7 @@ export const createPaymentLink = async (req: Request, res: Response) => {
 
 
         // console.log(util.inspect(response.data, false, null, true /* enable colors */))
-        const paymentLink = await PaymentRequests.create({
+        const crowdFund = await PaymentRequests.create({
             randoId: response.data.id,
             organizationId: response.data.organizationId,
             url: response.data.url,
@@ -94,10 +87,10 @@ export const createPaymentLink = async (req: Request, res: Response) => {
             gateway: response.data.gateway,
             symbol,
             userId: id,
-            email: user?.email
+            target,
+            type: TypeState.CROWD_FUND
         })
-        await sendEmail(user!.email, "Payment request", `<div>payment request sent</div>`);
-        return successResponse(res, "Successful", paymentLink);
+        return successResponse(res, "Successful", crowdFund);
     } catch (error: any) {
         if (axios.isAxiosError(error)) {
             return successResponse(res, "Failed", error.response.data);
@@ -113,9 +106,9 @@ export const createPaymentLink = async (req: Request, res: Response) => {
 
 
 
-export const fetchPaymenntRequest = async (req: Request, res: Response) => {
+export const fetchCrowdFund = async (req: Request, res: Response) => {
     const { id } = req.user;
-    const request = await PaymentRequests.findAll({ where: { userId: id , type: TypeState.PAYMENT_LINK} })
+    const request = await PaymentRequests.findAll({ where: { userId: id , type: TypeState.CROWD_FUND} })
     return successResponse(res, "Successful", request);
 
 }
@@ -123,7 +116,7 @@ export const fetchPaymenntRequest = async (req: Request, res: Response) => {
 
 
 
-export const fetchSignlePaymenntRequest = async (req: Request, res: Response) => {
+export const fetchSignleCrowdFund = async (req: Request, res: Response) => {
     const { id } = req.params;
     const user = await Users.findOne({ where: { id } })
     const request = await PaymentRequests.findOne({ where: { randoId: id } })

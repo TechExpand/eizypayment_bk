@@ -8,6 +8,7 @@ import invoice from './routes/invoice';
 import withdrawal from './routes/withdrawal';
 import auth from './routes/auth';
 import paymentRequest from "./routes/paymentLink";
+import crowdFund from "./routes/crowdFund";
 import admin from './routes/admin/token';
 
 import customer from "./routes/customer";
@@ -39,6 +40,7 @@ app.all('*', isAuthorized);
 app.use("/api", invoice);
 app.use("/api", auth);
 app.use("/api", paymentRequest);
+app.use("/api", crowdFund);
 app.use("/api", admin);
 app.use("/api", customer);
 app.use("/api", withdrawal);

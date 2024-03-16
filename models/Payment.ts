@@ -3,18 +3,10 @@ import Sequelize from 'sequelize/types/sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { Users } from './Users';
 
-export enum UserStatus {
-    ACTIVE = 'ACTIVE',
-    INACTIVE = 'INACTIVE',
-    SUSPENDED = 'SUSPENDED',
-}
 
-
-
-export enum UserState {
-    STEP_ONE = 'STEP_ONE',
-    STEP_TWO = 'STEP_TWO',
-    VERIFIED = 'VERIFIED',
+export enum TypeState {
+    PAYMENT_LINK = 'PAYMENT_LINK',
+    CROWD_FUND = 'CROWD_FUND'
 }
 
 
@@ -32,7 +24,7 @@ export class PaymentRequests extends Model {
     @AllowNull(true)
     @Column(DataType.STRING)
     randoId!: string;
-   
+
 
     @AllowNull(true)
     @Column(DataType.STRING)
@@ -43,7 +35,7 @@ export class PaymentRequests extends Model {
     @AllowNull(true)
     @Column(DataType.STRING)
     symbol!: string;
-    
+
 
 
     @AllowNull(true)
@@ -77,7 +69,14 @@ export class PaymentRequests extends Model {
     @Column(DataType.STRING)
     successUrl!: string;
 
-    
+
+
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    email!: string;
+
+
     @AllowNull(true)
     @Column(DataType.JSON)
     products!: any;
@@ -101,6 +100,24 @@ export class PaymentRequests extends Model {
 
 
 
+
+    @Default(0.0)
+    @AllowNull(true)
+    @Column(DataType.DECIMAL)
+    target!: number;
+
+
+    @Default(0.0)
+    @AllowNull(true)
+    @Column(DataType.DECIMAL)
+    targetReached!: number;
+
+
+    @Default(TypeState.PAYMENT_LINK)
+    @AllowNull(true)
+    @Column(DataType.ENUM(TypeState.PAYMENT_LINK, TypeState.CROWD_FUND))
+    type!: TypeState
+
     // @AllowNull(true)
     // @Column(DataType.JSON)
     // status!: string;
@@ -110,4 +127,7 @@ export class PaymentRequests extends Model {
     @AllowNull(false)
     @Column(DataType.UUID)
     userId!: string;
+
+
+
 }
