@@ -25,7 +25,7 @@ routes.post('/user/update-invoice', sendInvoiceReminder);
 routes.post('/user/webhook', webhook);
 
 
-routes.get('/test', testApi);
+routes.get('/invoice/test', testApi);
 
 
 

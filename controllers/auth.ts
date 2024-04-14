@@ -13,11 +13,12 @@ import { Sequelize } from "sequelize-typescript";
 import { Verify } from "../models/Verify";
 // import { sendEmailResend } from "../services/sms";
 import { templateEmail } from "../config/template";
-import { sendEmail } from "../services/notification";
+import { sendAppNotification, sendEmail } from "../services/notification";
 import axios from "axios";
 import { Tokens } from "../models/Token";
 import { UserTokens } from "../models/UserToken";
 import { AvatarGenerator } from 'random-avatar-generator';
+import { ServiceType, TransactionType } from "../models/Transaction";
 
 const generator = new AvatarGenerator();
 
@@ -233,6 +234,13 @@ export const changePassword = async (req: Request, res: Response) => {
 
 
 export const testApi = async (req: Request, res: Response) => {
+  const { id } = req.user;
+  await sendAppNotification(id, {
+    description: `You Recieved an Invoice Payment of Successfully`,
+    title: "Invoice Payment Successful",
+    type: TransactionType.CREDIT,
+    service: ServiceType.INVOICE,
+  })
   return successResponse(res, "Successful")
 };
 
