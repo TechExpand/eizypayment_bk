@@ -35,9 +35,14 @@ socketio.on("connection", async (socket: any) => {
 	console.log("connetetd");
 	console.log(socket.id, "has joined");
 
-	socket.on("notification", async (id: any) => {
+	socket.on("signin_notification", async (id: any) => {
 		const redis = new Redis();
 		const cachedUserSocket = await redis.setData(`notification-${id}`, socket.id);
+	});
+
+
+	socket.on("notification", async (data: any) => {
+
 	});
 });
 
