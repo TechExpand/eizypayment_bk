@@ -95,6 +95,7 @@ export const sendAppNotification = async (id: any, data: any) => {
   const redis = new Redis();
   const cachedSocket: any = await redis.getData(`notification-${id}`)
   const socket = socketio.sockets.sockets.get(cachedSocket);
+  console.log(socket)
   if (socket) {
     socket.emit("notification", data)
   }
