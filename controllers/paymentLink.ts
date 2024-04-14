@@ -13,7 +13,7 @@ import { compareTwoStrings } from 'string-similarity';
 import { StreamChat } from 'stream-chat';
 import { Sequelize } from "sequelize-typescript";
 import { Verify } from "../models/Verify";
-import { sendEmail } from "../services/sms";
+import { sendEmail } from "../services/notification";
 import { templateEmail } from "../config/template";
 import { Tokens } from "../models/Token";
 import { Customers } from "../models/Customers";
@@ -115,7 +115,7 @@ export const createPaymentLink = async (req: Request, res: Response) => {
 
 export const fetchPaymenntRequest = async (req: Request, res: Response) => {
     const { id } = req.user;
-    const request = await PaymentRequests.findAll({ where: { userId: id , type: TypeState.PAYMENT_LINK} })
+    const request = await PaymentRequests.findAll({ where: { userId: id, type: TypeState.PAYMENT_LINK } })
     return successResponse(res, "Successful", request);
 
 }

@@ -22,7 +22,6 @@ export enum UserState {
 @Table({ timestamps: true, tableName: 'invoice' })
 export class Invoice extends Model {
 
-
     @PrimaryKey
     @Default(uuidv4)
     @Column(DataType.UUID)
@@ -36,7 +35,43 @@ export class Invoice extends Model {
 
     @AllowNull(true)
     @Column(DataType.STRING)
+    network!: string;
+
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    symbol!: string;
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    note!: string;
+
+
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
     organizationId!: string;
+
+
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    title!: string;
+
+
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    business!: string;
+
+    @Default(0)
+    @AllowNull(false)
+    @Column(DataType.DECIMAL)
+    subTotal!: any;
+
+
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    invoiceNo!: string;
+
 
 
 

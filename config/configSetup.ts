@@ -58,6 +58,7 @@ const getConfig = (): Config => {
 			'/api',
 			'/',
 			'/api/test',
+			"/invoice",
 			'/api/user/login',
 			'/api/user/register',
 			'/api/user/forget',
@@ -65,6 +66,7 @@ const getConfig = (): Config => {
 			"/api/user/send-otp",
 			"/api/user/network",
 			"/api/user/webhook"
+			
 
 
 

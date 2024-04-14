@@ -13,10 +13,13 @@ import { Sequelize } from "sequelize-typescript";
 import { Verify } from "../models/Verify";
 // import { sendEmailResend } from "../services/sms";
 import { templateEmail } from "../config/template";
-import { sendEmail } from "../services/sms";
+import { sendEmail } from "../services/notification";
 import axios from "axios";
 import { Tokens } from "../models/Token";
 import { UserTokens } from "../models/UserToken";
+import { AvatarGenerator } from 'random-avatar-generator';
+
+const generator = new AvatarGenerator();
 
 
 // instantiate your stream client using the API key and secret
@@ -58,16 +61,14 @@ export const verifyOtp = async (req: Request, res: Response) => {
   const { emailServiceId, emailCode, type } = req.body;
 
 
-
+  console.log(emailServiceId)
   const verifyEmail = await Verify.findOne({
     where: {
       serviceId: emailServiceId
     }
   })
 
-  if (
-
-    verifyEmail) {
+  if (verifyEmail) {
     if (verifyEmail.code === emailCode) {
 
 
@@ -89,7 +90,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
     }
   } else {
     errorResponse(res, "Failed", {
-      message: `${"Email"} Code Already Used`,
+      message: `Invalid ${"Email"} Code`,
       status: false
     })
   }
@@ -105,15 +106,15 @@ export const register = async (req: Request, res: Response) => {
   const { email, fullname, password } = req.body;
   hash(password, saltRounds, async function (err, hashedPassword) {
     const userEmail = await Users.findOne({ where: { email } })
-    if (!validateEmail(email)) return errorResponse(res, "Failed", { status: false, message: "Enter a valid email" })
+    if (!validateEmail(email)) return errorResponse(res, "Enter a valid email")
     if (userEmail) {
       if (userEmail?.state === UserState.VERIFIED) {
-        if (userEmail) return errorResponse(res, "Failed", { status: false, message: "Email already exist", state: userEmail.state })
+        if (userEmail) return errorResponse(res, "Email already exist", { state: userEmail.state })
       } else {
         await userEmail?.destroy();
 
         const user = await Users.create({
-          email, fullname, password: hashedPassword, customerId: ""
+          email, fullname, password: hashedPassword, customerId: "", avater: generator.generateRandomAvatar("https://avataaars.io/?avatarStyle=Circle&topType=WinterHat4&accessoriesType=Blank&hatColor=Heather&facialHairType=BeardMajestic&facialHairColor=Red&clotheType=ShirtScoopNeck&clotheColor=Blue01&eyeType=Surprised&eyebrowType=DefaultNatural&mouthType=Smile&skinColor=Brown")
         })
         const emailServiceId = randomId(12);
         const codeEmail = String(Math.floor(1000 + Math.random() * 9000));
@@ -137,17 +138,16 @@ export const register = async (req: Request, res: Response) => {
 
         await UserTokens.bulkCreate(insertData)
         return successResponse(res, "Successful", {
-          status: true,
-          message: {
-            email, fullname, token, emailServiceId
-          }
+
+          email, fullname, token, emailServiceId
+
         })
 
       }
     } else {
 
       const user = await Users.create({
-        email, fullname, password: hashedPassword, customerId: ""
+        email, fullname, password: hashedPassword, customerId: "", avater: generator.generateRandomAvatar("https://avataaars.io/?avatarStyle=Circle&topType=WinterHat4&accessoriesType=Blank&hatColor=Heather&facialHairType=BeardMajestic&facialHairColor=Red&clotheType=ShirtScoopNeck&clotheColor=Blue01&eyeType=Surprised&eyebrowType=DefaultNatural&mouthType=Smile&skinColor=Brown")
       })
       const emailServiceId = randomId(12);
       const codeEmail = String(Math.floor(1000 + Math.random() * 9000));
@@ -172,10 +172,9 @@ export const register = async (req: Request, res: Response) => {
 
       await UserTokens.bulkCreate(insertData)
       return successResponse(res, "Successful", {
-        status: true,
-        message: {
-          email, fullname, token, emailServiceId
-        }
+
+        email, fullname, token, emailServiceId
+
       })
 
     }
@@ -190,11 +189,11 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   let { email, password } = req.body;
   const user = await Users.findOne({ where: { email } })
-  if (!user) return errorResponse(res, "Failed", { status: false, message: "User does not exist" })
+  if (!user) return errorResponse(res, "User does not exist")
   const match = await compare(password, user.password)
-  if (!match) return errorResponse(res, "Failed", { status: false, message: "Invalid Credentials" })
+  if (!match) return errorResponse(res, "Invalid Credentials",)
   let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
-  return successResponse(res, "Successful", { status: true, message: { ...user.dataValues, token } })
+  return successResponse(res, "Successful", { ...user.dataValues, token })
 }
 
 

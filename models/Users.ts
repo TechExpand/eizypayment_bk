@@ -40,6 +40,11 @@ export class Users extends Model {
 	fullname!: string;
 
 
+	@AllowNull(false)
+	@Column(DataType.TEXT)
+	avater!: string;
+
+
 
 	@AllowNull(false)
 	@Column(DataType.STRING)

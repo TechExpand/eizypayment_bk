@@ -13,7 +13,7 @@ import { compareTwoStrings } from 'string-similarity';
 import { StreamChat } from 'stream-chat';
 import { Sequelize } from "sequelize-typescript";
 import { Verify } from "../models/Verify";
-import { sendEmail } from "../services/sms";
+import { sendEmail } from "../services/notification";
 import { templateEmail } from "../config/template";
 import { Tokens } from "../models/Token";
 import { Customers } from "../models/Customers";
@@ -29,7 +29,7 @@ const axios = require('axios')
 
 
 
-export const createCrowdFund= async (req: Request, res: Response) => {
+export const createCrowdFund = async (req: Request, res: Response) => {
     const { id } = req.user;
     const { description, target, network, currency, token, symbol } = req.body;
 
@@ -108,7 +108,7 @@ export const createCrowdFund= async (req: Request, res: Response) => {
 
 export const fetchCrowdFund = async (req: Request, res: Response) => {
     const { id } = req.user;
-    const request = await PaymentRequests.findAll({ where: { userId: id , type: TypeState.CROWD_FUND} })
+    const request = await PaymentRequests.findAll({ where: { userId: id, type: TypeState.CROWD_FUND } })
     return successResponse(res, "Successful", request);
 
 }

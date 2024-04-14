@@ -1,6 +1,7 @@
 [
     {
         "asset": "BTC",
+        "url": "https://dashboard.radom.network/BTCLogo.4629da26.svg",
         "tokens": [
             {
                 "name": "Bitcoin",
@@ -10,6 +11,7 @@
     },
     {
         "asset": "ETH",
+        "url": "https://dashboard.radom.network/EthLogo.7c6d6f39.svg",
         "tokens": [
             {
                 "name": "Ethereum",
@@ -27,6 +29,7 @@
     },
     {
         "asset": "BNB",
+        "url": "https://cdn.coinranking.com/B1N19L_dZ/bnb.svg",
         "tokens": [
             {
                 "name": "BNB Smart Chain",
@@ -36,6 +39,7 @@
     },
     {
         "asset": "MATIC",
+        "url": "https://cdn.coinranking.com/M-pwilaq-/polygon-matic-logo.svg",
         "tokens": [
             {
                 "name": "Polygon",
@@ -45,6 +49,7 @@
     },
     {
         "asset": "DOT",
+        "url": "https://cdn.coinranking.com/V3NSSybv-/polkadot-dot.svg",
         "tokens": [
             {
                 "name": "Polkadot",
@@ -54,6 +59,7 @@
     },
     {
         "asset": "TRX",
+        "url": "https://cdn.coinranking.com/behejNqQs/trx.svg",
         "tokens": [
             {
                 "name": "Tron",
@@ -63,6 +69,7 @@
     },
     {
         "asset": "USDC",
+        "url": "https://cdn.coinranking.com/jkDf8sQbY/usdc.svg",
         "tokens": [
             {
                 "name": "Ethereum",
@@ -88,6 +95,7 @@
     },
     {
         "asset": "USDT",
+        "url": "https://cdn.coinranking.com/mgHqwlCLj/usdt.svg",
         "tokens": [
             {
                 "name": "Ethereum",
@@ -113,6 +121,7 @@
     },
     {
         "asset": "BAT",
+        "url": "https://dashboard.radom.network/BAT.1212afba.svg",
         "tokens": [
             {
                 "name": "Ethereum",

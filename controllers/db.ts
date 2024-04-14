@@ -11,6 +11,7 @@ import { Invoice } from '../models/Invoice';
 import { UserTokens } from '../models/UserToken';
 import { Withdrawal } from '../models/Withdrawal';
 import { PaymentRequests } from '../models/Payment';
+import { Transactions } from '../models/Transaction';
 
 
 
@@ -35,6 +36,7 @@ const sequelize = new Sequelize(config.DBNAME, config.DBUSERNAME, config.DBPASSW
 		Verify,
 		Tokens,
 		UserTokens,
+		Transactions,
 		Customers,
 		PaymentRequests,
 		Invoice,
