@@ -37,6 +37,7 @@ socketio.on("connection", async (socket: any) => {
 
 	socket.on("signin_notification", async (id: any) => {
 		const redis = new Redis();
+		console.log(id, "userid o");
 		const cachedUserSocket = await redis.setData(`notification-${id}`, socket.id);
 	});
 
