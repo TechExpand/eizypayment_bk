@@ -115,7 +115,11 @@ export const createPaymentLink = async (req: Request, res: Response) => {
 
 export const fetchPaymenntRequest = async (req: Request, res: Response) => {
     const { id } = req.user;
-    const request = await PaymentRequests.findAll({ where: { userId: id, type: TypeState.PAYMENT_LINK } })
+    const request = await PaymentRequests.findAll({
+        where: { userId: id, type: TypeState.PAYMENT_LINK }, order: [
+            ['id', 'DESC']
+        ],
+    })
     return successResponse(res, "Successful", request);
 
 }

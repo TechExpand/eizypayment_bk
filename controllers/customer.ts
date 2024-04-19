@@ -68,7 +68,11 @@ export const createCustomer = async (req: Request, res: Response) => {
 
 export const fetchCustomer = async (req: Request, res: Response) => {
     const { id } = req.user;
-    const customer = await Customers.findAll({ where: { userId: id } })
+    const customer = await Customers.findAll({
+        where: { userId: id }, order: [
+            ['id', 'DESC']
+        ],
+    })
     return successResponse(res, "Successful", customer);
 }
 

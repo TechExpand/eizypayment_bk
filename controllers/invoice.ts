@@ -101,7 +101,11 @@ export const createInvoice = async (req: Request, res: Response) => {
 
 export const fetchInvoice = async (req: Request, res: Response) => {
   const { id } = req.user;
-  const invoice = await Invoice.findAll({ where: { userId: id } })
+  const invoice = await Invoice.findAll({
+    where: { userId: id }, order: [
+      ['id', 'DESC']
+    ],
+  })
   console.log(invoice);
   return successResponse(res, "Successful", invoice);
 
@@ -212,8 +216,14 @@ export const webhook = async (req: Request, res: Response) => {
         const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
         const user = await Users.findOne({ where: { id: invoice?.userId } })
         if (userToken) {
+
           await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
           await invoice.update({ processed: true })
+
+
+          const tokenX = await Tokens.findOne({ where: { symbol: invoice?.symbol } })
+          const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
           await Transactions.create({
             ref: createRandomRef(8, "txt"),
             description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
@@ -230,6 +240,16 @@ export const webhook = async (req: Request, res: Response) => {
             title: "Invoice Payment Successful",
             type: TransactionType.CREDIT,
             service: ServiceType.INVOICE,
+            mata: {
+              invoice: { ...invoice?.dataValues }, token: {
+                title: tokenX?.dataValues.symbol,
+                tokenId: tokenX?.dataValues.id,
+                id: creditedToken?.dataValues.id,
+                currency: tokenX?.dataValues.currency,
+                amount: creditedToken?.dataValues.balance,
+                icon: tokenX?.dataValues.url
+              }
+            },
           })
           await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice paid by you</div>`);
           await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
@@ -237,6 +257,11 @@ export const webhook = async (req: Request, res: Response) => {
         } else {
           const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
           await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
+
+          const tokenX = await Tokens.findOne({ where: { symbol: invoice?.symbol } })
+          const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
+
           await Transactions.create({
             ref: createRandomRef(8, "txt"),
             description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
@@ -252,6 +277,16 @@ export const webhook = async (req: Request, res: Response) => {
             description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
             title: "Invoice Payment Successful",
             type: TransactionType.CREDIT,
+            mata: {
+              invoice: { ...invoice?.dataValues }, token: {
+                title: tokenX?.dataValues.symbol,
+                tokenId: tokenX?.dataValues.id,
+                id: creditedToken?.dataValues.id,
+                currency: tokenX?.dataValues.currency,
+                amount: creditedToken?.dataValues.balance,
+                icon: tokenX?.dataValues.url
+              }
+            },
             service: ServiceType.INVOICE,
           })
           await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice sent</div>`);
@@ -280,6 +315,10 @@ export const webhook = async (req: Request, res: Response) => {
         await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
         await invoice.update({ processed: true })
         const user = await Users.findOne({ where: { id: invoice?.userId } })
+
+        const tokenX = await Tokens.findOne({ where: { symbol: invoice?.symbol } })
+        const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
         await Transactions.create({
           ref: createRandomRef(8, "txt"),
           description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
@@ -296,6 +335,17 @@ export const webhook = async (req: Request, res: Response) => {
           title: "Invoice Payment Successful",
           type: TransactionType.CREDIT,
           service: ServiceType.INVOICE,
+          mata: {
+            invoice: { ...invoice?.dataValues },
+            token: {
+              title: tokenX?.dataValues.symbol,
+              tokenId: tokenX?.dataValues.id,
+              id: creditedToken?.dataValues.id,
+              currency: tokenX?.dataValues.currency,
+              amount: creditedToken?.dataValues.balance,
+              icon: tokenX?.dataValues.url
+            }
+          },
         })
         await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice paid by you</div>`);
         await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
@@ -334,6 +384,11 @@ export const webhook = async (req: Request, res: Response) => {
             await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
             await newRequest!.update({ processed: true })
             const user = await Users.findOne({ where: { id: newRequest?.userId } })
+
+
+            const tokenX = await Tokens.findOne({ where: { symbol: getToken?.symbol } })
+            const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
             await Transactions.create({
               ref: createRandomRef(8, "txt"),
               description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
@@ -349,6 +404,16 @@ export const webhook = async (req: Request, res: Response) => {
               description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
               title: "Payment Request Paid Successfully",
               type: TransactionType.CREDIT,
+              mata: {
+                token: {
+                  title: tokenX?.dataValues.symbol,
+                  tokenId: tokenX?.dataValues.id,
+                  id: creditedToken?.dataValues.id,
+                  currency: tokenX?.dataValues.currency,
+                  amount: creditedToken?.dataValues.balance,
+                  icon: tokenX?.dataValues.url
+                }
+              },
               service: ServiceType.PAYMENT_REQUEST,
             })
             await sendEmail(newRequest!.email, "Payment Successful", `<div>payment request paid by you</div>`);
@@ -359,6 +424,11 @@ export const webhook = async (req: Request, res: Response) => {
             await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
             await newRequest!.update({ processed: true })
             const user = await Users.findOne({ where: { id: newRequest?.userId } })
+
+            const tokenX = await Tokens.findOne({ where: { symbol: getToken?.symbol } })
+            const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
+
             await Transactions.create({
               ref: createRandomRef(8, "txt"),
               description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
@@ -374,6 +444,16 @@ export const webhook = async (req: Request, res: Response) => {
               description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
               title: "Payment Request Paid Successfully",
               type: TransactionType.CREDIT,
+              mata: {
+                token: {
+                  title: tokenX?.dataValues.symbol,
+                  tokenId: tokenX?.dataValues.id,
+                  id: creditedToken?.dataValues.id,
+                  currency: tokenX?.dataValues.currency,
+                  amount: creditedToken?.dataValues.balance,
+                  icon: tokenX?.dataValues.url
+                }
+              },
               service: ServiceType.PAYMENT_REQUEST,
             })
             await sendEmail(newRequest!.email, "Payment Successful", `<div>payment request paid by you</div>`);
@@ -397,6 +477,9 @@ export const webhook = async (req: Request, res: Response) => {
 
           })
 
+          const tokenX = await Tokens.findOne({ where: { symbol: getToken?.symbol } })
+          const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
           const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
           await userToken.update({ balance: (Number(userToken.balance) + Number(amountToCredit)) })
           await newRequest!.update({ processed: true })
@@ -416,6 +499,16 @@ export const webhook = async (req: Request, res: Response) => {
             description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
             title: "Payment Request Paid Successfully",
             type: TransactionType.CREDIT,
+            mata: {
+              token: {
+                title: tokenX?.dataValues.symbol,
+                tokenId: tokenX?.dataValues.id,
+                id: creditedToken?.dataValues.id,
+                currency: tokenX?.dataValues.currency,
+                amount: creditedToken?.dataValues.balance,
+                icon: tokenX?.dataValues.url
+              }
+            },
             service: ServiceType.PAYMENT_REQUEST,
           })
           await sendEmail(newRequest!.email, "Payment Successful", `<div>invoice paid by you</div>`);
@@ -432,6 +525,11 @@ export const webhook = async (req: Request, res: Response) => {
             const newRequestLatest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
             await newRequestLatest!.update({ processed: Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ? true : false })
             const user = await Users.findOne({ where: { id: newRequest?.userId } })
+
+            const tokenX = await Tokens.findOne({ where: { symbol: getToken?.symbol } })
+            const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
+
             Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
               await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
               await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
@@ -449,6 +547,16 @@ export const webhook = async (req: Request, res: Response) => {
             await sendAppNotification(user?.id, {
               title: "Crowdfund Paid Successfully",
               type: TransactionType.CREDIT,
+              mata: {
+                token: {
+                  title: tokenX?.dataValues.symbol,
+                  tokenId: tokenX?.dataValues.id,
+                  id: creditedToken?.dataValues.id,
+                  currency: tokenX?.dataValues.currency,
+                  amount: creditedToken?.dataValues.balance,
+                  icon: tokenX?.dataValues.url
+                }
+              },
               service: ServiceType.CROWD_FUND,
             })
             return res.sendStatus(200)
@@ -459,6 +567,11 @@ export const webhook = async (req: Request, res: Response) => {
             const newRequestLatest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
             await newRequestLatest!.update({ processed: Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ? true : false })
             const user = await Users.findOne({ where: { id: newRequest?.userId } })
+
+            const tokenX = await Tokens.findOne({ where: { symbol: getToken?.symbol } })
+            const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
+
             Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
               await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
               await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
@@ -477,6 +590,16 @@ export const webhook = async (req: Request, res: Response) => {
               description: `You Recieved a Crowdfund Paymemt of $${amountToCredit} Successfully`,
               title: "Crowdfund Paid Successfully",
               type: TransactionType.CREDIT,
+              mata: {
+                token: {
+                  title: tokenX?.dataValues.symbol,
+                  tokenId: tokenX?.dataValues.id,
+                  id: creditedToken?.dataValues.id,
+                  currency: tokenX?.dataValues.currency,
+                  amount: creditedToken?.dataValues.balance,
+                  icon: tokenX?.dataValues.url
+                }
+              },
               service: ServiceType.CROWD_FUND,
             })
             return res.sendStatus(200)
@@ -504,6 +627,9 @@ export const webhook = async (req: Request, res: Response) => {
           const newRequestLatest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
           await newRequestLatest!.update({ processed: Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ? true : false })
           const user = await Users.findOne({ where: { id: newRequest?.userId } })
+          const tokenX = await Tokens.findOne({ where: { symbol: getToken?.symbol } })
+          const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
           Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
             await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
             await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
@@ -522,6 +648,16 @@ export const webhook = async (req: Request, res: Response) => {
             description: `You Recieved a Crowdfund Paymemt of $${amountToCredit} Successfully`,
             title: "Crowdfund Paid Successfully",
             type: TransactionType.CREDIT,
+            mata: {
+              token: {
+                title: tokenX?.dataValues.symbol,
+                tokenId: tokenX?.dataValues.id,
+                id: creditedToken?.dataValues.id,
+                currency: tokenX?.dataValues.currency,
+                amount: creditedToken?.dataValues.balance,
+                icon: tokenX?.dataValues.url
+              }
+            },
             service: ServiceType.CROWD_FUND,
           })
           return res.sendStatus(200)
@@ -541,6 +677,9 @@ export const webhook = async (req: Request, res: Response) => {
       reason: body.eventData.managedWithdrawal.failureReason, processed: true
     })
     const user = await Users.findOne({ where: { id: withdrawal?.userId } })
+    const tokenX = await Tokens.findOne({ where: { symbol: withdrawal?.symbol } })
+    const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+
     await sendEmail(user!.email, "Withdrawal Successful", `<div>recieved by you</div>`);
     await Transactions.create({
       ref: createRandomRef(8, "txt"),
@@ -557,6 +696,16 @@ export const webhook = async (req: Request, res: Response) => {
       description: `Withdrawal of $${withdrawal.amount} is Successful`,
       title: "Withdrawal Successful",
       type: TransactionType.DEBIT,
+      mata: {
+        token: {
+          title: tokenX?.dataValues.symbol,
+          tokenId: tokenX?.dataValues.id,
+          id: creditedToken?.dataValues.id,
+          currency: tokenX?.dataValues.currency,
+          amount: creditedToken?.dataValues.balance,
+          icon: tokenX?.dataValues.url
+        }
+      },
       service: ServiceType.WITHDRAWAL,
     })
     return res.sendStatus(200)
@@ -570,10 +719,11 @@ export const webhook = async (req: Request, res: Response) => {
 
 
 export const updateInvoiceStatus = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.query;
   const invoice = await Invoice.findOne({ where: { randoId: id } })
+  const date: string = new Date().toISOString();
   await invoice!.update({
-    paidAt: new Date().toISOString,
+    paidAt: date,
     status: "paid",
     processed: true
   })
@@ -586,9 +736,11 @@ export const updateInvoiceStatus = async (req: Request, res: Response) => {
 
 
 export const sendInvoiceReminder = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.query;
   const invoice = await Invoice.findOne({ where: { randoId: id } })
-  await sendEmail(invoice?.customer.name, "Invoice Reminder", `<div>invoice reminder</div>`);
+  console.log(invoice?.customer.email)
+  await sendEmail(invoice?.customer.email, "Invoice Reminder", `<div>invoice reminder</div>`);
+
   const newInvoice = await Invoice.findOne({ where: { randoId: id } })
   return successResponse(res, "Successful", newInvoice);
 }

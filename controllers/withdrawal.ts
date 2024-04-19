@@ -13,12 +13,13 @@ import { compareTwoStrings } from 'string-similarity';
 import { StreamChat } from 'stream-chat';
 import { Sequelize } from "sequelize-typescript";
 import { Verify } from "../models/Verify";
-import { sendEmail } from "../services/notification";
+import { sendEmail, sendEmailWithdraw } from "../services/notification";
 import { templateEmail } from "../config/template";
 import { Tokens } from "../models/Token";
 import { Customers } from "../models/Customers";
 import { UserTokens } from "../models/UserToken";
-import { Withdrawal } from "../models/Withdrawal";
+import { WithdrawTypeState, Withdrawal } from "../models/Withdrawal";
+import { Banks } from "../models/Bank";
 const fs = require("fs");
 const axios = require('axios')
 
@@ -64,15 +65,92 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                     Authorization: `${config.RADON}`
                 },
             })
-            console.log(response2.data)
 
+            await sendEmailWithdraw("", "Withdrawal Request", `<div>recieved by you</div>`);
             const withdrawal = await Withdrawal.create({
                 randoId: response2.data[0].id,
                 network,
                 token,
                 symbol,
                 amount,
+                type: WithdrawTypeState.CRYPTO,
                 withdrawalAddress,
+                userTokenId: userToken?.id,
+                userId: id
+            })
+            return successResponse(res, "Successful", withdrawal);
+        } else {
+            return errorResponse(res, "Insuffient funds");
+        }
+
+
+    } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+            return successResponse(res, "Failed", error.response.data);
+            // Do something with this error...
+        } else {
+            console.error(error);
+            return successResponse(res, "Failed", error);
+        }
+    }
+}
+
+
+
+
+
+export const createBank = async (req: Request, res: Response) => {
+    const { id } = req.user;
+    console.log("ddddd")
+    const { accountName, bankName, accountNumber } = req.body;
+    const bank = await Banks.create({
+        accountName,
+        bankName,
+        bankAccount: accountNumber,
+        userId: id
+    })
+    return successResponse(res, "Successful", bank);
+}
+
+
+
+export const fetchBank = async (req: Request, res: Response) => {
+    const { id } = req.user;
+    const bank = await Banks.findAll({
+        where: { userId: id },
+        order: [
+            ['id', 'DESC']
+        ],
+    })
+    // console.log(bank)
+    return successResponse(res, "Successful", bank);
+}
+
+
+
+
+export const createWithdrawalCash = async (req: Request, res: Response) => {
+    const { id } = req.user;
+    const { network, token, amount, bank, symbol } = req.body;
+    console.log(symbol)
+    try {
+        const tokens = await Tokens.findOne({ where: { symbol } })
+        if (!tokens) return errorResponse(res, "Token Not found");
+        const userToken = await UserTokens.findOne({ where: { tokenId: tokens?.id, userId: id } })
+        if (!userToken) return errorResponse(res, "User Token Not found");
+
+        if (userToken?.balance >= amount) {
+
+            await userToken.update({ balance: (Number(userToken.balance) - Number(amount)) })
+
+            const withdrawal = await Withdrawal.create({
+                randoId: "",
+                network,
+                token,
+                symbol,
+                type: WithdrawTypeState.P2P,
+                amount,
+                bank,
                 userTokenId: userToken?.id,
                 userId: id
             })
@@ -99,7 +177,11 @@ export const createWithdrawal = async (req: Request, res: Response) => {
 
 export const fetchWithdrawal = async (req: Request, res: Response) => {
     const { id } = req.user;
-    const withdrawal = await Withdrawal.findAll({ where: { userId: id } })
+    const withdrawal = await Withdrawal.findAll({
+        where: { userId: id }, order: [
+            ['id', 'DESC']
+        ],
+    })
     return successResponse(res, "Successful", withdrawal);
 }
 

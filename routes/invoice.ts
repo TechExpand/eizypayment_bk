@@ -20,8 +20,8 @@ routes.post('/user/invoice', createInvoice);
 routes.get('/user/invoice', fetchInvoice);
 routes.get('/user/invoice/:id', fetchSignleInvoice);
 routes.get('/user/network', fetchAllNetwork);
-routes.post('/user/update-invoice', updateInvoiceStatus);
-routes.post('/user/update-invoice', sendInvoiceReminder);
+routes.get('/user/update-invoice', updateInvoiceStatus);
+routes.get('/user/invoice-reminder', sendInvoiceReminder);
 routes.post('/user/webhook', webhook);
 
 

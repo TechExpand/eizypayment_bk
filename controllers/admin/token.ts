@@ -41,6 +41,9 @@ export const deleteToken = async (req: Request, res: Response) => {
 export const fetchTokens = async (req: Request, res: Response) => {
     const token = await Tokens.findAll({
         limit: 6,
+        order: [
+            ['id', 'DESC']
+          ],
     },)
     return successResponse(res, "Successful", token.reverse());
 }

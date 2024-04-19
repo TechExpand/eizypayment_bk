@@ -18,7 +18,8 @@ import axios from "axios";
 import { Tokens } from "../models/Token";
 import { UserTokens } from "../models/UserToken";
 import { AvatarGenerator } from 'random-avatar-generator';
-import { ServiceType, TransactionType } from "../models/Transaction";
+import { ServiceType, TransactionStatus, TransactionType, Transactions } from "../models/Transaction";
+import { Invoice } from "../models/Invoice";
 
 const generator = new AvatarGenerator();
 
@@ -130,6 +131,9 @@ export const register = async (req: Request, res: Response) => {
         let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
         const tokens = await Tokens.findAll({
           limit: 6,
+          order: [
+            ['id', 'DESC']
+          ],
         },)
         tokens.reverse()
         let insertData: any = [];
@@ -163,6 +167,9 @@ export const register = async (req: Request, res: Response) => {
       let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
       const tokens = await Tokens.findAll({
         limit: 6,
+        order: [
+          ['id', 'DESC']
+        ],
       },)
       tokens.reverse()
       let insertData: any = [];
@@ -235,11 +242,43 @@ export const changePassword = async (req: Request, res: Response) => {
 
 export const testApi = async (req: Request, res: Response) => {
   const { id } = req.user;
+  const { invoiceId } = req.query;
+  const invoice = await Invoice.findOne({ where: { randoId: invoiceId } })
+
+
+
+  const token = await Tokens.findOne({ where: { symbol: invoice?.symbol } })
+  const creditedToken = await UserTokens.findOne({ where: { tokenId: token?.id } })
+
+  await creditedToken?.update({ balance: (Number(creditedToken?.balance) + Number(100)) })
+
+  await Transactions.create({
+    ref: createRandomRef(8, "txt"),
+    description: `You Recieved an Invoice Payment of $${100} Successfully`,
+    title: "Invoice Payment Successful",
+    type: TransactionType.CREDIT,
+    service: ServiceType.INVOICE,
+    amount: 100,
+    status: TransactionStatus.COMPLETE,
+    mata: invoice,
+    userId: id
+  })
+
   await sendAppNotification(id, {
     description: `You Recieved an Invoice Payment of Successfully`,
     title: "Invoice Payment Successful",
     type: TransactionType.CREDIT,
     service: ServiceType.INVOICE,
+    mata: {
+      invoice: { ...invoice?.dataValues }, token: {
+        title: token?.dataValues.symbol,
+        tokenId: token?.dataValues.id,
+        id: creditedToken?.dataValues.id,
+        currency: token?.dataValues.currency,
+        amount: creditedToken?.dataValues.balance,
+        icon: token?.dataValues.url
+      }
+    },
   })
   return successResponse(res, "Successful")
 };

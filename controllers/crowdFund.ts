@@ -108,7 +108,11 @@ export const createCrowdFund = async (req: Request, res: Response) => {
 
 export const fetchCrowdFund = async (req: Request, res: Response) => {
     const { id } = req.user;
-    const request = await PaymentRequests.findAll({ where: { userId: id, type: TypeState.CROWD_FUND } })
+    const request = await PaymentRequests.findAll({
+        where: { userId: id, type: TypeState.CROWD_FUND }, order: [
+            ['id', 'DESC']
+        ],
+    })
     return successResponse(res, "Successful", request);
 
 }

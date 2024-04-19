@@ -12,6 +12,7 @@ import { UserTokens } from '../models/UserToken';
 import { Withdrawal } from '../models/Withdrawal';
 import { PaymentRequests } from '../models/Payment';
 import { Transactions } from '../models/Transaction';
+import { Banks } from '../models/Bank';
 
 
 
@@ -34,6 +35,7 @@ const sequelize = new Sequelize(config.DBNAME, config.DBUSERNAME, config.DBPASSW
 	models: [
 		Users,
 		Verify,
+		Banks,
 		Tokens,
 		UserTokens,
 		Transactions,
