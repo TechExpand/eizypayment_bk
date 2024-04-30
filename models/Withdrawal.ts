@@ -52,7 +52,7 @@ export class Withdrawal extends Model {
     @Column(DataType.STRING)
     token!: string;
 
-
+    @Default("")
     @AllowNull(true)
     @Column(DataType.STRING)
     withdrawalAddress!: string;
@@ -73,7 +73,7 @@ export class Withdrawal extends Model {
     @Column(DataType.BOOLEAN)
     processed!: boolean;
 
-  
+
 
     @Default(0.0)
     @AllowNull(true)
@@ -105,12 +105,12 @@ export class Withdrawal extends Model {
 
 
     @BelongsTo(() => Users, { onDelete: 'CASCADE' })
-	user!: Users;
+    user!: Users;
 
 
 
     @BelongsTo(() => UserTokens, { onDelete: 'CASCADE' })
-	userToken!: UserTokens;
+    userToken!: UserTokens;
 }
 
 
