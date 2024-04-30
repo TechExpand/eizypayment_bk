@@ -73,6 +73,8 @@ export class Withdrawal extends Model {
     @Column(DataType.BOOLEAN)
     processed!: boolean;
 
+  
+
     @Default(0.0)
     @AllowNull(true)
     @Column(DataType.FLOAT)
@@ -100,4 +102,16 @@ export class Withdrawal extends Model {
     @Default(WithdrawalStatus.PENDING)
     @Column(DataType.ENUM(WithdrawalStatus.COMPLETE, WithdrawalStatus.FAILED, WithdrawalStatus.PENDING))
     status!: WithdrawalStatus
+
+
+    @BelongsTo(() => Users, { onDelete: 'CASCADE' })
+	user!: Users;
+
+
+
+    @BelongsTo(() => UserTokens, { onDelete: 'CASCADE' })
+	userToken!: UserTokens;
 }
+
+
+

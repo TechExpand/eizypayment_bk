@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "eisypayment-c9365",
+  "private_key_id": "b25cafbd82087c871f238ab587f9109dbc78e253",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDOOs+5cLHrBco5\nm06wqJrLXlG8/1kUfspc52Zirw/07pvbVPeQl1eKJfldE5SrZAsr8Cz9d8Sdyp9n\nlgfyk/IIVtLl71n4MiK4Bk+1o2AmGR2CHgDcBlZpaWA6YibYkQej4s0RpYhcC7cG\nLXUtnWulLo9pYzNRUqQ1ehg9wW4U2GcJbZPRHDZZSupO19U/9g/5yZ7veGtUIOjt\nyh55xa94nb7WVNSV1FefLIMWrMEAuqKxMF3xvFx6bL+OoO4uztRPyg6/etpohWae\neqaZualnSQ19mF2lEO0YfLjSyN9PKHXie8cLsMVXBofJ2ELpTRwtcw06w611YpLn\nWJr/XqFFAgMBAAECggEATr90TGo09fprAt5ECP8IxLlKWvHiUQotOZZ+qRYR8MQg\nLXtfYQ35Nl5Tvu/YKC32ehunAk52fI4/mi1W8ZD+raKBu51O7JAwY7a9Py2YbFPQ\nybutNlcRLgU34nNSRAX1NeZHygI8dHFgvPIkuXtP/G4wAt0HXnlBDM6HbSVsZHai\nPekEZ1GHHahDsEB4ljQDpfuxzhXwCsOMgUNcUqBv31jxXLKvxDh5hQQKjr+5ePxg\nw5SG7WP95BumF8APq8qx03CqtmuaDHLLrIwynE6c7uuyWvBpGc4RrvgzXk1/f6ZZ\nStIIOsV/TFxWBTs9WH5s+k1uePrwtnW6rahlksdw7QKBgQDnvlNzOQV+JSQUAjZY\nrqSFnC6mI/rWjW+5GveeQvnoO4SfZvR16SSKmpaoE/zjsz2FgpwOWyXL3520bvUT\nvXHJwZ+j7TB2WfzF/N2jDBDhcmsPU4yPWoO75YjB46/O0LGcfXUB0M22Sl8yJ3D9\nFgeflGOGItkrN7l6jVLTtRXrBwKBgQDj0NVMV+hqSBspUaGsIRJCugHisMshuZeM\nWo1fThTYK8/MfEvQPxUegNSWvTlUcQnorEefk13ZH17u78YhF1PWng7GXeSey6xr\nkOOTxHp1TgNenT726VN4h+RXG++1HsQtNzQ4hYQTHLKak8WtaicUOfCoFIk3b8rH\nxI38Se+iUwKBgQCFB8+1xBTwHfgA+GgkLlTJUifBPcQ/p79rvhxJIF9/PbNbIenR\nSf2tByLW52pzd7AoVRqqbw5aY0qPimZrZ4PLcrfmjUEVn4CoUwkUENgb4uesS6TT\nof0fPptr2f1RNqHOmIIzgZ6lNzpAez20OxIzPCaJmLWbxohV3oyedURYvwKBgGoV\ntx3D2dCUH0HQZ462H8C+yV38obrkp7ON/0MgIwi+7hb00oD4vybjKxu+pdGyicC1\naOzgPNV8jEKLmSGTsVDBbXPmCS4A/htg7vjCh5vUZjFK3CUyZdI8xZHiym73ErdT\ne5fOZMBZnrnokia8xdHfYTeDyJnuDumTl+Khs1tNAoGBAJSf3NlBdQYKECh2GYJP\ny3QK0YtKSWeZxWXEj6Ng4VvDjqPIrEDegl+HYfIMRkGAZCO0JsLkl26lF57wNX7L\nGiIdfl9YsWR02PosX967cAZw0OHhj1oCUuEml7yruolSaW+F+1pMdTNJglrGsVk+\naTmsz/6PM2zMTZmJevGDjiSl\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-f7ozp@eisypayment-c9365.iam.gserviceaccount.com",
+  "client_id": "101952806958980005517",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-f7ozp%40eisypayment-c9365.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

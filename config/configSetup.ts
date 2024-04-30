@@ -58,6 +58,10 @@ const getConfig = (): Config => {
 			'/api',
 			'/',
 			'/api/test',
+			'/api/user/admin',
+			"/admin/invoice",
+			"/admin/invoice-view",
+			"/admin/approve-withdraw",
 			"/invoice",
 			'/api/user/login',
 			'/api/user/register',
@@ -66,10 +70,6 @@ const getConfig = (): Config => {
 			"/api/user/send-otp",
 			"/api/user/network",
 			"/api/user/webhook"
-			
-
-
-
 		],
 		BUSINESS_PUBLIC_ROUTES: [
 

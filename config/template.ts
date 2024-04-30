@@ -1,162 +1,363 @@
 
 
+// Import types
 
 
-export const templateEmail = (subject: string, body: string)=>{
-    return `<!-- © 2018 Shift Technologies. All rights reserved. -->
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed;background-color:#f9f9f9" id="bodyTable">
-        <tbody>
-            <tr>
-                <td style="padding-right:10px;padding-left:10px;" align="center" valign="top" id="bodyCell">
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="wrapperWebview" style="max-width:600px">
-                        <tbody>
-                            <tr>
-                                <td align="center" valign="top">
-                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                                        <tbody>
-                                            <tr>
-                                                <td style="padding-top: 20px; padding-bottom: 20px; padding-right: 0px;" align="right" valign="middle" class="webview"> <a href="#" style="color:#bbb;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:12px;font-weight:400;font-style:normal;letter-spacing:normal;line-height:20px;text-transform:none;text-align:right;text-decoration:underline;padding:0;margin:0" target="_blank" class="text hideOnMobile">Oh wait, there's more! →</a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="wrapperBody" style="max-width:600px">
-                        <tbody>
-                            <tr>
-                                <td align="center" valign="top">
-                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableCard" style="background-color:#fff;border-color:#e5e5e5;border-style:solid;border-width:0 1px 1px 1px;">
-                                        <tbody>
-                                            <tr>
-                                                <td style="background-color:#00d2f4;font-size:1px;line-height:3px" class="topBorder" height="3">&nbsp;</td>
-                                            </tr>
-                                          
-                                           
-                                            <tr>
-                                                <td style="padding-bottom: 5px; padding-left: 20px; padding-right: 20px;" align="center" valign="top" class="mainTitle">
-                                                    <h2 class="text" style="color:#000;font-family:Poppins,Helvetica,Arial,sans-serif;font-size:28px;font-weight:500;font-style:normal;letter-spacing:normal;line-height:36px;text-transform:none;text-align:center;padding:0;margin:0">${subject}</h2>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding-bottom: 30px; padding-left: 20px; padding-right: 20px;" align="center" valign="top" class="subTitle">
-                                                    <h4 class="text" style="color:#999;font-family:Poppins,Helvetica,Arial,sans-serif;font-size:16px;font-weight:500;font-style:normal;letter-spacing:normal;line-height:24px;text-transform:none;text-align:center;padding:0;margin:0">${body}</h4>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding-left:20px;padding-right:20px" align="center" valign="top" class="containtTable ui-sortable">
-                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableDescription" style="">
-                                                        <tbody>
-                                                            <tr>
-                                                                <td style="padding-bottom: 20px;" align="center" valign="top" class="description">
-                                                                    <p class="text" style="color:#666;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;font-style:normal;letter-spacing:normal;line-height:22px;text-transform:none;text-align:center;padding:0;margin:0">Thanks for subscribe for the Vespro newsletter. Please click confirm button for subscription to start receiving our emails.</p>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="tableButton" style="">
-                                                        <tbody>
-                                                            <tr>
-                                                                <td style="padding-top:20px;padding-bottom:20px" align="center" valign="top">
-                                                                    <table border="0" cellpadding="0" cellspacing="0" align="center">
-                                                                        <tbody>
-                                                                            <tr>
-                                                                              
-                                                                              
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-size:1px;line-height:1px" height="20">&nbsp;</td>
-                                            </tr>
-                                           
-                                        </tbody>
-                                    </table>
-                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="space">
-                                        <tbody>
-                                            <tr>
-                                                <td style="font-size:1px;line-height:1px" height="30">&nbsp;</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="wrapperFooter" style="max-width:600px">
-                        <tbody>
-                            <tr>
-                                <td align="center" valign="top">
-                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="footer">
-                                        <tbody>
-                                            <tr>
-                                                <td style="padding-top:10px;padding-bottom:10px;padding-left:10px;padding-right:10px" align="center" valign="top" class="socialLinks">
-                                                    <a href="#facebook-link" style="display:inline-block" target="_blank" class="facebook">
-                                                        <img alt="" border="0" src="http://email.aumfusion.com/vespro/img/social/light/facebook.png" style="height:auto;width:100%;max-width:40px;margin-left:2px;margin-right:2px" width="40">
-                                                    </a>
-                                                    <a href="#twitter-link" style="display: inline-block;" target="_blank" class="twitter">
-                                                        <img alt="" border="0" src="http://email.aumfusion.com/vespro/img/social/light/twitter.png" style="height:auto;width:100%;max-width:40px;margin-left:2px;margin-right:2px" width="40">
-                                                    </a>
-                                                    <a href="#pintrest-link" style="display: inline-block;" target="_blank" class="pintrest">
-                                                        <img alt="" border="0" src="http://email.aumfusion.com/vespro/img/social/light/pintrest.png" style="height:auto;width:100%;max-width:40px;margin-left:2px;margin-right:2px" width="40">
-                                                    </a>
-                                                    <a href="#instagram-link" style="display: inline-block;" target="_blank" class="instagram">
-                                                        <img alt="" border="0" src="http://email.aumfusion.com/vespro/img/social/light/instagram.png" style="height:auto;width:100%;max-width:40px;margin-left:2px;margin-right:2px" width="40">
-                                                    </a>
-                                                    <a href="#linkdin-link" style="display: inline-block;" target="_blank" class="linkdin">
-                                                        <img alt="" border="0" src="http://email.aumfusion.com/vespro/img/social/light/linkdin.png" style="height:auto;width:100%;max-width:40px;margin-left:2px;margin-right:2px" width="40">
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding: 10px 10px 5px;" align="center" valign="top" class="brandInfo">
-                                                    <p class="text" style="color:#bbb;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:12px;font-weight:400;font-style:normal;letter-spacing:normal;line-height:20px;text-transform:none;text-align:center;padding:0;margin:0">©&nbsp;Vespro Inc. | 800 Broadway, Suite 1500 | New York, NY 000123, USA.</p>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding: 0px 10px 20px;" align="center" valign="top" class="footerLinks">
-                                                    <p class="text" style="color:#bbb;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:12px;font-weight:400;font-style:normal;letter-spacing:normal;line-height:20px;text-transform:none;text-align:center;padding:0;margin:0"> <a href="#" style="color:#bbb;text-decoration:underline" target="_blank">View Web Version </a>&nbsp;|&nbsp; <a href="#" style="color:#bbb;text-decoration:underline" target="_blank">Email Preferences </a>&nbsp;|&nbsp; <a href="#" style="color:#bbb;text-decoration:underline" target="_blank">Privacy Policy</a>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding: 0px 10px 10px;" align="center" valign="top" class="footerEmailInfo">
-                                                    <p class="text" style="color:#bbb;font-family:'Open Sans',Helvetica,Arial,sans-serif;font-size:12px;font-weight:400;font-style:normal;letter-spacing:normal;line-height:20px;text-transform:none;text-align:center;padding:0;margin:0">If you have any quetions please contact us <a href="#" style="color:#bbb;text-decoration:underline" target="_blank">support@mail.com.</a>
-                                                        <br> <a href="#" style="color:#bbb;text-decoration:underline" target="_blank">Unsubscribe</a> from our mailing lists</p>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding-top:10px;padding-bottom:10px;padding-left:10px;padding-right:10px" align="center" valign="top" class="appLinks">
-                                                    <a href="#Play-Store-Link" style="display: inline-block;" target="_blank" class="play-store">
-                                                        <img alt="" border="0" src="http://email.aumfusion.com/vespro/img/app/play-store.png" style="height:auto;margin:5px;width:100%;max-width:120px" width="120">
-                                                    </a>
-                                                    <a href="#App-Store-Link" style="display: inline-block;" target="_blank" class="app-store">
-                                                        <img alt="" border="0" src="http://email.aumfusion.com/vespro/img/app/app-store.png" style="height:auto;margin:5px;width:100%;max-width:120px" width="120">
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="font-size:1px;line-height:1px" height="30">&nbsp;</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="font-size:1px;line-height:1px" height="30">&nbsp;</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>`
-}
+export const templateEmail = (subject: string, body: string) => {
+    return `
+    
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Simple Transactional Email</title>
+        <style media="all" type="text/css">
+        /* -------------------------------------
+        GLOBAL RESETS
+    ------------------------------------- */
+        
+        body {
+          font-family: Helvetica, sans-serif;
+          -webkit-font-smoothing: antialiased;
+          font-size: 16px;
+          line-height: 1.3;
+          -ms-text-size-adjust: 100%;
+          -webkit-text-size-adjust: 100%;
+        }
+        
+        table {
+          border-collapse: separate;
+          mso-table-lspace: 0pt;
+          mso-table-rspace: 0pt;
+          width: 100%;
+        }
+        
+        table td {
+          font-family: Helvetica, sans-serif;
+          font-size: 16px;
+          vertical-align: top;
+        }
+        /* -------------------------------------
+        BODY & CONTAINER
+    ------------------------------------- */
+        
+        body {
+          background-color: #f4f5f6;
+          margin: 0;
+          padding: 0;
+        }
+        
+        .body {
+          background-color: #f4f5f6;
+          width: 100%;
+        }
+        
+        .container {
+          margin: 0 auto !important;
+          max-width: 600px;
+          padding: 0;
+          padding-top: 24px;
+          width: 600px;
+        }
+        
+        .content {
+          box-sizing: border-box;
+          display: block;
+          margin: 0 auto;
+          max-width: 600px;
+          padding: 0;
+        }
+        /* -------------------------------------
+        HEADER, FOOTER, MAIN
+    ------------------------------------- */
+        
+        .main {
+          background: #ffffff;
+          border: 1px solid #eaebed;
+          border-radius: 16px;
+          width: 100%;
+        }
+        
+        .wrapper {
+          box-sizing: border-box;
+          padding: 24px;
+        }
+        
+        .footer {
+          clear: both;
+          padding-top: 24px;
+          text-align: center;
+          width: 100%;
+        }
+        
+        .footer td,
+        .footer p,
+        .footer span,
+        .footer a {
+          color: #9a9ea6;
+          font-size: 16px;
+          text-align: center;
+        }
+        /* -------------------------------------
+        TYPOGRAPHY
+    ------------------------------------- */
+        
+        p {
+          font-family: Helvetica, sans-serif;
+          font-size: 16px;
+          font-weight: normal;
+          margin: 0;
+          margin-bottom: 16px;
+        }
+        
+        a {
+          color: #0867ec;
+          text-decoration: underline;
+        }
+        /* -------------------------------------
+        BUTTONS
+    ------------------------------------- */
+        
+        .btn {
+          box-sizing: border-box;
+          min-width: 100% !important;
+          width: 100%;
+        }
+        
+        .btn > tbody > tr > td {
+          padding-bottom: 16px;
+        }
+        
+        .btn table {
+          width: auto;
+        }
+        
+        .btn table td {
+          background-color: #ffffff;
+          border-radius: 4px;
+          text-align: center;
+        }
+        
+        .btn a {
+          background-color: #ffffff;
+          border: solid 2px #0867ec;
+          border-radius: 4px;
+          box-sizing: border-box;
+          color: #0867ec;
+          cursor: pointer;
+          display: inline-block;
+          font-size: 16px;
+          font-weight: bold;
+          margin: 0;
+          padding: 12px 24px;
+          text-decoration: none;
+          text-transform: capitalize;
+        }
+        
+        .btn-primary table td {
+          background-color: #0867ec;
+        }
+        
+        .btn-primary a {
+          background-color: #0867ec;
+          border-color: #0867ec;
+          color: #ffffff;
+        }
+        
+        @media all {
+          .btn-primary table td:hover {
+            background-color: #ec0867 !important;
+          }
+          .btn-primary a:hover {
+            background-color: #ec0867 !important;
+            border-color: #ec0867 !important;
+          }
+        }
+        
+        /* -------------------------------------
+        OTHER STYLES THAT MIGHT BE USEFUL
+    ------------------------------------- */
+        
+        .last {
+          margin-bottom: 0;
+        }
+        
+        .first {
+          margin-top: 0;
+        }
+        
+        .align-center {
+          text-align: center;
+        }
+        
+        .align-right {
+          text-align: right;
+        }
+        
+        .align-left {
+          text-align: left;
+        }
+        
+        .text-link {
+          color: #0867ec !important;
+          text-decoration: underline !important;
+        }
+        
+        .clear {
+          clear: both;
+        }
+        
+        .mt0 {
+          margin-top: 0;
+        }
+        
+        .mb0 {
+          margin-bottom: 0;
+        }
+        
+        .preheader {
+          color: transparent;
+          display: none;
+          height: 0;
+          max-height: 0;
+          max-width: 0;
+          opacity: 0;
+          overflow: hidden;
+          mso-hide: all;
+          visibility: hidden;
+          width: 0;
+        }
+        
+        .powered-by a {
+          text-decoration: none;
+        }
+        
+        /* -------------------------------------
+        RESPONSIVE AND MOBILE FRIENDLY STYLES
+    ------------------------------------- */
+        
+        @media only screen and (max-width: 640px) {
+          .main p,
+          .main td,
+          .main span {
+            font-size: 16px !important;
+          }
+          .wrapper {
+            padding: 8px !important;
+          }
+          .content {
+            padding: 0 !important;
+          }
+          .container {
+            padding: 0 !important;
+            padding-top: 8px !important;
+            width: 100% !important;
+          }
+          .main {
+            border-left-width: 0 !important;
+            border-radius: 0 !important;
+            border-right-width: 0 !important;
+          }
+          .btn table {
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+          .btn a {
+            font-size: 16px !important;
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+        }
+        /* -------------------------------------
+        PRESERVE THESE STYLES IN THE HEAD
+    ------------------------------------- */
+        
+        @media all {
+          .ExternalClass {
+            width: 100%;
+          }
+          .ExternalClass,
+          .ExternalClass p,
+          .ExternalClass span,
+          .ExternalClass font,
+          .ExternalClass td,
+          .ExternalClass div {
+            line-height: 100%;
+          }
+          .apple-link a {
+            color: inherit !important;
+            font-family: inherit !important;
+            font-size: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+            text-decoration: none !important;
+          }
+          #MessageViewBody a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+          }
+        }
+        </style>
+      </head>
+      <body>
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+          <tr>
+            <td>&nbsp;</td>
+            <td class="container">
+              <div class="content">
+    
+                <!-- START CENTERED WHITE CONTAINER -->
+                <span class="preheader">This is preheader text. Some clients will show this text as a preview.</span>
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
+    
+                  <!-- START MAIN CONTENT AREA -->
+                  <tr>
+                    <td class="wrapper">
+                      <p>Hi there</p>
+                      <p>${subject}</p>
+                   
+                      <p>${body}</p>
+                      <p>From Eisy Payment team!.</p>
+                    </td>
+                  </tr>
+    
+                  <!-- END MAIN CONTENT AREA -->
+                  </table>
+    
+                <!-- START FOOTER -->
+                <div class="footer">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td class="content-block">
+                        <span class="apple-link">Company Inc, 7-11 Commercial Ct, Belfast BT1 2NB</span>
+                        <br> Don't like these emails? <a href="http://htmlemail.io/blog">Unsubscribe</a>.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="content-block powered-by">
+                        Powered by <a href="http://htmlemail.io">HTMLemail.io</a>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+    
+                <!-- END FOOTER -->
+                
+    <!-- END CENTERED WHITE CONTAINER --></div>
+            </td>
+            <td>&nbsp;</td>
+          </tr>
+        </table>
+      </body>
+    </html>
+
+    `;
+};
+
+
+

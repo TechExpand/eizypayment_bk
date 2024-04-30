@@ -18,9 +18,10 @@ import { Tokens } from "../models/Token";
 import { UserTokens } from "../models/UserToken";
 import { parseJsonText } from "typescript";
 import { Withdrawal, WithdrawalStatus } from "../models/Withdrawal";
-import { sendAppNotification, sendEmail } from "../services/notification";
+import { sendFcmNotification, sendEmail } from "../services/notification";
 import { PaymentRequests, TypeState } from "../models/Payment";
 import { ServiceType, TransactionStatus, TransactionType, Transactions } from "../models/Transaction";
+import { templateEmail } from "../config/template";
 const fs = require("fs");
 const axios = require('axios')
 
@@ -82,7 +83,10 @@ export const createInvoice = async (req: Request, res: Response) => {
       payment: response.data[0].payment,
       userId: id
     })
-    await sendEmail(invoice?.customer.email, "Invoice", `<div>invoice sent</div>`);
+    await sendEmail(invoice?.customer.email, "Invoice", templateEmail("Invoice", `<div>An Invoice was sent to you from ${invoice.customer.email}.
+    <br> Click the link below to view the invoice<br>
+    <a href=${invoice.url}> VIEW INVOICE <a/>
+    </div>`));
     return successResponse(res, "Successful", invoice);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
@@ -235,7 +239,7 @@ export const webhook = async (req: Request, res: Response) => {
             mata: invoice,
             userId: invoice?.userId
           })
-          await sendAppNotification(user?.id, {
+          await sendFcmNotification("Invoice Payment Successful", {
             description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
             title: "Invoice Payment Successful",
             type: TransactionType.CREDIT,
@@ -250,9 +254,35 @@ export const webhook = async (req: Request, res: Response) => {
                 icon: tokenX?.dataValues.url
               }
             },
-          })
-          await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice paid by you</div>`);
-          await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
+          }, user!.fcmToken)
+          await sendEmail(data.customer!.email, `Payment Received for Invoice ${invoice.randoId}`,
+            templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the invoice ${invoice.randoId}. Your prompt action is greatly appreciated.<br>
+
+          Here are the details of your payment:<br><br>
+          
+          Invoice Number: ${invoice.randoId}<br>
+          Amount Received: ${amountToCredit}<br>
+          Payment Date: ${invoice.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+          Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
+    
+          Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+          
+          </div>`));
+          await sendEmail(user!.email, `Payment Received for Invoice ${invoice.randoId}`,
+            templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that ${invoice.customer.name} successfully paid for your invoice ${invoice.randoId}.<br>
+
+          Here are the details of the payment:<br><br>
+          
+          Invoice Number: ${invoice.randoId}<br>
+          Amount Received: ${amountToCredit}<br>
+          Payment Date: ${invoice.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+          Your cooperation is essential in maintaining smooth business operations.<br><br>
+    
+          Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+          
+          </div>`)
+
+          );
           return res.sendStatus(200)
         } else {
           const userToken = await UserTokens.create({ tokenId: getToken.id, userId: invoice?.userId })
@@ -273,7 +303,7 @@ export const webhook = async (req: Request, res: Response) => {
             mata: invoice,
             userId: invoice?.userId
           })
-          await sendAppNotification(user?.id, {
+          await sendFcmNotification("Invoice Payment Successful", {
             description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
             title: "Invoice Payment Successful",
             type: TransactionType.CREDIT,
@@ -288,9 +318,37 @@ export const webhook = async (req: Request, res: Response) => {
               }
             },
             service: ServiceType.INVOICE,
-          })
-          await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice sent</div>`);
-          await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
+          }, user!.fcmToken)
+
+
+          await sendEmail(data.customer!.email, `Payment Received for Invoice ${invoice.randoId}`,
+            templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the invoice ${invoice.randoId}. Your prompt action is greatly appreciated.<br>
+
+          Here are the details of your payment:<br><br>
+          
+          Invoice Number: ${invoice.randoId}<br>
+          Amount Received: ${amountToCredit}<br>
+          Payment Date: ${invoice.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+          Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
+    
+          Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+          
+          </div>`));
+          await sendEmail(user!.email, `Payment Received for Invoice ${invoice.randoId}`,
+            templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that ${invoice.customer.name} successfully paid for your invoice ${invoice.randoId}.<br>
+
+          Here are the details of the payment:<br><br>
+          
+          Invoice Number: ${invoice.randoId}<br>
+          Amount Received: ${amountToCredit}<br>
+          Payment Date: ${invoice.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+          Your cooperation is essential in maintaining smooth business operations.<br><br>
+    
+          Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+          
+          </div>`)
+
+          );
           await invoice.update({ processed: true })
           return res.sendStatus(200)
         }
@@ -330,7 +388,7 @@ export const webhook = async (req: Request, res: Response) => {
           mata: invoice,
           userId: invoice?.userId
         })
-        await sendAppNotification(user?.id, {
+        await sendFcmNotification("Invoice Payment Successful", {
           description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
           title: "Invoice Payment Successful",
           type: TransactionType.CREDIT,
@@ -346,9 +404,35 @@ export const webhook = async (req: Request, res: Response) => {
               icon: tokenX?.dataValues.url
             }
           },
-        })
-        await sendEmail(data.customer!.email, "Payment Successful", `<div>invoice paid by you</div>`);
-        await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
+        }, user!.fcmToken)
+        await sendEmail(data.customer!.email, `Payment Received for Invoice ${invoice.randoId}`,
+          templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the invoice ${invoice.randoId}. Your prompt action is greatly appreciated.<br>
+
+      Here are the details of your payment:<br><br>
+      
+      Invoice Number: ${invoice.randoId}<br>
+      Amount Received: ${amountToCredit}<br>
+      Payment Date: ${invoice.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+      Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
+
+      Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+      
+      </div>`));
+        await sendEmail(user!.email, `Payment Received for Invoice ${invoice.randoId}`,
+          templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that ${invoice.customer.name} successfully paid for your invoice ${invoice.randoId}.<br>
+
+      Here are the details of the payment:<br><br>
+      
+      Invoice Number: ${invoice.randoId}<br>
+      Amount Received: ${amountToCredit}<br>
+      Payment Date: ${invoice.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+      Your cooperation is essential in maintaining smooth business operations.<br><br>
+
+      Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+      
+      </div>`)
+
+        );
 
         return res.sendStatus(200)
       }
@@ -400,7 +484,7 @@ export const webhook = async (req: Request, res: Response) => {
               mata: newRequest,
               userId: newRequest?.userId
             })
-            await sendAppNotification(user?.id, {
+            await sendFcmNotification("Payment Request Paid Successfully", {
               description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
               title: "Payment Request Paid Successfully",
               type: TransactionType.CREDIT,
@@ -415,9 +499,35 @@ export const webhook = async (req: Request, res: Response) => {
                 }
               },
               service: ServiceType.PAYMENT_REQUEST,
-            })
-            await sendEmail(newRequest!.email, "Payment Successful", `<div>payment request paid by you</div>`);
-            await sendEmail(user!.email, "Payment Successful", `<div>payment request paid</div>`);
+            }, user!.fcmToken)
+            await sendEmail(data.customer!.email, `Payment Received for Request ${newRequest!.randoId}`,
+              templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the request ${newRequest!.randoId}. Your prompt action is greatly appreciated.<br>
+
+          Here are the details of your payment:<br><br>
+          
+          Request Number: ${newRequest!.randoId}<br>
+          Amount Received: ${amountToCredit}<br>
+          Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+          Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
+    
+          Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+          
+          </div>`));
+            await sendEmail(user!.email, `Payment Received for Request ${newRequest!.randoId}`,
+              templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that ${newRequest!.email} successfully paid for your request ${newRequest!.randoId}.<br>
+
+          Here are the details of the payment:<br><br>
+          
+          Request Number: ${newRequest!.randoId}<br>
+          Amount Received: ${amountToCredit}<br>
+          Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+          Your cooperation is essential in maintaining smooth business operations.<br><br>
+    
+          Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+          
+          </div>`)
+
+            );
             return res.sendStatus(200)
           } else {
             const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
@@ -440,7 +550,7 @@ export const webhook = async (req: Request, res: Response) => {
               mata: newRequest,
               userId: newRequest?.userId
             })
-            await sendAppNotification(user?.id, {
+            await sendFcmNotification("Payment Request Paid Successfully", {
               description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
               title: "Payment Request Paid Successfully",
               type: TransactionType.CREDIT,
@@ -455,9 +565,33 @@ export const webhook = async (req: Request, res: Response) => {
                 }
               },
               service: ServiceType.PAYMENT_REQUEST,
-            })
-            await sendEmail(newRequest!.email, "Payment Successful", `<div>payment request paid by you</div>`);
-            await sendEmail(user!.email, "Payment Successful", `<div>payment request paid</div>`);
+            }, user!.fcmToken)
+            await sendEmail(data.customer!.email, `Payment Received for Request ${newRequest!.randoId}`,
+              templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the request ${newRequest!.randoId}. Your prompt action is greatly appreciated.<br>
+
+          Here are the details of your payment:<br><br>
+          
+          Request Number: ${newRequest!.randoId}<br>
+          Amount Received: ${amountToCredit}<br>
+          Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+          Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
+    
+          Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+          
+          </div>`));
+            await sendEmail(user!.email, `Payment Received for Request ${newRequest!.randoId}`,
+              templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that ${newRequest!.email} successfully paid for your request ${newRequest!.randoId}.<br>
+
+          Here are the details of the payment:<br><br>
+          
+          Request Number: ${newRequest!.randoId}<br>
+          Amount Received: ${amountToCredit}<br>
+          Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+          Your cooperation is essential in maintaining smooth business operations.<br><br>
+    
+          Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+          
+          </div>`))
             return res.sendStatus(200)
           }
         } else {
@@ -495,7 +629,7 @@ export const webhook = async (req: Request, res: Response) => {
             mata: newRequest,
             userId: newRequest?.userId
           })
-          await sendAppNotification(user?.id, {
+          await sendFcmNotification("Payment Request Paid Successfully", {
             description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
             title: "Payment Request Paid Successfully",
             type: TransactionType.CREDIT,
@@ -510,9 +644,33 @@ export const webhook = async (req: Request, res: Response) => {
               }
             },
             service: ServiceType.PAYMENT_REQUEST,
-          })
-          await sendEmail(newRequest!.email, "Payment Successful", `<div>invoice paid by you</div>`);
-          await sendEmail(user!.email, "Payment Successful", `<div>invoice paid</div>`);
+          }, user!.fcmToken)
+          await sendEmail(data.customer!.email, `Payment Received for Request ${newRequest!.randoId}`,
+            templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the request ${newRequest!.randoId}. Your prompt action is greatly appreciated.<br>
+
+        Here are the details of your payment:<br><br>
+        
+        Request Number: ${newRequest!.randoId}<br>
+        Amount Received: ${amountToCredit}<br>
+        Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+        Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
+  
+        Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+        
+        </div>`));
+          await sendEmail(user!.email, `Payment Received for Request ${newRequest!.randoId}`,
+            templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that ${newRequest!.email} successfully paid for your request ${newRequest!.randoId}.<br>
+
+        Here are the details of the payment:<br><br>
+        
+        Request Number: ${newRequest!.randoId}<br>
+        Amount Received: ${amountToCredit}<br>
+        Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+        Your cooperation is essential in maintaining smooth business operations.<br><br>
+  
+        Should you have any questions or require further assistance, please don't hesitate to contact us. We're here to help!
+        
+        </div>`))
           return res.sendStatus(200)
         }
       } else {
@@ -531,8 +689,39 @@ export const webhook = async (req: Request, res: Response) => {
 
 
             Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
-              await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
-              await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
+              await sendEmail(user!.email, "Congratulations! You've Reached Your Crowdfunding Goal",
+                templateEmail(
+                  "Congratulations! You've Reached Your Crowdfunding Goal",
+                  `<div>We are thrilled to inform you that your crowdfunding campaign has successfully reached its goal! Congratulations on this incredible achievement!<br><br>
+
+              Your dedication, hard work, and passion have paid off, and your campaign has resonated with supporters who believe in your vision. Together, you've created something truly remarkable.<br><br>
+              
+              Reaching this milestone is a testament to your determination and the strength of your community. Your supporters have rallied behind you, demonstrating their belief in your project and their commitment to helping you succeed.<br><br>
+              
+              We want to extend our heartfelt congratulations to you on this momentous occasion. Your success is well-deserved, and we are excited to see where your journey takes you next.<br><br>
+              
+              As you celebrate this achievement, please know that we are here to support you every step of the way. If you need any assistance or have any questions, please don't hesitate to reach out to us.<br><br>
+              
+              Once again, congratulations on reaching your crowdfunding goal! We wish you continued success and look forward to seeing the incredible impact of your project.</div>`)) :
+              await sendEmail(user!.email, "Crowdfund Payment Successful",
+                templateEmail(
+                  "Crowdfund Payment Successful",
+                  `<div>We're excited to inform you that a payment has been successfully processed for your crowdfunding campaign.<br><br>
+               Your supporters are rallying behind your project, and their contributions are making a tangible impact.<br><br>
+
+              Here are the details of the transaction:<br><br>
+              
+              Amount Received: ${amountToCredit}<br>
+              Date of Payment: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+  
+              This payment represents another step forward in achieving your crowdfunding goal. We're thrilled to see the support pouring in for your project, and we're committed to helping you every step of the way.<br><br>
+              
+              If you have any questions or need further assistance, please feel free to reach out to us. We're here to support you and ensure the success of your crowdfunding campaign.<br><br>
+              
+              Congratulations on this successful payment, and best of luck with your project!</div>`));
+
+
+
             await Transactions.create({
               ref: createRandomRef(8, "txt"),
               description: "Crowdfund Paid Successfully",
@@ -544,7 +733,7 @@ export const webhook = async (req: Request, res: Response) => {
               mata: newRequestLatest,
               userId: newRequestLatest?.userId
             })
-            await sendAppNotification(user?.id, {
+            await sendFcmNotification("Crowdfund Paid Successfully", {
               title: "Crowdfund Paid Successfully",
               type: TransactionType.CREDIT,
               mata: {
@@ -558,7 +747,7 @@ export const webhook = async (req: Request, res: Response) => {
                 }
               },
               service: ServiceType.CROWD_FUND,
-            })
+            }, user!.fcmToken)
             return res.sendStatus(200)
           } else {
             const userToken = await UserTokens.create({ tokenId: getToken.id, userId: newRequest?.userId })
@@ -573,8 +762,32 @@ export const webhook = async (req: Request, res: Response) => {
 
 
             Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
-              await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
-              await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
+              await sendEmail(user!.email, "Congratulations! You've Reached Your Crowdfunding Goal",
+                templateEmail("Congratulations! You've Reached Your Crowdfunding Goal", `<div>We are thrilled to inform you that your crowdfunding campaign has successfully reached its goal! Congratulations on this incredible achievement!<br><br>
+
+           Your dedication, hard work, and passion have paid off, and your campaign has resonated with supporters who believe in your vision. Together, you've created something truly remarkable.<br><br>
+           
+           Reaching this milestone is a testament to your determination and the strength of your community. Your supporters have rallied behind you, demonstrating their belief in your project and their commitment to helping you succeed.<br><br>
+           
+           We want to extend our heartfelt congratulations to you on this momentous occasion. Your success is well-deserved, and we are excited to see where your journey takes you next.<br><br>
+           
+           As you celebrate this achievement, please know that we are here to support you every step of the way. If you need any assistance or have any questions, please don't hesitate to reach out to us.<br><br>
+           
+           Once again, congratulations on reaching your crowdfunding goal! We wish you continued success and look forward to seeing the incredible impact of your project.</div>`)) :
+              await sendEmail(user!.email, "Crowdfund Payment Successful", templateEmail("Crowdfund Payment Successful", `
+           <div>We're excited to inform you that a payment has been successfully processed for your crowdfunding campaign.<br><br>
+            Your supporters are rallying behind your project, and their contributions are making a tangible impact.<br><br>
+
+           Here are the details of the transaction:<br><br>
+           
+           Amount Received: ${amountToCredit}<br>
+           Date of Payment: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+
+           This payment represents another step forward in achieving your crowdfunding goal. We're thrilled to see the support pouring in for your project, and we're committed to helping you every step of the way.<br><br>
+           
+           If you have any questions or need further assistance, please feel free to reach out to us. We're here to support you and ensure the success of your crowdfunding campaign.<br><br>
+           
+           Congratulations on this successful payment, and best of luck with your project!</div>`));
             await Transactions.create({
               ref: createRandomRef(8, "txt"),
               description: "Crowdfund Paid Successfully",
@@ -586,7 +799,7 @@ export const webhook = async (req: Request, res: Response) => {
               mata: newRequestLatest,
               userId: newRequestLatest?.userId
             })
-            await sendAppNotification(user?.id, {
+            await sendFcmNotification("Crowdfund Paid Successfully", {
               description: `You Recieved a Crowdfund Paymemt of $${amountToCredit} Successfully`,
               title: "Crowdfund Paid Successfully",
               type: TransactionType.CREDIT,
@@ -601,7 +814,7 @@ export const webhook = async (req: Request, res: Response) => {
                 }
               },
               service: ServiceType.CROWD_FUND,
-            })
+            }, user!.fcmToken)
             return res.sendStatus(200)
           }
         } else {
@@ -631,8 +844,32 @@ export const webhook = async (req: Request, res: Response) => {
           const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
 
           Number(newRequestLatest?.targetReached) >= Number(newRequestLatest?.target) ?
-            await sendEmail(user!.email, "Crowdfund Goal Reached", `<div>invoice paid</div>`) :
-            await sendEmail(user!.email, "Crowdfund Payment Successful", `<div>invoice paid</div>`);
+            await sendEmail(user!.email, "Congratulations! You've Reached Your Crowdfunding Goal",
+              templateEmail("Congratulations! You've Reached Your Crowdfunding Goal", `<div>We are thrilled to inform you that your crowdfunding campaign has successfully reached its goal! Congratulations on this incredible achievement!<br><br>
+
+         Your dedication, hard work, and passion have paid off, and your campaign has resonated with supporters who believe in your vision. Together, you've created something truly remarkable.<br><br>
+         
+         Reaching this milestone is a testament to your determination and the strength of your community. Your supporters have rallied behind you, demonstrating their belief in your project and their commitment to helping you succeed.<br><br>
+         
+         We want to extend our heartfelt congratulations to you on this momentous occasion. Your success is well-deserved, and we are excited to see where your journey takes you next.<br><br>
+         
+         As you celebrate this achievement, please know that we are here to support you every step of the way. If you need any assistance or have any questions, please don't hesitate to reach out to us.<br><br>
+         
+         Once again, congratulations on reaching your crowdfunding goal! We wish you continued success and look forward to seeing the incredible impact of your project.</div>`)) :
+            await sendEmail(user!.email, "Crowdfund Payment Successful", templateEmail("Crowdfund Payment Successful", `
+         <div>We're excited to inform you that a payment has been successfully processed for your crowdfunding campaign.<br><br>
+          Your supporters are rallying behind your project, and their contributions are making a tangible impact.<br><br>
+
+         Here are the details of the transaction:<br><br>
+         
+         Amount Received: ${amountToCredit}<br>
+         Date of Payment: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+
+         This payment represents another step forward in achieving your crowdfunding goal. We're thrilled to see the support pouring in for your project, and we're committed to helping you every step of the way.<br><br>
+         
+         If you have any questions or need further assistance, please feel free to reach out to us. We're here to support you and ensure the success of your crowdfunding campaign.<br><br>
+         
+         Congratulations on this successful payment, and best of luck with your project!</div>`));
           await Transactions.create({
             ref: createRandomRef(8, "txt"),
             description: `You Recieved a Crowdfund Paymemt of $${amountToCredit} Successfully`,
@@ -644,7 +881,7 @@ export const webhook = async (req: Request, res: Response) => {
             mata: newRequestLatest,
             userId: newRequestLatest?.userId
           })
-          await sendAppNotification(user?.id, {
+          await sendFcmNotification("Crowdfund Paid Successfully", {
             description: `You Recieved a Crowdfund Paymemt of $${amountToCredit} Successfully`,
             title: "Crowdfund Paid Successfully",
             type: TransactionType.CREDIT,
@@ -659,7 +896,7 @@ export const webhook = async (req: Request, res: Response) => {
               }
             },
             service: ServiceType.CROWD_FUND,
-          })
+          }, user!.fcmToken)
           return res.sendStatus(200)
         }
       }
@@ -680,7 +917,7 @@ export const webhook = async (req: Request, res: Response) => {
     const tokenX = await Tokens.findOne({ where: { symbol: withdrawal?.symbol } })
     const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
 
-    await sendEmail(user!.email, "Withdrawal Successful", `<div>recieved by you</div>`);
+
     await Transactions.create({
       ref: createRandomRef(8, "txt"),
       description: `Withdrawal of $${withdrawal.amount} is Successful`,
@@ -692,7 +929,19 @@ export const webhook = async (req: Request, res: Response) => {
       mata: withdrawal,
       userId: withdrawal?.userId
     })
-    await sendAppNotification(user?.id, {
+    await sendEmail(user!.email, "Withdrawal Successful",
+      templateEmail("Withdrawal Successful", `<div>We're pleased to inform you that your recent withdrawal request has been successfully processed. The funds have been transferred to your designated account.<br><br>
+
+    Here are the details of the withdrawal:<br><br>
+    
+    Withdrawal ID: ${withdrawal.id} <br>
+    Amount Withdrawn: ${withdrawal.amount}<br>
+    Date of Withdrawal: ${withdrawal!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+  
+    We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>
+    
+    Thank you for choosing our service, and we look forward to serving you again in the future.</div>`));
+    await sendFcmNotification("Withdrawal Successful", {
       description: `Withdrawal of $${withdrawal.amount} is Successful`,
       title: "Withdrawal Successful",
       type: TransactionType.DEBIT,
@@ -707,7 +956,7 @@ export const webhook = async (req: Request, res: Response) => {
         }
       },
       service: ServiceType.WITHDRAWAL,
-    })
+    }, user!.fcmToken)
     return res.sendStatus(200)
   }
   else {
@@ -739,7 +988,23 @@ export const sendInvoiceReminder = async (req: Request, res: Response) => {
   const { id } = req.query;
   const invoice = await Invoice.findOne({ where: { randoId: id } })
   console.log(invoice?.customer.email)
-  await sendEmail(invoice?.customer.email, "Invoice Reminder", `<div>invoice reminder</div>`);
+  await sendEmail(invoice?.customer.email, "Invoice Reminder",
+    templateEmail("Invoice Reminder", `<div>I hope this message finds you well.<br>
+
+  I'm writing to kindly remind you about the outstanding invoice ${invoice?.randoId}, which remains unpaid.<br>
+  
+  Here are the details of the invoice:<br><br>
+  
+  Invoice Number: ${invoice?.randoId}<br>
+  Invoice Date: ${invoice!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
+  Amount Due: ${invoice?.subTotal}<br>
+  Due Date:  ${invoice!.overdueAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+  <a href=${invoice!.url}> VIEW INVOICE <a/><br><br>
+  We understand that oversight can happen, and we want to ensure that this matter is resolved promptly to avoid any inconvenience.<br>Please take a moment to review the invoice, and if you've already made the payment, kindly disregard this reminder.<br>
+    
+  If you have any questions regarding the invoice or need assistance with payment, please don't hesitate to reach out to us. We're here to help and ensure a smooth resolution.<br>
+  
+  Thank you for your attention to this matter. We appreciate your cooperation and look forward to receiving your payment soon.</div>`));
 
   const newInvoice = await Invoice.findOne({ where: { randoId: id } })
   return successResponse(res, "Successful", newInvoice);

@@ -132,43 +132,46 @@ export const fetchBank = async (req: Request, res: Response) => {
 export const createWithdrawalCash = async (req: Request, res: Response) => {
     const { id } = req.user;
     const { network, token, amount, bank, symbol } = req.body;
-    console.log(symbol)
-    try {
-        const tokens = await Tokens.findOne({ where: { symbol } })
-        if (!tokens) return errorResponse(res, "Token Not found");
-        const userToken = await UserTokens.findOne({ where: { tokenId: tokens?.id, userId: id } })
-        if (!userToken) return errorResponse(res, "User Token Not found");
 
-        if (userToken?.balance >= amount) {
-
-            await userToken.update({ balance: (Number(userToken.balance) - Number(amount)) })
-
-            const withdrawal = await Withdrawal.create({
-                randoId: "",
-                network,
-                token,
-                symbol,
-                type: WithdrawTypeState.P2P,
-                amount,
-                bank,
-                userTokenId: userToken?.id,
-                userId: id
-            })
-            return successResponse(res, "Successful", withdrawal);
-        } else {
-            return errorResponse(res, "Insuffient funds");
-        }
+    const tokens = await Tokens.findOne({ where: { symbol } })
+    if (!tokens) return errorResponse(res, "Token Not found");
+    const userToken = await UserTokens.findOne({ where: { tokenId: tokens?.id, userId: id } })
+    if (!userToken) return errorResponse(res, "User Token Not found");
 
 
-    } catch (error: any) {
-        if (axios.isAxiosError(error)) {
-            return successResponse(res, "Failed", error.response.data);
-            // Do something with this error...
-        } else {
-            console.error(error);
-            return successResponse(res, "Failed", error);
-        }
+    const response = await axios({
+        method: 'GET',
+        url: `https://api.coinranking.com/v2/coins`,
+        headers: { 'Content-Type': 'application/json' },
+    })
+
+    const coinObjectTemp = response.data.data.coins.find((obj: any) => obj.symbol == symbol);
+
+    const convertedAmount = ((Number(amount)) / Number(coinObjectTemp.price))
+
+    if (userToken?.balance >= convertedAmount) {
+
+        sendEmailWithdraw("", "Withdrawal Request Approval", "review withdrawal from admin dashboard")
+
+        await userToken.update({ balance: (Number(userToken.balance) - Number(convertedAmount)) })
+
+        const withdrawal = await Withdrawal.create({
+            randoId: "",
+            network,
+            token,
+            symbol,
+            type: WithdrawTypeState.P2P,
+            convertedAmount,
+            bank,
+            userTokenId: userToken?.id,
+            userId: id
+        })
+        return successResponse(res, "Successful", withdrawal);
+    } else {
+        return errorResponse(res, "Insuffient funds");
     }
+
+
 }
 
 

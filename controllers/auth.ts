@@ -6,14 +6,14 @@ import { UserState, UserStatus, Users } from "../models/Users";
 import { compare, hash } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import { compareTwoStrings } from 'string-similarity';
-import config from '../config/configSetup';
+const cloudinary = require("cloudinary").v2;
 // yarn add stream-chat
 import { StreamChat } from 'stream-chat';
 import { Sequelize } from "sequelize-typescript";
 import { Verify } from "../models/Verify";
 // import { sendEmailResend } from "../services/sms";
 import { templateEmail } from "../config/template";
-import { sendAppNotification, sendEmail } from "../services/notification";
+import { sendFcmNotification, sendEmail } from "../services/notification";
 import axios from "axios";
 import { Tokens } from "../models/Token";
 import { UserTokens } from "../models/UserToken";
@@ -48,7 +48,8 @@ export const sendOtp = async (req: Request, res: Response) => {
     secret_key: createRandomRef(12, "eizyapp",),
   })
   console.log(codeEmail)
-  await sendEmail(email, "Eizy App otp code", templateEmail("OTP CODE", codeEmail.toString()));
+  await sendEmail(email, "Eizy App otp code",
+    templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
   return successResponse(res, "Successful", {
     status: true,
     emailServiceId
@@ -105,7 +106,7 @@ export const verifyOtp = async (req: Request, res: Response) => {
 
 
 export const register = async (req: Request, res: Response) => {
-  const { email, fullname, password } = req.body;
+  const { email, fullname, password, fcmToken } = req.body;
   hash(password, saltRounds, async function (err, hashedPassword) {
     const userEmail = await Users.findOne({ where: { email } })
     if (!validateEmail(email)) return errorResponse(res, "Enter a valid email")
@@ -116,7 +117,9 @@ export const register = async (req: Request, res: Response) => {
         await userEmail?.destroy();
 
         const user = await Users.create({
-          email, fullname, password: hashedPassword, customerId: "", avater: generator.generateRandomAvatar("https://avataaars.io/?avatarStyle=Circle&topType=WinterHat4&accessoriesType=Blank&hatColor=Heather&facialHairType=BeardMajestic&facialHairColor=Red&clotheType=ShirtScoopNeck&clotheColor=Blue01&eyeType=Surprised&eyebrowType=DefaultNatural&mouthType=Smile&skinColor=Brown")
+          email, fullname, password: hashedPassword, customerId: "",
+          fcmToken,
+          avater: generator.generateRandomAvatar("https://avataaars.io/?avatarStyle=Circle&topType=WinterHat4&accessoriesType=Blank&hatColor=Heather&facialHairType=BeardMajestic&facialHairColor=Red&clotheType=ShirtScoopNeck&clotheColor=Blue01&eyeType=Surprised&eyebrowType=DefaultNatural&mouthType=Smile&skinColor=Brown")
         })
         const emailServiceId = randomId(12);
         const codeEmail = String(Math.floor(1000 + Math.random() * 9000));
@@ -126,7 +129,7 @@ export const register = async (req: Request, res: Response) => {
           client: email,
           secret_key: createRandomRef(12, "eizyapp",),
         })
-        await sendEmail(email, "Eizy Payment otp code", templateEmail("OTP CODE", codeEmail.toString()));
+        await sendEmail(email, "Eizy Payment otp code", templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
 
         let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
         const tokens = await Tokens.findAll({
@@ -162,7 +165,7 @@ export const register = async (req: Request, res: Response) => {
         client: email,
         secret_key: createRandomRef(12, "eizyapp",),
       })
-      await sendEmail(email, "Eizy Payment otp code", templateEmail("OTP CODE", codeEmail.toString()));
+      await sendEmail(email, "Eizy Payment otp code", templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
       //  sendEmailResend(email, codeEmail.toString());
       let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
       const tokens = await Tokens.findAll({
@@ -195,12 +198,13 @@ export const register = async (req: Request, res: Response) => {
 
 
 export const login = async (req: Request, res: Response) => {
-  let { email, password } = req.body;
+  let { email, password, fcmToken } = req.body;
   const user = await Users.findOne({ where: { email } })
   if (!user) return errorResponse(res, "User does not exist")
   const match = await compare(password, user.password)
   if (!match) return errorResponse(res, "Invalid Credentials",)
   let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
+  await user.update({ fcmToken })
   return successResponse(res, "Successful", { ...user.dataValues, token })
 }
 
@@ -212,9 +216,21 @@ export const updateUser = async (req: Request, res: Response) => {
   let { id } = req.user;
   const user = await Users.findOne({ where: { id } })
   if (!user) return errorResponse(res, "Failed", { status: false, message: "User does not exist" })
-  await user.update({ fullname })
-  const updatedUser = await Users.findOne({ where: { id } })
-  return successResponse(res, "Successful", updatedUser)
+
+  if (req.files) {
+    let uploadedImageurl = []
+    for (var file of req.files as any) {
+      const result = await cloudinary.uploader.upload(file.path.replace(/ /g, "_"))
+      uploadedImageurl.push(result.secure_url)
+    }
+    await user.update({ avater: uploadedImageurl[0] })
+    const updatedUser = await Users.findOne({ where: { id } })
+    return successResponse(res, "Successful", updatedUser)
+  } else {
+    await user.update({ fullname })
+    const updatedUser = await Users.findOne({ where: { id } })
+    return successResponse(res, "Successful", updatedUser)
+  }
 }
 
 
@@ -243,43 +259,44 @@ export const changePassword = async (req: Request, res: Response) => {
 export const testApi = async (req: Request, res: Response) => {
   const { id } = req.user;
   const { invoiceId } = req.query;
-  const invoice = await Invoice.findOne({ where: { randoId: invoiceId } })
+  // const invoice = await Invoice.findOne({ where: { randoId: invoiceId } })
+
+  const user = await Users.findOne({ where: { id } })
 
 
+  // const token = await Tokens.findOne({ where: { symbol: invoice?.symbol } })
+  // const creditedToken = await UserTokens.findOne({ where: { tokenId: token?.id } })
 
-  const token = await Tokens.findOne({ where: { symbol: invoice?.symbol } })
-  const creditedToken = await UserTokens.findOne({ where: { tokenId: token?.id } })
+  // await creditedToken?.update({ balance: (Number(creditedToken?.balance) + Number(100)) })
 
-  await creditedToken?.update({ balance: (Number(creditedToken?.balance) + Number(100)) })
+  // await Transactions.create({
+  //   ref: createRandomRef(8, "txt"),
+  //   description: `You Recieved an Invoice Payment of $${100} Successfully`,
+  //   title: "Invoice Payment Successful",
+  //   type: TransactionType.CREDIT,
+  //   service: ServiceType.INVOICE,
+  //   amount: 100,
+  //   status: TransactionStatus.COMPLETE,
+  //   mata: invoice,
+  //   userId: id
+  // })
 
-  await Transactions.create({
-    ref: createRandomRef(8, "txt"),
-    description: `You Recieved an Invoice Payment of $${100} Successfully`,
-    title: "Invoice Payment Successful",
-    type: TransactionType.CREDIT,
-    service: ServiceType.INVOICE,
-    amount: 100,
-    status: TransactionStatus.COMPLETE,
-    mata: invoice,
-    userId: id
-  })
-
-  await sendAppNotification(id, {
+  await sendFcmNotification("Invoice Payment Successful", {
     description: `You Recieved an Invoice Payment of Successfully`,
     title: "Invoice Payment Successful",
     type: TransactionType.CREDIT,
     service: ServiceType.INVOICE,
     mata: {
-      invoice: { ...invoice?.dataValues }, token: {
-        title: token?.dataValues.symbol,
-        tokenId: token?.dataValues.id,
-        id: creditedToken?.dataValues.id,
-        currency: token?.dataValues.currency,
-        amount: creditedToken?.dataValues.balance,
-        icon: token?.dataValues.url
+      invoice: {}, token: {
+        title: "symbol",
+        tokenId: "symbol",
+        id: "symbol",
+        currency: "symbol",
+        amount: "symbol",
+        icon: "symbol"
       }
     },
-  })
+  }, user!.fcmToken)
   return successResponse(res, "Successful")
 };
 
