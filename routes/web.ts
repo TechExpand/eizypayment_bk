@@ -8,6 +8,7 @@ import { ServiceType, TransactionStatus, TransactionType, Transactions } from '.
 import { createRandomRef } from '../helpers/utility';
 import { sendEmail, sendFcmNotification } from '../services/notification';
 import { templateEmail } from '../config/template';
+import { Admin } from '../models/Admin';
 
 const routes = Router();
 
@@ -58,11 +59,12 @@ routes.get('/admin/invoice-view', async function (req, res) {
             { model: UserTokens, include: [{ model: Tokens }] }
         ]
     })
+    const admins = await Admin.findOne({})
     const generateMailtoLink = () => {
         const recipientEmail = withdrawal?.user.email;
         return `mailto:${recipientEmail}`;
     };
-    res.render('pages/invoice-overview', { withdrawal, generateMailtoLink });
+    res.render('pages/invoice-overview', { withdrawal, generateMailtoLink, rate: admins?.rate });
 });
 
 
