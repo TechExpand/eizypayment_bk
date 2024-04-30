@@ -17,13 +17,6 @@ import { Admin } from '../models/Admin';
 
 
 
-// // Import models
-// import {
-
-
-// } from './models';
-
-
 const sequelize = new Sequelize(config.DBNAME, config.DBUSERNAME, config.DBPASSWORD, {
 	host: config.DBHOST,
 	port: config.DBPORT,
@@ -51,7 +44,6 @@ const sequelize = new Sequelize(config.DBNAME, config.DBUSERNAME, config.DBPASSW
 const initDB = async () => {
 	await sequelize.authenticate();
 	await sequelize
-		// .sync({})
 		.sync({ alter: true })
 		.then(async () => {
 			console.log('Database connected!');
