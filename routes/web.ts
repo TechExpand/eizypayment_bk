@@ -101,7 +101,7 @@ routes.get('/admin/invoice-view', async function (req, res) {
 
 
     const combinbedValue = value * Number(withdrawal!.amount.toString()) * Number(admins?.rate)
-    const bankInfo = JSON.parse(JSON.stringify(withdrawal!.dataValues.bank))
+    const bankInfo = JSON.parse(withdrawal!.dataValues.bank)
     console.log(typeof bankInfo)
     console.log(bankInfo!.accountName)
 
