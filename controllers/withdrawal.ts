@@ -161,7 +161,7 @@ export const createWithdrawalCash = async (req: Request, res: Response) => {
             token,
             symbol,
             type: WithdrawTypeState.P2P,
-            convertedAmount,
+            amount : convertedAmount,
             bank,
             userTokenId: userToken?.id,
             userId: id
