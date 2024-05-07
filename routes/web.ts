@@ -9,6 +9,7 @@ import { createRandomRef } from '../helpers/utility';
 import { sendEmail, sendFcmNotification } from '../services/notification';
 import { templateEmail } from '../config/template';
 import { Admin } from '../models/Admin';
+import axios from 'axios';
 
 const routes = Router();
 
@@ -64,7 +65,47 @@ routes.get('/admin/invoice-view', async function (req, res) {
         const recipientEmail = withdrawal?.user.email;
         return `mailto:${recipientEmail}`;
     };
-    res.render('pages/invoice-overview', { withdrawal, generateMailtoLink, rate: admins?.rate });
+
+    let coinList: any[] = []
+    const token = await Tokens.findAll({})
+    const response = await axios({
+        method: 'GET',
+        url: `https://api.coinranking.com/v2/coins`,
+        headers: { 'Content-Type': 'application/json' },
+    })
+
+    token.forEach((e) => {
+        if (e.currency == "BAT") {
+
+        } else if (e.currency == "BUSD") {
+            const coinObjectTemp = response.data.data.coins.find((obj: any) => obj.symbol == "USDT");
+            coinList.push({ symbol: "BUSD", price: coinObjectTemp.price })
+        }
+        else {
+            const coinObjectTemp = response.data.data.coins.find((obj: any) => obj.symbol == e.currency);
+            coinList.push({ symbol: coinObjectTemp.symbol, price: coinObjectTemp.price })
+        }
+
+    })
+
+
+
+    const value = Number(Number(
+        coinList
+            .find(e =>
+                e["symbol"] ==
+                withdrawal!.userToken.token.symbol)["price"]
+            .toString()
+    )
+        )
+
+
+    const combinbedValue = value * Number(withdrawal!.amount.toString()) * Number(admins?.rate)
+
+    res.render('pages/invoice-overview', {
+        withdrawal, generateMailtoLink,
+        rate: admins?.rate, value: combinbedValue.toFixed(4)
+    });
 });
 
 
