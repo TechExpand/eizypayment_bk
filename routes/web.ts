@@ -102,13 +102,20 @@ routes.get('/admin/invoice-view', async function (req, res) {
 
     const combinbedValue = value * Number(withdrawal!.amount.toString()) * Number(admins?.rate)
 
+    console.log({
+        bankName: withdrawal!.bank.bankName,
+        accountNumber: withdrawal!.bank.accountNumber,
+        accountName: withdrawal!.bank.accountName,
+        rate: admins?.rate, value: combinbedValue.toFixed(4),
+    })
+
     res.render('pages/invoice-overview', {
         withdrawal, generateMailtoLink,
         rate: admins?.rate, value: combinbedValue.toFixed(4),
         bankName: withdrawal!.bank.bankName,
         accountNumber: withdrawal!.bank.accountNumber,
         accountName: withdrawal!.bank.accountName
- 
+
     });
 });
 
