@@ -97,14 +97,18 @@ routes.get('/admin/invoice-view', async function (req, res) {
                 withdrawal!.userToken.token.symbol)["price"]
             .toString()
     )
-        )
+    )
 
 
     const combinbedValue = value * Number(withdrawal!.amount.toString()) * Number(admins?.rate)
 
     res.render('pages/invoice-overview', {
         withdrawal, generateMailtoLink,
-        rate: admins?.rate, value: combinbedValue.toFixed(4)
+        rate: admins?.rate, value: combinbedValue.toFixed(4),
+        bankName: withdrawal!.bank.bankName,
+        accountNumber: withdrawal!.bank.accountNumber,
+        accountName: withdrawal!.bank.accountName
+ 
     });
 });
 
