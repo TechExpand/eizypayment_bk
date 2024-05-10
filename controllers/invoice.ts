@@ -989,8 +989,9 @@ export const updateInvoiceStatus = async (req: Request, res: Response) => {
 export const sendInvoiceReminder = async (req: Request, res: Response) => {
   const { id } = req.query;
   const invoice = await Invoice.findOne({ where: { randoId: id } })
-  console.log(invoice?.customer.email)
-  await sendEmail(invoice?.customer.email, "Invoice Reminder",
+  const data = JSON.parse(invoice?.customer)
+  console.log(data)
+  await sendEmail(data.email, "Invoice Reminder",
     templateEmail("Invoice Reminder", `<div>I hope this message finds you well.<br>
 
   I'm writing to kindly remind you about the outstanding invoice ${invoice?.randoId}, which remains unpaid.<br>
