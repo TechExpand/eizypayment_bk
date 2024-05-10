@@ -155,7 +155,7 @@ export const sendFcmNotification = async (title: string,
       title: "Eisy Payment",
       body: title,
     },
-    data: data,
+    data: JSON.stringify(data),
     token: token,
   };
   try {
