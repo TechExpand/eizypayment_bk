@@ -35,7 +35,7 @@ routes.get('/admin/invoice', async function (req, res) {
         offset: (perPage * Number(currentPage)) - perPage,
         limit: perPage,
         order: [
-            ['id', 'DESC'],
+            ['createdAt', 'DESC'],
         ],
     })
     const count = await Withdrawal.count();
@@ -88,8 +88,6 @@ routes.get('/admin/invoice-view', async function (req, res) {
 
     })
 
-
-
     const value = Number(Number(
         coinList
             .find(e =>
@@ -99,15 +97,16 @@ routes.get('/admin/invoice-view', async function (req, res) {
     )
     )
 
-
     const combinbedValue = value * Number(withdrawal!.amount.toString()) * Number(admins?.rate)
     const bankInfo = JSON.parse(withdrawal!.dataValues.bank)
-
 
     console.log({
         bankName: bankInfo.bankName,
         accountNumber: bankInfo.accountNumber,
         accountName: bankInfo.accountName,
+        // bankName: withdrawal?.bank.bankName,
+        // accountNumber: withdrawal?.bank.accountNumber,
+        // accountName: withdrawal?.bank.accountName,
         rate: admins?.rate, value: combinbedValue.toFixed(4),
     })
 
@@ -117,6 +116,9 @@ routes.get('/admin/invoice-view', async function (req, res) {
         bankName: bankInfo.bankName,
         accountNumber: bankInfo.accountNumber,
         accountName: bankInfo.accountName,
+        // bankName: withdrawal?.bank.bankName,
+        // accountNumber: withdrawal?.bank.accountNumber,
+        // accountName: withdrawal?.bank.accountName,
 
     });
 });
@@ -136,7 +138,7 @@ routes.get('/admin/approve-withdraw', async function (req, res) {
     await withdrawalOne?.update({ processed: true, status: WithdrawalStatus.COMPLETE })
     await Transactions.create({
         ref: createRandomRef(8, "txt"),
-        description: `You Recieved a Payment of NGN${withdrawalOne?.amount} Successfully`,
+        description: `You Recieved a Payment of ${withdrawalOne?.symbol} ${withdrawalOne?.amount} Successfully`,
         title: "Withdrawal Paid Successfully",
         type: TransactionType.CREDIT,
         service: ServiceType.WITHDRAWAL,
@@ -146,7 +148,7 @@ routes.get('/admin/approve-withdraw', async function (req, res) {
         userId: withdrawalOne?.userId
     })
     await sendFcmNotification("Payment Request Paid Successfully", {
-        description: `You Recieved a Payment of NGN${withdrawalOne} Successfully`,
+        description: `You Recieved a Payment of ${withdrawalOne?.symbol} ${withdrawalOne} Successfully`,
         title: "Withdrawal Paid Successfully",
         type: TransactionType.CREDIT,
         mata: {
@@ -162,7 +164,7 @@ routes.get('/admin/approve-withdraw', async function (req, res) {
   Here are the details of the withdrawal:<br><br>
   
   Withdrawal ID: ${withdrawalOne!.id} <br>
-  Amount Withdrawn: ${withdrawalOne!.amount}<br>
+  Amount Withdrawn: ${withdrawalOne?.symbol} ${withdrawalOne!.amount}<br>
   Date of Withdrawal: ${withdrawalOne!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
 
   We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>

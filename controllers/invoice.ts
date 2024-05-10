@@ -475,7 +475,7 @@ export const webhook = async (req: Request, res: Response) => {
 
             await Transactions.create({
               ref: createRandomRef(8, "txt"),
-              description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
+              description: `You Recieved a Payment Request of ${tokenX?.symbol} ${amountToCredit} Successfully`,
               title: "Payment Request Paid Successfully",
               type: TransactionType.CREDIT,
               service: ServiceType.PAYMENT_REQUEST,
@@ -485,7 +485,7 @@ export const webhook = async (req: Request, res: Response) => {
               userId: newRequest?.userId
             })
             await sendFcmNotification("Payment Request Paid Successfully", {
-              description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
+              description: `You Recieved a Payment Request of ${tokenX?.symbol} ${amountToCredit} Successfully`,
               title: "Payment Request Paid Successfully",
               type: TransactionType.CREDIT,
               mata: {
@@ -506,7 +506,7 @@ export const webhook = async (req: Request, res: Response) => {
           Here are the details of your payment:<br><br>
           
           Request Number: ${newRequest!.randoId}<br>
-          Amount Received: ${amountToCredit}<br>
+          Amount Received: ${tokenX?.symbol} ${amountToCredit}<br>
           Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
           Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
     
@@ -541,7 +541,7 @@ export const webhook = async (req: Request, res: Response) => {
 
             await Transactions.create({
               ref: createRandomRef(8, "txt"),
-              description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
+              description: `You Recieved a Payment Request of ${tokenX?.symbol} ${amountToCredit} Successfully`,
               title: "Payment Request Paid Successfully",
               type: TransactionType.CREDIT,
               service: ServiceType.PAYMENT_REQUEST,
@@ -551,7 +551,7 @@ export const webhook = async (req: Request, res: Response) => {
               userId: newRequest?.userId
             })
             await sendFcmNotification("Payment Request Paid Successfully", {
-              description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
+              description: `You Recieved a Payment Request of ${tokenX?.symbol} ${amountToCredit} Successfully`,
               title: "Payment Request Paid Successfully",
               type: TransactionType.CREDIT,
               mata: {
@@ -572,7 +572,7 @@ export const webhook = async (req: Request, res: Response) => {
           Here are the details of your payment:<br><br>
           
           Request Number: ${newRequest!.randoId}<br>
-          Amount Received: ${amountToCredit}<br>
+          Amount Received: ${tokenX?.symbol} ${amountToCredit}<br>
           Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
           Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
     
@@ -620,7 +620,7 @@ export const webhook = async (req: Request, res: Response) => {
           const user = await Users.findOne({ where: { id: newRequest?.userId } })
           await Transactions.create({
             ref: createRandomRef(8, "txt"),
-            description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
+            description: `You Recieved a Payment Request of ${tokenX?.symbol} ${amountToCredit} Successfully`,
             title: "Payment Request Paid Successfully",
             type: TransactionType.CREDIT,
             service: ServiceType.PAYMENT_REQUEST,
@@ -630,7 +630,7 @@ export const webhook = async (req: Request, res: Response) => {
             userId: newRequest?.userId
           })
           await sendFcmNotification("Payment Request Paid Successfully", {
-            description: `You Recieved a Payment Request of $${amountToCredit} Successfully`,
+            description: `You Recieved a Payment Request of ${tokenX?.symbol} ${amountToCredit} Successfully`,
             title: "Payment Request Paid Successfully",
             type: TransactionType.CREDIT,
             mata: {
@@ -651,7 +651,7 @@ export const webhook = async (req: Request, res: Response) => {
         Here are the details of your payment:<br><br>
         
         Request Number: ${newRequest!.randoId}<br>
-        Amount Received: ${amountToCredit}<br>
+        Amount Received: ${tokenX?.symbol} ${amountToCredit}<br>
         Payment Date: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
         Thank you for your timely settlement. Your cooperation is essential in maintaining smooth business operations.<br><br>
   
@@ -711,7 +711,7 @@ export const webhook = async (req: Request, res: Response) => {
 
               Here are the details of the transaction:<br><br>
               
-              Amount Received: ${amountToCredit}<br>
+              Amount Received: ${tokenX?.symbol} ${amountToCredit}<br>
               Date of Payment: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
   
               This payment represents another step forward in achieving your crowdfunding goal. We're thrilled to see the support pouring in for your project, and we're committed to helping you every step of the way.<br><br>
@@ -780,7 +780,7 @@ export const webhook = async (req: Request, res: Response) => {
 
            Here are the details of the transaction:<br><br>
            
-           Amount Received: ${amountToCredit}<br>
+           Amount Received: ${tokenX?.symbol} ${amountToCredit}<br>
            Date of Payment: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
 
            This payment represents another step forward in achieving your crowdfunding goal. We're thrilled to see the support pouring in for your project, and we're committed to helping you every step of the way.<br><br>
@@ -862,7 +862,7 @@ export const webhook = async (req: Request, res: Response) => {
 
          Here are the details of the transaction:<br><br>
          
-         Amount Received: ${amountToCredit}<br>
+         Amount Received: ${tokenX?.symbol} ${amountToCredit}<br>
          Date of Payment: ${newRequest!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
 
          This payment represents another step forward in achieving your crowdfunding goal. We're thrilled to see the support pouring in for your project, and we're committed to helping you every step of the way.<br><br>

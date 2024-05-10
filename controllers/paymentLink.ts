@@ -100,7 +100,7 @@ export const createPaymentLink = async (req: Request, res: Response) => {
             templateEmail("Payment request", `<div
         I hope this email finds you well.<br><br>
         
-        I am reaching out to request a payment for ${description}. The amount requested is ${price}.<br><br>
+        I am reaching out to request a payment for ${description}. The amount requested is ${symbol}  ${price}.<br><br>
         
         Your prompt attention to this request would be greatly appreciated. If you have any questions or concerns regarding the payment, please feel free to reach out to me.</div>`));
         return successResponse(res, "Successful", paymentLink);

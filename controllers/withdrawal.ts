@@ -29,6 +29,13 @@ const axios = require('axios')
 export const createWithdrawal = async (req: Request, res: Response) => {
     const { id } = req.user;
     const { network, token, amount, withdrawalAddress, symbol } = req.body;
+    console.log({
+        network,
+        token: token == "-" ? null : token,
+        amount,
+        withdrawalAddress,
+        withdrawalAccountId: null
+    })
     try {
         const tokens = await Tokens.findOne({ where: { symbol } })
         if (!tokens) return errorResponse(res, "Token Not found");
@@ -45,12 +52,13 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                 },
                 data: {
                     network,
-                    token,
+                    token: token == "-" ? null : token,
                     amount,
                     withdrawalAddress,
                     withdrawalAccountId: null
                 }
             })
+            console.log(response.data)
 
 
 
@@ -66,7 +74,7 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                 },
             })
 
-            await sendEmailWithdraw("", "Withdrawal Request", `<div>recieved by you</div>`);
+            // await sendEmailWithdraw("", "Withdrawal Request", `<div>recieved by you</div>`);
             const withdrawal = await Withdrawal.create({
                 randoId: response2.data[0].id,
                 network,
@@ -85,6 +93,7 @@ export const createWithdrawal = async (req: Request, res: Response) => {
 
 
     } catch (error: any) {
+        console.log(error)
         if (axios.isAxiosError(error)) {
             return successResponse(res, "Failed", error.response.data);
             // Do something with this error...
@@ -127,8 +136,6 @@ export const fetchBank = async (req: Request, res: Response) => {
 }
 
 
-
-
 export const createWithdrawalCash = async (req: Request, res: Response) => {
     const { id } = req.user;
     const { network, token, amount, bank, symbol } = req.body;
@@ -138,15 +145,15 @@ export const createWithdrawalCash = async (req: Request, res: Response) => {
     const userToken = await UserTokens.findOne({ where: { tokenId: tokens?.id, userId: id } })
     if (!userToken) return errorResponse(res, "User Token Not found");
 
-
     const response = await axios({
         method: 'GET',
         url: `https://api.coinranking.com/v2/coins`,
         headers: { 'Content-Type': 'application/json' },
     })
 
-    const coinObjectTemp = response.data.data.coins.find((obj: any) => obj.symbol == symbol);
-
+    const coinObjectTemp = response.data.data.coins.find((obj: any) => symbol == "BAT" ?
+        obj.symbol == "USDC" : symbol == "BUSD" ?
+            obj.symbol == "USDC" : obj.symbol == symbol);
     const convertedAmount = ((Number(amount)) / Number(coinObjectTemp.price))
 
     if (userToken?.balance >= convertedAmount) {
@@ -161,7 +168,7 @@ export const createWithdrawalCash = async (req: Request, res: Response) => {
             token,
             symbol,
             type: WithdrawTypeState.P2P,
-            amount : convertedAmount,
+            amount: convertedAmount,
             bank,
             userTokenId: userToken?.id,
             userId: id
@@ -182,7 +189,7 @@ export const fetchWithdrawal = async (req: Request, res: Response) => {
     const { id } = req.user;
     const withdrawal = await Withdrawal.findAll({
         where: { userId: id }, order: [
-            ['id', 'DESC']
+            ['createdAt', 'DESC']
         ],
     })
     return successResponse(res, "Successful", withdrawal);
