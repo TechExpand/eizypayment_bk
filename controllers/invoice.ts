@@ -957,6 +957,8 @@ export const webhook = async (req: Request, res: Response) => {
       },
       service: ServiceType.WITHDRAWAL,
     }, user!.fcmToken)
+    console.log(user!.fcmToken)
+    console.log(user!.fcmToken)
     return res.sendStatus(200)
   }
   else {
