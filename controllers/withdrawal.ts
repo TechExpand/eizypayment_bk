@@ -128,7 +128,7 @@ export const fetchBank = async (req: Request, res: Response) => {
     const bank = await Banks.findAll({
         where: { userId: id },
         order: [
-            ['id', 'DESC']
+            ['createdAt', 'DESC']
         ],
     })
     // console.log(bank)

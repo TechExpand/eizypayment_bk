@@ -21,7 +21,7 @@ export const fetchFirstSixTransactions = async (req: Request, res: Response) => 
         where: { userId: id },
         limit: 6,
         order: [
-            ['id', 'DESC'],
+            ['createdAt', 'DESC'],
         ],
     })
     return successResponse(res, "Successful", transactions);
@@ -35,7 +35,7 @@ export const fetchTransactions = async (req: Request, res: Response) => {
         where: { userId: id },
         limit: 6,
         order: [
-            ['id', 'DESC'],
+            ['createdAt', 'DESC'],
         ],
     })
     return successResponse(res, "Successful", transactions);
@@ -59,11 +59,11 @@ export const fetchAdmin = async (req: Request, res: Response) => {
 
         } else if (e.currency == "BUSD") {
             const coinObjectTemp = response.data.data.coins.find((obj: any) => obj.symbol == "USDT");
-            coinList.push({symbol: "BUSD", price: coinObjectTemp.price})
+            coinList.push({ symbol: "BUSD", price: coinObjectTemp.price })
         }
         else {
             const coinObjectTemp = response.data.data.coins.find((obj: any) => obj.symbol == e.currency);
-            coinList.push({symbol: coinObjectTemp.symbol, price: coinObjectTemp.price})
+            coinList.push({ symbol: coinObjectTemp.symbol, price: coinObjectTemp.price })
         }
 
     })

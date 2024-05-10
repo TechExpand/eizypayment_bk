@@ -107,7 +107,7 @@ export const fetchInvoice = async (req: Request, res: Response) => {
   const { id } = req.user;
   const invoice = await Invoice.findAll({
     where: { userId: id }, order: [
-      ['id', 'DESC']
+      ['createdAt', 'DESC']
     ],
   })
   console.log(invoice);

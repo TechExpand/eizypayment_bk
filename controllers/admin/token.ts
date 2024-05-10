@@ -42,8 +42,8 @@ export const fetchTokens = async (req: Request, res: Response) => {
     const token = await Tokens.findAll({
         limit: 6,
         order: [
-            ['id', 'DESC']
-          ],
+            ['createdAt', 'DESC']
+        ],
     },)
     return successResponse(res, "Successful", token.reverse());
 }

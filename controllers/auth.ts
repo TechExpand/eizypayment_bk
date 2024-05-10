@@ -135,7 +135,7 @@ export const register = async (req: Request, res: Response) => {
         const tokens = await Tokens.findAll({
           limit: 6,
           order: [
-            ['id', 'DESC']
+            ['createdAt', 'DESC']
           ],
         },)
         tokens.reverse()
@@ -171,7 +171,7 @@ export const register = async (req: Request, res: Response) => {
       const tokens = await Tokens.findAll({
         limit: 6,
         order: [
-          ['id', 'DESC']
+          ['createdAt', 'DESC']
         ],
       },)
       tokens.reverse()
