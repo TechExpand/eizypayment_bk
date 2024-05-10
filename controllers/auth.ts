@@ -212,7 +212,7 @@ export const login = async (req: Request, res: Response) => {
 
 
 export const updateUser = async (req: Request, res: Response) => {
-  let { fullname } = req.body;
+  let { fullname, fcmToken } = req.body;
   let { id } = req.user;
   const user = await Users.findOne({ where: { id } })
   if (!user) return errorResponse(res, "Failed", { status: false, message: "User does not exist" })
@@ -227,7 +227,7 @@ export const updateUser = async (req: Request, res: Response) => {
     const updatedUser = await Users.findOne({ where: { id } })
     return successResponse(res, "Successful", updatedUser)
   } else {
-    await user.update({ fullname })
+    await user.update({ fullname,  fcmToken})
     const updatedUser = await Users.findOne({ where: { id } })
     return successResponse(res, "Successful", updatedUser)
   }
