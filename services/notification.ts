@@ -150,6 +150,7 @@ export const sendFcmNotification = async (title: string,
   data: any, token: string) => {
   console.log(token);
   console.log(data)
+  console.log(JSON.stringify(data))
 
   const message = {
     notification: {
