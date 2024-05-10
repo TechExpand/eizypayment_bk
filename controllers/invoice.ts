@@ -920,7 +920,7 @@ export const webhook = async (req: Request, res: Response) => {
 
     await Transactions.create({
       ref: createRandomRef(8, "txt"),
-      description: `Withdrawal of $${withdrawal.amount} is Successful`,
+      description: `Withdrawal of ${withdrawal.symbol} ${withdrawal.amount} is Successful`,
       title: "Withdrawal Successful",
       type: TransactionType.DEBIT,
       service: ServiceType.WITHDRAWAL,
@@ -942,7 +942,7 @@ export const webhook = async (req: Request, res: Response) => {
     
     Thank you for choosing our service, and we look forward to serving you again in the future.</div>`));
     await sendFcmNotification("Withdrawal Successful", {
-      description: `Withdrawal of $${withdrawal.amount} is Successful`,
+      description: `Withdrawal of ${withdrawal.symbol} ${withdrawal.amount} is Successful`,
       title: "Withdrawal Successful",
       type: TransactionType.DEBIT,
       mata: {

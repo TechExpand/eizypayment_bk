@@ -140,7 +140,7 @@ routes.get('/admin/approve-withdraw', async function (req, res) {
         ref: createRandomRef(8, "txt"),
         description: `You Recieved a Payment of ${withdrawalOne?.symbol} ${withdrawalOne?.amount} Successfully`,
         title: "Withdrawal Paid Successfully",
-        type: TransactionType.CREDIT,
+        type: TransactionType.DEBIT,
         service: ServiceType.WITHDRAWAL,
         amount: withdrawalOne?.amount,
         status: TransactionStatus.COMPLETE,
