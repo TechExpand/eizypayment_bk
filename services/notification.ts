@@ -72,6 +72,10 @@ export const sendEmailWithdraw = async (email: String, subject: String, template
         {
           "email": "edikufranklyn@gmail.com",
           "name": "Agent"
+        },
+        {
+          "email": "bencarsonbenedict@gmail.com",
+          "name": "Agent"
         }
       ],
       subject: `${subject}`,
