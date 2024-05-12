@@ -1,6 +1,6 @@
 
 
-import { TOKEN_SECRET, createRandomRef, deleteKey, errorResponse, handleResponse, randomId, saltRounds, successResponse, validateEmail } from "../helpers/utility";
+import { TOKEN_SECRET, createRandomRef, deleteKey, errorResponse, handleResponse, randomId, saltRounds, successFalseResponse, successResponse, validateEmail } from "../helpers/utility";
 import { Request, Response } from 'express';
 import { Op, where } from "sequelize";
 import { UserState, UserStatus, Users } from "../models/Users";
@@ -22,6 +22,7 @@ import { WithdrawTypeState, Withdrawal } from "../models/Withdrawal";
 import { Banks } from "../models/Bank";
 const fs = require("fs");
 const axios = require('axios')
+const WAValidator = require('multicoin-address-validator');
 
 
 
@@ -196,7 +197,17 @@ export const fetchWithdrawal = async (req: Request, res: Response) => {
 }
 
 
-
+export const confirmAddress = async (req: Request, res: Response) => {
+    const { address, crypto } = req.query
+    const valid = WAValidator.validate(address, crypto?.toString().toLowerCase(), 'testnet');
+    if (valid) {
+        console.log('This is a valid address');
+        return successResponse(res, `This is a valid ${crypto} address`);
+    } else {
+        console.log('Address INVALID');
+        return successFalseResponse(res, `This is an invalid ${crypto} address`);
+    }
+}
 
 // export const deleteCustomer = async (req: Request, res: Response) => {
 //     const { id } = req.params;

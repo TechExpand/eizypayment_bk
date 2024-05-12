@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { changePassword, login, register, testApi, verifyOtp } from '../controllers/auth';
 import { createInvoice, fetchInvoice, fetchSignleInvoice } from '../controllers/invoice';
 import { createCustomer, deleteCustomer, fetchCustomer } from '../controllers/customer';
-import { createBank, createWithdrawal, createWithdrawalCash, fetchBank, fetchWithdrawal } from '../controllers/withdrawal';
+import { confirmAddress, createBank, createWithdrawal, createWithdrawalCash, fetchBank, fetchWithdrawal } from '../controllers/withdrawal';
 
 
 const routes = Router();
@@ -20,6 +20,7 @@ routes.get('/user/bank', fetchBank);
 routes.post('/user/withdraw-cash', createWithdrawalCash);
 routes.get('/user/withdraw', fetchWithdrawal);
 routes.get('/test', testApi);
+routes.get("/user/confirm-address", confirmAddress)
 
 
 
