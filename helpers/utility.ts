@@ -25,7 +25,7 @@ export const successResponse = (res: any, message: string = 'Operation successfu
 
 export const successFalseResponse = (res: any, message: string = 'Operation successfull', data?: any) => {
 	return res.status(200).json({
-		status: true,
+		status: false,
 		message,
 		data,
 	});
