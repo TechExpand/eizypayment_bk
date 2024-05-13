@@ -227,7 +227,7 @@ export const updateUser = async (req: Request, res: Response) => {
     const updatedUser = await Users.findOne({ where: { id } })
     return successResponse(res, "Successful", updatedUser)
   } else {
-    await user.update({ fullname,  fcmToken})
+    await user.update({ fullname: fullname == null || fullname == "" ? user.fullname : fullname, fcmToken })
     const updatedUser = await Users.findOne({ where: { id } })
     return successResponse(res, "Successful", updatedUser)
   }
