@@ -18,7 +18,7 @@ import { Tokens } from "../models/Token";
 import { UserTokens } from "../models/UserToken";
 import { parseJsonText } from "typescript";
 import { Withdrawal, WithdrawalStatus } from "../models/Withdrawal";
-import { sendFcmNotification, sendEmail } from "../services/notification";
+import { sendFcmNotification, sendEmail, sendEmailWithdraw } from "../services/notification";
 import { PaymentRequests, TypeState } from "../models/Payment";
 import { ServiceType, TransactionStatus, TransactionType, Transactions } from "../models/Transaction";
 import { templateEmail } from "../config/template";
@@ -171,15 +171,58 @@ export const fetchAllNetwork = async (req: Request, res: Response) => {
 
 export const webhookMoonPay = async (req: Request, res: Response) => {
   const data = req.body;
-  console.log(`Received data: ${JSON.parse(data)}`);
-  if (data.data.status === "completed") {
+  // data.data.status === "completed"
+  if (data.data.status != "completed") {
     console.log("update invoice on successful")
     console.log("success...")
+    const invoice = await Invoice.findOne({ where: { randoId: data.data.externalTransactionId } })
+    const user = await Users.findOne({ where: { id: invoice?.userId } })
+    await invoice?.update({ status: "PROCESSING" })
+    await sendEmail(invoice!.customer.email, "Invoice Payment Confirmation - Eisy Global",
+      templateEmail("Invoice Payment Confirmation - Eisy Global", `<div>
+  This is an automated message to confirm that your invoice #${invoice?.invoiceNo} has been received and is being processed by Eisy Global.<br><br>
+  Invoice Details:<br><br>
+  Invoice Number: ${invoice?.invoiceNo} <br>
+  Amount: ${invoice?.subTotal}<br>
+  Invoice Date: ${invoice!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+
+  We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>
+  
+  Thank you for choosing our service, and we look forward to serving you again in the future.</div>`));
+
+
+    await sendEmail(user!.email, "Invoice Payment Confirmation - Eisy Global",
+      templateEmail("Invoice Payment Confirmation - Eisy Global", `<div>
+This is an automated message to confirm that your invoice #${invoice?.invoiceNo} has been received and is being processed by Eisy Global.<br><br>
+Invoice Details:<br><br>
+Invoice Number: ${invoice?.invoiceNo} <br>
+Amount: ${invoice?.subTotal}<br>
+Invoice Date: ${invoice!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+
+We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>
+
+Thank you for choosing our service, and we look forward to serving you again in the future.</div>`));
+
+
+    await sendFcmNotification("Invoice Payment Processing", {
+      description: `Invoice payment for #${invoice?.invoiceNo} has been received and is being processed by Eisy Global.`,
+      title: "Invoice Payment Processing",
+      type: TransactionType.CREDIT,
+      mata: {
+
+      },
+      service: ServiceType.WITHDRAWAL,
+    }, user!.fcmToken)
+
+    sendEmailWithdraw("", "Invoice Payment Processing", "Review Invoice Payment Fiat Payment")
+
+    res.status(200).json({ status: 'success' });
   } else {
     console.log("update invoice on failed")
     console.log("failed...")
+
+    res.status(200).json({ status: 'success' });
   }
-  res.status(200).json({ status: 'success' });
 }
 
 
