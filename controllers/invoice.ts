@@ -180,7 +180,7 @@ export const webhookMoonPay = async (req: Request, res: Response) => {
 
       const user = await Users.findOne({ where: { id: invoice?.userId } })
       await invoice?.update({ status: "PROCESSING", processedForFiat: true })
-    
+
       const customerInfo = JSON.parse(invoice!.customer)
 
       await sendEmail(customerInfo.email, "Invoice Payment Confirmation - Eisy Global",
@@ -188,7 +188,7 @@ export const webhookMoonPay = async (req: Request, res: Response) => {
       This is an automated message to confirm that your invoice #${invoice?.invoiceNo} has been received and is being processed by Eisy Global.<br><br>
       Invoice Details:<br><br>
       Invoice Number: ${invoice?.invoiceNo} <br>
-      Amount: ${invoice?.subTotal}<br>
+      Amount: ${invoice.symbol} ${invoice?.subTotal}<br>
       Invoice Date: ${invoice!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
 
       We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>
@@ -201,7 +201,7 @@ export const webhookMoonPay = async (req: Request, res: Response) => {
   This is an automated message to confirm that your invoice #${invoice?.invoiceNo} has been received and is being processed by Eisy Global.<br><br>
   Invoice Details:<br><br>
   Invoice Number: ${invoice?.invoiceNo} <br>
-  Amount: ${invoice?.subTotal}<br>
+  Amount: ${invoice.symbol}${invoice?.subTotal}<br>
   Invoice Date: ${invoice!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
   
   We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>
