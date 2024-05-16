@@ -118,6 +118,13 @@ export class Invoice extends Model {
 
 
 
+    @Default(false)
+    @AllowNull(true)
+    @Column(DataType.BOOLEAN)
+    processedForFiat!: boolean;
+
+
+
     @AllowNull(true)
     @Column(DataType.STRING)
     voidedAt!: string;

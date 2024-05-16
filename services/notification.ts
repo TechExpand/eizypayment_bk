@@ -152,10 +152,6 @@ export const sendWhatsapp = async (number: String, subject: String, template: an
 
 export const sendFcmNotification = async (title: string,
   data: any, token: string) => {
-  console.log(token);
-  console.log(data)
-  console.log(JSON.stringify(data))
-
   const message = {
     notification: {
       title: "Eisy Payment",
