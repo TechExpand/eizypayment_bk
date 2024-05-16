@@ -18,12 +18,14 @@ const routes = Router();
 
 routes.get('/buy', async function (req, res) {
     const address = ""
-    res.render('pages/fiat-buy', { address, invoiceId: "invoiceId" });
+    const { invoiceId } = req.query
+    res.render('pages/fiat-buy', { address, invoiceId });
 });
 
 
 
 routes.get('/sell', async function (req, res) {
+
     res.render('pages/fiat-sell', { invoiceId: "invoiceId" });
 });
 
