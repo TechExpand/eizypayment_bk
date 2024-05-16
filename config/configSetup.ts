@@ -71,7 +71,8 @@ const getConfig = (): Config => {
 			'/api/user/verify',
 			"/api/user/send-otp",
 			"/api/user/network",
-			"/api/user/webhook"
+			"/api/user/webhook",
+			"/api/user/webhook-moonpay"
 		],
 		BUSINESS_PUBLIC_ROUTES: [
 

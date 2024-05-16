@@ -1,7 +1,7 @@
 // Import packages
 import { Router } from 'express';
 import { changePassword, login, register, testApi, verifyOtp } from '../controllers/auth';
-import { createInvoice, fetchAllNetwork, fetchInvoice, fetchSignleInvoice, sendInvoiceReminder, updateInvoiceStatus, webhook } from '../controllers/invoice';
+import { createInvoice, fetchAllNetwork, fetchInvoice, fetchSignleInvoice, sendInvoiceReminder, updateInvoiceStatus, webhook, webhookMoonPay } from '../controllers/invoice';
 
 
 const routes = Router();
@@ -23,6 +23,8 @@ routes.get('/user/network', fetchAllNetwork);
 routes.get('/user/update-invoice', updateInvoiceStatus);
 routes.get('/user/invoice-reminder', sendInvoiceReminder);
 routes.post('/user/webhook', webhook);
+routes.post('/user/webhook-moonpay', webhookMoonPay);
+
 
 
 routes.get('/invoice/test', testApi);
