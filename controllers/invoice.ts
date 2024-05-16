@@ -174,7 +174,7 @@ export const webhookMoonPay = async (req: Request, res: Response) => {
   // data.data.status === "completed"
   const invoice = await Invoice.findOne({ where: { randoId: data.data.externalTransactionId } })
   if (invoice?.processedForFiat == false) {
-    if (data.data.status != "completed") {
+    if (data.data.status === "completed") {
       console.log("update invoice on successful")
       console.log("success...")
 
@@ -182,7 +182,6 @@ export const webhookMoonPay = async (req: Request, res: Response) => {
       await invoice?.update({ status: "PROCESSING", processedForFiat: true })
     
       const customerInfo = JSON.parse(invoice!.customer)
-      console.log(customerInfo.email)
 
       await sendEmail(customerInfo.email, "Invoice Payment Confirmation - Eisy Global",
         templateEmail("Invoice Payment Confirmation - Eisy Global", `<div>
