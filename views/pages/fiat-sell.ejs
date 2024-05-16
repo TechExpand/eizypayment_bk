@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Eisy Global Crypto Offramp</title>
+  <script src="/moonpay.js"></script>
+  <meta name="description" content="A demo of hosted onramp" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+</head>
+
+
+
+<body>
+  <script>
+    const moonPay = window.MoonPayWebSdk.init;
+    const widget = moonPay?.({
+      flow: "sell",
+      environment: "sandbox",
+      params: {
+        apiKey: "pk_test_j9cd6kWLJCnN8fG56zLhiXVz0FIWuOS",
+        baseCurrencyCode: 'usd',
+        currencyCode: "usdc",
+        quoteCurrencyAmount: 100,
+        baseCurrencyAmount: 100,
+        externalCustomerId: `<%- invoiceId %>`,
+        externalTransactionId: `<%- invoiceId %>`,
+      },
+      variant: "overlay",
+      handlers: {
+        async onTransactionCompleted(props) {
+          console.log("onTransactionCompleted", props);
+        },
+      },
+    });
+
+    widget?.show();
+  </script>
+</body>
+
+</html>

@@ -169,6 +169,20 @@ export const fetchAllNetwork = async (req: Request, res: Response) => {
 
 
 
+export const webhookMoonPay = async (req: Request, res: Response) => {
+  const data = req.body;
+  console.log(`Received data: ${JSON.parse(data)}`);
+  if (data.data.status === "completed") {
+    console.log("update invoice on successful")
+    console.log("success...")
+  } else {
+    console.log("update invoice on failed")
+    console.log("failed...")
+  }
+  res.status(200).json({ status: 'success' });
+}
+
+
 
 export const webhook = async (req: Request, res: Response) => {
   const body = req.body;

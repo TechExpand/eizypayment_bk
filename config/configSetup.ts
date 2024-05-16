@@ -63,6 +63,8 @@ const getConfig = (): Config => {
 			"/admin/invoice-view",
 			"/admin/approve-withdraw",
 			"/invoice",
+			"/buy",
+			"/sell",
 			'/api/user/login',
 			'/api/user/register',
 			'/api/user/forget',

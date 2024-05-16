@@ -10,7 +10,8 @@ import auth from './routes/auth';
 import paymentRequest from "./routes/paymentLink";
 import crowdFund from "./routes/crowdFund";
 import transactions from "./routes/transactions";
-import web from "./routes/web";
+import webAdmin from "./routes/webAdmin";
+import webUser from "./routes/webUser";
 import admin from './routes/admin/token';
 
 import customer from "./routes/customer";
@@ -81,7 +82,8 @@ app.use("/api", admin);
 app.use("/api", customer);
 app.use("/api", transactions);
 app.use("/api", withdrawal);
-app.use("/", web);
+app.use("/", webAdmin);
+app.use("/", webUser);
 
 
 
