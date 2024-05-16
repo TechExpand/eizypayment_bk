@@ -178,17 +178,19 @@ export const webhookMoonPay = async (req: Request, res: Response) => {
     const invoice = await Invoice.findOne({ where: { randoId: data.data.externalTransactionId } })
     const user = await Users.findOne({ where: { id: invoice?.userId } })
     await invoice?.update({ status: "PROCESSING" })
-    await sendEmail(invoice!.customer.email, "Invoice Payment Confirmation - Eisy Global",
-      templateEmail("Invoice Payment Confirmation - Eisy Global", `<div>
-  This is an automated message to confirm that your invoice #${invoice?.invoiceNo} has been received and is being processed by Eisy Global.<br><br>
-  Invoice Details:<br><br>
-  Invoice Number: ${invoice?.invoiceNo} <br>
-  Amount: ${invoice?.subTotal}<br>
-  Invoice Date: ${invoice!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
 
-  We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>
-  
-  Thank you for choosing our service, and we look forward to serving you again in the future.</div>`));
+
+    //   await sendEmail(invoice!.customer.email, "Invoice Payment Confirmation - Eisy Global",
+    //     templateEmail("Invoice Payment Confirmation - Eisy Global", `<div>
+    // This is an automated message to confirm that your invoice #${invoice?.invoiceNo} has been received and is being processed by Eisy Global.<br><br>
+    // Invoice Details:<br><br>
+    // Invoice Number: ${invoice?.invoiceNo} <br>
+    // Amount: ${invoice?.subTotal}<br>
+    // Invoice Date: ${invoice!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+
+    // We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>
+
+    // Thank you for choosing our service, and we look forward to serving you again in the future.</div>`));
 
 
     await sendEmail(user!.email, "Invoice Payment Confirmation - Eisy Global",
