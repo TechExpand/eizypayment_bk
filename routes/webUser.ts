@@ -18,8 +18,8 @@ const routes = Router();
 
 routes.get('/buy', async function (req, res) {
     const address = ""
-    const { invoiceId } = req.query
-    res.render('pages/fiat-buy', { address, invoiceId });
+    const { id } = req.query
+    res.render('pages/fiat-buy', { address, invoiceId:id });
 });
 
 
