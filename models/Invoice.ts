@@ -172,4 +172,10 @@ export class Invoice extends Model {
     @AllowNull(false)
     @Column(DataType.UUID)
     userId!: string;
+
+
+    @BelongsTo(() => Users, { onDelete: 'CASCADE' })
+    user!: Users;
+
+
 }

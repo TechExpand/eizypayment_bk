@@ -14,7 +14,6 @@ API CALL START
 routes.post('/admin/token', createToken);
 routes.delete('/admin/token/:id', deleteToken);
 routes.get('/admin/token', fetchTokens);
-
 // routes.get('/sendemail', sendEmailTest);
 
 

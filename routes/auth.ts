@@ -23,6 +23,4 @@ routes.get('/user', getUser);
 
 
 
-
-
 export default routes;
