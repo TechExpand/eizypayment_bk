@@ -9,7 +9,7 @@ import { compareTwoStrings } from 'string-similarity';
 const cloudinary = require("cloudinary").v2;
 // yarn add stream-chat
 import { StreamChat } from 'stream-chat';
-import { Sequelize } from "sequelize-typescript";
+import config from '../config/configSetup';
 import { Verify } from "../models/Verify";
 // import { sendEmailResend } from "../services/sms";
 import { templateEmail } from "../config/template";
@@ -20,6 +20,7 @@ import { UserTokens } from "../models/UserToken";
 import { AvatarGenerator } from 'random-avatar-generator';
 import { ServiceType, TransactionStatus, TransactionType, Transactions } from "../models/Transaction";
 import { Invoice } from "../models/Invoice";
+import { Wallet } from "../models/Wallet";
 
 const generator = new AvatarGenerator();
 
@@ -73,8 +74,6 @@ export const verifyOtp = async (req: Request, res: Response) => {
 
   if (verifyEmail) {
     if (verifyEmail.code === emailCode) {
-
-
       const verifyEmailResult = await Verify.findOne({ where: { id: verifyEmail.id } })
       const user = await Users.findOne({ where: { email: verifyEmailResult?.client } })
       console.log(user?.dataValues)
@@ -106,57 +105,36 @@ export const verifyOtp = async (req: Request, res: Response) => {
 
 
 export const register = async (req: Request, res: Response) => {
-  const { email, fullname, password, fcmToken } = req.body;
-  hash(password, saltRounds, async function (err, hashedPassword) {
-    const userEmail = await Users.findOne({ where: { email } })
-    if (!validateEmail(email)) return errorResponse(res, "Enter a valid email")
-    if (userEmail) {
-      if (userEmail?.state === UserState.VERIFIED) {
-        if (userEmail) return errorResponse(res, "Email already exist", { state: userEmail.state })
-      } else {
-        await userEmail?.destroy();
+  const { email, fullname, password, fcmToken, countryCode, phone } = req.body;
+  const [firstName, lastName] = fullname.split(' ');
+  axios({
+    method: 'POST',
+    url: 'https://sandboxapi.bitnob.co/api/v1/customers',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      Authorization: `Bearer ${config.BITNOM}`
+    },
+    data: {
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+      countryCode: countryCode
+    }
+  }).then(function (response) {
+    console.log(response.data);
 
-        const user = await Users.create({
-          email, fullname, password: hashedPassword, customerId: "",
-          fcmToken,
-          avater: generator.generateRandomAvatar("https://avataaars.io/?avatarStyle=Circle&topType=WinterHat4&accessoriesType=Blank&hatColor=Heather&facialHairType=BeardMajestic&facialHairColor=Red&clotheType=ShirtScoopNeck&clotheColor=Blue01&eyeType=Surprised&eyebrowType=DefaultNatural&mouthType=Smile&skinColor=Brown")
-        })
-        const emailServiceId = randomId(12);
-        const codeEmail = String(Math.floor(1000 + Math.random() * 9000));
-        await Verify.create({
-          serviceId: emailServiceId,
-          code: codeEmail,
-          client: email,
-          secret_key: createRandomRef(12, "eizyapp",),
-        })
-        await sendEmail(email, "Eizy Payment otp code", templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
+    hash(password, saltRounds, async function (err, hashedPassword) {
+      const userEmail = await Users.findOne({ where: { email } })
+      if (!validateEmail(email)) return errorResponse(res, "Enter a valid email")
 
-        let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
-        const tokens = await Tokens.findAll({
-          limit: 6,
-          order: [
-            ['createdAt', 'DESC']
-          ],
-        },)
-        tokens.reverse()
-        let insertData: any = [];
-        tokens.every((e: any) => {
-          insertData.push({ tokenId: e.id, userId: user.id })
-        })
-
-        await UserTokens.bulkCreate(insertData)
-        return successResponse(res, "Successful", {
-
-          email, fullname, token, emailServiceId
-
-        })
-
-      }
-    } else {
 
       const user = await Users.create({
+        bitnumData: response.data.data,
         email, fullname, password: hashedPassword, customerId: "", avater: generator.generateRandomAvatar("https://avataaars.io/?avatarStyle=Circle&topType=WinterHat4&accessoriesType=Blank&hatColor=Heather&facialHairType=BeardMajestic&facialHairColor=Red&clotheType=ShirtScoopNeck&clotheColor=Blue01&eyeType=Surprised&eyebrowType=DefaultNatural&mouthType=Smile&skinColor=Brown")
       })
+
       const emailServiceId = randomId(12);
       const codeEmail = String(Math.floor(1000 + Math.random() * 9000));
       await Verify.create({
@@ -168,6 +146,9 @@ export const register = async (req: Request, res: Response) => {
       await sendEmail(email, "Eizy Payment otp code", templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
       //  sendEmailResend(email, codeEmail.toString());
       let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
+      const wallet = await Wallet.create({
+        userId: user.id
+      });
       const tokens = await Tokens.findAll({
         limit: 6,
         order: [
@@ -189,7 +170,39 @@ export const register = async (req: Request, res: Response) => {
       })
 
     }
+    );
+  }).catch(async function (error) {
+    console.error(email);
+    console.log("error")
+    const userEmail = await Users.findOne({ where: { email } })
+    if (userEmail?.state === UserState.VERIFIED) {
+      if (userEmail) return errorResponse(res, "Email already exist", { state: userEmail.state })
+    } else {
+      const emailServiceId = randomId(12);
+      const codeEmail = String(Math.floor(1000 + Math.random() * 9000));
+      await Verify.create({
+        serviceId: emailServiceId,
+        code: codeEmail,
+        client: email,
+        secret_key: createRandomRef(12, "eizyapp",),
+      })
+      await sendEmail(email, "Eizy Payment otp code", templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
+
+      let token = sign({ id: userEmail!.id, email: userEmail!.email }, TOKEN_SECRET);
+
+      return successResponse(res, "Successful", {
+
+        email, fullname, token, emailServiceId
+
+      })
+
+    }
+
   });
+
+
+
+
 }
 
 

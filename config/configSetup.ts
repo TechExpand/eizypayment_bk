@@ -23,6 +23,7 @@ type Config = {
 	LOGO: string | undefined;
 	WEBSITE: string | undefined;
 	VERIFICATIONKEY: string | undefined;
+	BITNOM: string | undefined;
 	BASE_API_URL: string | undefined;
 	REDIS_INSTANCE_URL: string | undefined;
 	PUBLIC_ROUTES: string[] | [];
@@ -35,6 +36,7 @@ const getConfig = (): Config => {
 		PORT: Number(process.env.PORT),
 		SSL: true,
 		JWTSECRET: process.env.JWTSECRET,
+		BITNOM: process.env.BITNOM,
 		JWT_EXPIRY_TIME: process.env.JWT_EXPIRY_TIME,
 		DBNAME: process.env.DBNAME,
 		DBUSERNAME: process.env.DBUSERNAME,

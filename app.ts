@@ -13,6 +13,7 @@ import transactions from "./routes/transactions";
 import webAdmin from "./routes/webAdmin";
 import webUser from "./routes/webUser";
 import admin from './routes/admin/token';
+import crypto from './routes/crypto';
 
 import customer from "./routes/customer";
 import { isAuthorized } from './middlewares/authorise';
@@ -84,6 +85,7 @@ app.use("/api", transactions);
 app.use("/api", withdrawal);
 app.use("/", webAdmin);
 app.use("/", webUser);
+app.use("/api", crypto);
 
 
 

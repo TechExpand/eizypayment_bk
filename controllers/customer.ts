@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 import { Op, where } from "sequelize";
 import { UserState, UserStatus, Users } from "../models/Users";
 import { compare, hash } from "bcryptjs"
-import config from '../config/configSetup';;
+import config from '../config/configSetup';
 import { sign } from "jsonwebtoken";
 import { compareTwoStrings } from 'string-similarity';
 

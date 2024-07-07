@@ -53,6 +53,12 @@ export class Users extends Model {
 
 
 	@AllowNull(false)
+	@Column(DataType.JSON)
+	bitnumData!: any;
+
+
+
+	@AllowNull(false)
 	@Column(DataType.STRING)
 	password!: string;
 
