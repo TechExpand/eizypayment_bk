@@ -505,14 +505,14 @@
                     <div class="grid grid-cols-1 gap-5 xl:grid-cols-12">
                       <div class="text-center xl:col-span-2 ltr:xl:text-left rtl:xl:text-right">
                         <div class="flex items-center justify-center mx-auto rounded-md size-16 bg-slate-100 dark:bg-zink-600 xl:mx-0">
-                          <img src="<%=withdrawal.userToken.token.url%>" alt="" class="h-8">
+                          <img src="<%= withdrawal.userToken==null?"https://dashboard.radom.network/TetherLogo.6d30f474.svg":withdrawal.userToken.token.url%>" alt="" class="h-8">
                         </div>
-                        <h5 class="mt-4 mb-1"><%=withdrawal.userToken.token.currency%></h5>
+                        <h5 class="mt-4 mb-1"><%= withdrawal.userToken==null?"USD":withdrawal.userToken.token.currency%></h5>
                         <p class="text-slate-500 dark:text-zink-200"><%=withdrawal.user.fullname%></p>
                       </div>
                       <!--end col-->
                       <div class="ltr:xl:text-right rtl:xl:text-left xl:col-start-10 xl:col-span-3">
-                        <p class="mb-1 text-slate-500 dark:text-zink-200">From Currency: <span class="font-semibold"><%=withdrawal.userToken.token.symbol%></span></p>
+                        <p class="mb-1 text-slate-500 dark:text-zink-200">From Currency: <span class="font-semibold"><%= withdrawal.userToken==null?"USD":withdrawal.userToken.token.symbol%></span></p>
                         <p class="mb-1 truncate text-slate-500 dark:text-zink-200">From Amount: <span class="font-semibold"><%=withdrawal.amount%></span></p>
                         <p class="mb-1 text-slate-500 dark:text-zink-200">To Currency: <span class="font-semibold"> NGN </span></p>
                         <p class="text-slate-500 dark:text-zink-200">To Amount: <span class="font-semibold"><%= value %></span></p>

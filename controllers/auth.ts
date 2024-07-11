@@ -132,6 +132,7 @@ export const register = async (req: Request, res: Response) => {
 
       const user = await Users.create({
         bitnumData: response.data.data,
+        fcmToken,
         email, fullname, password: hashedPassword, customerId: "", avater: generator.generateRandomAvatar("https://avataaars.io/?avatarStyle=Circle&topType=WinterHat4&accessoriesType=Blank&hatColor=Heather&facialHairType=BeardMajestic&facialHairColor=Red&clotheType=ShirtScoopNeck&clotheColor=Blue01&eyeType=Surprised&eyebrowType=DefaultNatural&mouthType=Smile&skinColor=Brown")
       })
 
@@ -149,6 +150,7 @@ export const register = async (req: Request, res: Response) => {
       const wallet = await Wallet.create({
         userId: user.id
       });
+      await user.update({ walletId: wallet.id })
       const tokens = await Tokens.findAll({
         limit: 6,
         order: [
@@ -250,7 +252,13 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   let { id } = req.user;
-  const user = await Users.findOne({ where: { id }, include: [{ model: UserTokens, include: [{ model: Tokens }] }] })
+  const user = await Users.findOne({
+    where: { id },
+    include: [{
+      model: UserTokens,
+      include: [{ model: Tokens }]
+    }, { model: Wallet }]
+  })
   return successResponse(res, "Successful", user)
 }
 

@@ -1,8 +1,6 @@
 // Import packages
 import { Router } from 'express';
 import { changePassword, login, register, testApi, verifyOtp } from '../controllers/auth';
-import { createInvoice, fetchInvoice, fetchSignleInvoice } from '../controllers/invoice';
-import { createCustomer, deleteCustomer, fetchCustomer } from '../controllers/customer';
 import { confirmAddress, createBank, createWithdrawal, createWithdrawalCash, fetchBank, fetchWithdrawal } from '../controllers/withdrawal';
 
 

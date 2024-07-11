@@ -49,6 +49,12 @@ export class Withdrawal extends Model {
 
 
     @AllowNull(true)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    card!: boolean;
+
+
+    @AllowNull(true)
     @Column(DataType.STRING)
     token!: string;
 
@@ -91,9 +97,9 @@ export class Withdrawal extends Model {
     @Column(DataType.ENUM(WithdrawTypeState.P2P, WithdrawTypeState.CRYPTO))
     type!: WithdrawTypeState;
 
-
+    
+    @AllowNull(true)
     @ForeignKey(() => UserTokens)
-    @AllowNull(false)
     @Column(DataType.UUID)
     userTokenId!: string;
 

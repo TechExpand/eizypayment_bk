@@ -70,6 +70,7 @@ const getConfig = (): Config => {
 			"/buy",
 			"/sell",
 			'/api/user/login',
+			'/api/user/webhook-bitnom',
 			'/admin/invoice-fiat',
 			'/api/user/register',
 			'/api/user/forget',

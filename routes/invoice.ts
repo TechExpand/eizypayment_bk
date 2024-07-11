@@ -1,7 +1,8 @@
 // Import packages
 import { Router } from 'express';
 import { changePassword, login, register, testApi, verifyOtp } from '../controllers/auth';
-import { createInvoice, fetchAllNetwork, fetchInvoice, fetchSignleInvoice, sendInvoiceReminder, updateInvoiceStatus, webhook, webhookMoonPay } from '../controllers/invoice';
+import { createInvoice, fetchAllNetwork, fetchInvoice, fetchSignleInvoice, sendInvoiceReminder, updateInvoiceStatus } from '../controllers/invoice';
+import { webhook, webhookBitnom, webhookMoonPay } from '../controllers/webhook';
 
 
 const routes = Router();
@@ -24,6 +25,7 @@ routes.get('/user/update-invoice', updateInvoiceStatus);
 routes.get('/user/invoice-reminder', sendInvoiceReminder);
 routes.post('/user/webhook', webhook);
 routes.post('/user/webhook-moonpay', webhookMoonPay);
+routes.post('/user/webhook-bitnom', webhookBitnom);
 
 
 

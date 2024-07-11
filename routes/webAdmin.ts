@@ -57,7 +57,7 @@ routes.get('/admin/invoice-view', async function (req, res) {
         },
         include: [
             { model: Users },
-            { model: UserTokens, include: [{ model: Tokens }] }
+
         ]
     })
     const admins = await Admin.findOne({})
@@ -66,61 +66,29 @@ routes.get('/admin/invoice-view', async function (req, res) {
         return `mailto:${recipientEmail}`;
     };
 
-    let coinList: any[] = []
-    const token = await Tokens.findAll({})
-    const response = await axios({
-        method: 'GET',
-        url: `https://api.coinranking.com/v2/coins`,
-        headers: { 'Content-Type': 'application/json' },
-    })
 
-    token.forEach((e) => {
-        if (e.currency == "BAT") {
+    const combinbedValue = Number(withdrawal!.amount.toString()) * Number(admins?.rate)
+    // const bankInfo = JSON.parse(withdrawal!.bank)
+    // console.log(bankInfo!)
 
-        } else if (e.currency == "BUSD") {
-            const coinObjectTemp = response.data.data.coins.find((obj: any) => obj.symbol == "USDT");
-            coinList.push({ symbol: "BUSD", price: coinObjectTemp.price })
-        }
-        else {
-            const coinObjectTemp = response.data.data.coins.find((obj: any) => obj.symbol == e.currency);
-            coinList.push({ symbol: coinObjectTemp.symbol, price: coinObjectTemp.price })
-        }
+    // res.render('pages/invoice-overview', {
+    //     withdrawal, generateMailtoLink,
+    //     rate: admins?.rate, value: combinbedValue.toFixed(4),
+    //     bankName: bankInfo.bankName,
+    //     accountNumber: bankInfo.accountNumber,
+    //     accountName: bankInfo.accountName,
 
-    })
-
-    const value = Number(Number(
-        coinList
-            .find(e =>
-                e["symbol"] ==
-                withdrawal!.userToken.token.symbol)["price"]
-            .toString()
-    )
-    )
-
-    const combinbedValue = value * Number(withdrawal!.amount.toString()) * Number(admins?.rate)
-    const bankInfo = JSON.parse(withdrawal!.dataValues.bank)
-
-    console.log({
-        bankName: bankInfo.bankName,
-        accountNumber: bankInfo.accountNumber,
-        accountName: bankInfo.accountName,
-        // bankName: withdrawal?.bank.bankName,
-        // accountNumber: withdrawal?.bank.accountNumber,
-        // accountName: withdrawal?.bank.accountName,
-        rate: admins?.rate, value: combinbedValue.toFixed(4),
-    })
+    // });
 
     res.render('pages/invoice-overview', {
         withdrawal, generateMailtoLink,
         rate: admins?.rate, value: combinbedValue.toFixed(4),
-        bankName: bankInfo.bankName,
-        accountNumber: bankInfo.accountNumber,
-        accountName: bankInfo.accountName,
-        // bankName: withdrawal?.bank.bankName,
-        // accountNumber: withdrawal?.bank.accountNumber,
-        // accountName: withdrawal?.bank.accountName,
+        bankName: withdrawal!.bank.bankName,
+        accountNumber: withdrawal!.bank.accountNumber,
+        accountName: withdrawal!.bank.accountName,
 
     });
+
 });
 
 

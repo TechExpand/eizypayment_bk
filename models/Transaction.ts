@@ -27,7 +27,8 @@ export enum ServiceType {
     PAYMENT_REQUEST = "PAYMENT_REQUEST",
     CROWD_FUND = "CROWD_FUND",
     WITHDRAWAL = "WITHDRAWAL",
-    NOTIFICATION = "NOTIFICATION"
+    NOTIFICATION = "NOTIFICATION",
+    CRYPTO = "CRYPTO"
 }
 
 export enum TransactionDateType {
@@ -73,7 +74,7 @@ export class Transactions extends Model {
 
 
     @AllowNull(true)
-    @Column(DataType.ENUM(ServiceType.INVOICE, ServiceType.PAYMENT_REQUEST, ServiceType.WITHDRAWAL, ServiceType.CROWD_FUND, ServiceType.NOTIFICATION))
+    @Column(DataType.ENUM(ServiceType.INVOICE, ServiceType.CRYPTO, ServiceType.PAYMENT_REQUEST, ServiceType.WITHDRAWAL, ServiceType.CROWD_FUND, ServiceType.NOTIFICATION))
     service!: ServiceType;
 
 

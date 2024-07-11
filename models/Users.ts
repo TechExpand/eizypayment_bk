@@ -2,6 +2,7 @@ import { Table, Model, Column, DataType, HasOne, BelongsToMany, HasMany, AllowNu
 import Sequelize from 'sequelize/types/sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { UserTokens } from './UserToken';
+import { Wallet } from './Wallet';
 
 export enum UserStatus {
 	ACTIVE = 'ACTIVE',
@@ -21,7 +22,6 @@ export enum UserState {
 
 @Table({ timestamps: true, tableName: 'users' })
 export class Users extends Model {
-
 
 	@PrimaryKey
 	@Default(uuidv4)
@@ -52,6 +52,7 @@ export class Users extends Model {
 
 
 
+
 	@AllowNull(false)
 	@Column(DataType.JSON)
 	bitnumData!: any;
@@ -68,6 +69,18 @@ export class Users extends Model {
 	fcmToken!: string;
 
 
+	@Default(false)
+	@AllowNull(true)
+	@Column(DataType.BOOLEAN)
+	kyc!: boolean;
+
+
+	@Default(false)
+	@AllowNull(true)
+	@Column(DataType.BOOLEAN)
+	kycComplete!: boolean;
+
+
 
 	@Default(UserStatus.ACTIVE)
 	@Column(DataType.ENUM(UserStatus.ACTIVE, UserStatus.INACTIVE, UserStatus.SUSPENDED))
@@ -82,4 +95,9 @@ export class Users extends Model {
 
 	@HasMany(() => UserTokens, { onDelete: 'CASCADE' })
 	wallets!: UserTokens[];
+
+
+	@HasOne(() => Wallet, { onDelete: "CASCADE" })
+	wallet!: Wallet;
 }
+

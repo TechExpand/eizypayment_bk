@@ -14,6 +14,8 @@ import { PaymentRequests } from '../models/Payment';
 import { Transactions } from '../models/Transaction';
 import { Banks } from '../models/Bank';
 import { Admin } from '../models/Admin';
+import { Wallet } from '../models/Wallet';
+import { Card } from '../models/Card';
 
 
 
@@ -30,9 +32,11 @@ const sequelize = new Sequelize(config.DBNAME, config.DBUSERNAME, config.DBPASSW
 		Users,
 		Verify,
 		Admin,
+		Card,
 		Banks,
 		Tokens,
 		UserTokens,
+		Wallet,
 		Transactions,
 		Customers,
 		PaymentRequests,

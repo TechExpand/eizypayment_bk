@@ -30,13 +30,7 @@ const WAValidator = require('multicoin-address-validator');
 export const createWithdrawal = async (req: Request, res: Response) => {
     const { id } = req.user;
     const { network, token, amount, withdrawalAddress, symbol } = req.body;
-    console.log({
-        network,
-        token: token == "-" ? null : token,
-        amount,
-        withdrawalAddress,
-        withdrawalAccountId: null
-    })
+   
     try {
         const tokens = await Tokens.findOne({ where: { symbol } })
         if (!tokens) return errorResponse(res, "Token Not found");
@@ -146,22 +140,22 @@ export const createWithdrawalCash = async (req: Request, res: Response) => {
     const userToken = await UserTokens.findOne({ where: { tokenId: tokens?.id, userId: id } })
     if (!userToken) return errorResponse(res, "User Token Not found");
 
-    const response = await axios({
-        method: 'GET',
-        url: `https://api.coinranking.com/v2/coins`,
-        headers: { 'Content-Type': 'application/json' },
-    })
+    // const response = await axios({
+    //     method: 'GET',
+    //     url: `https://api.coinranking.com/v2/coins`,
+    //     headers: { 'Content-Type': 'application/json' },
+    // })
 
-    const coinObjectTemp = response.data.data.coins.find((obj: any) => symbol == "BAT" ?
-        obj.symbol == "USDC" : symbol == "BUSD" ?
-            obj.symbol == "USDC" : obj.symbol == symbol);
-    const convertedAmount = ((Number(amount)) / Number(coinObjectTemp.price))
+    // const coinObjectTemp = response.data.data.coins.find((obj: any) => symbol == "BAT" ?
+    //     obj.symbol == "USDC" : symbol == "BUSD" ?
+    //         obj.symbol == "USDC" : obj.symbol == symbol);
+    // const convertedAmount = ((Number(amount)) / Number(coinObjectTemp.price))
 
-    if (userToken?.balance >= convertedAmount) {
+    if (userToken?.balance >= amount) {
 
         sendEmailWithdraw("", "Withdrawal Request Approval", "review withdrawal from admin dashboard")
 
-        await userToken.update({ balance: (Number(userToken.balance) - Number(convertedAmount)) })
+        await userToken.update({ balance: (Number(userToken.balance) - Number(amount)) })
 
         const withdrawal = await Withdrawal.create({
             randoId: "",
@@ -169,7 +163,7 @@ export const createWithdrawalCash = async (req: Request, res: Response) => {
             token,
             symbol,
             type: WithdrawTypeState.P2P,
-            amount: convertedAmount,
+            amount: amount,
             bank,
             userTokenId: userToken?.id,
             userId: id
