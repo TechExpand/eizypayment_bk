@@ -61,7 +61,7 @@ const getConfig = (): Config => {
 			'/',
 			'/api/test',
 			'/api/user/admin',
-			"/admin/invoice",
+			"/api/admin/invoice",
 			"/admin/price",
 			"/admin/invoice-view",
 			"/admin/approve-withdraw",
