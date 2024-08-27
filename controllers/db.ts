@@ -16,6 +16,7 @@ import { Banks } from '../models/Bank';
 import { Admin } from '../models/Admin';
 import { Wallet } from '../models/Wallet';
 import { Card } from '../models/Card';
+import { Price } from '../models/Price';
 
 
 
@@ -32,6 +33,7 @@ const sequelize = new Sequelize(config.DBNAME, config.DBUSERNAME, config.DBPASSW
 		Users,
 		Verify,
 		Admin,
+		Price,
 		Card,
 		Banks,
 		Tokens,
