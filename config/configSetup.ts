@@ -62,6 +62,7 @@ const getConfig = (): Config => {
 			'/api/test',
 			'/api/user/admin',
 			"/admin/invoice",
+			"/admin/price",
 			"/admin/invoice-view",
 			"/admin/approve-withdraw",
 			"/admin/invoice-fiat-overview",

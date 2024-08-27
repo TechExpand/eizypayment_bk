@@ -9,6 +9,7 @@ import { StreamChat } from 'stream-chat';
 import { Sequelize } from "sequelize-typescript";
 import { templateEmail } from "../../config/template";
 import { Tokens } from "../../models/Token";
+import { Price } from "../../models/Price";
 // import { templateEmail } from ".";
 const fs = require("fs");
 const axios = require('axios')
@@ -46,4 +47,11 @@ export const fetchTokens = async (req: Request, res: Response) => {
         ],
     },)
     return successResponse(res, "Successful", token.reverse());
+}
+
+
+
+export const fetchPrices = async (req: Request, res: Response) => {
+    const price = await Price.findOne()
+    return successResponse(res, "Successful", price);
 }
