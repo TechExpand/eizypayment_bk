@@ -122,6 +122,12 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Invoice.prototype, "processed", void 0);
 __decorate([
+    (0, sequelize_typescript_1.Default)(false),
+    (0, sequelize_typescript_1.AllowNull)(true),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.BOOLEAN),
+    __metadata("design:type", Boolean)
+], Invoice.prototype, "processedForFiat", void 0);
+__decorate([
     (0, sequelize_typescript_1.AllowNull)(true),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)
@@ -162,6 +168,10 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.UUID),
     __metadata("design:type", String)
 ], Invoice.prototype, "userId", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => Users_1.Users, { onDelete: 'CASCADE' }),
+    __metadata("design:type", Users_1.Users)
+], Invoice.prototype, "user", void 0);
 exports.Invoice = Invoice = __decorate([
     (0, sequelize_typescript_1.Table)({ timestamps: true, tableName: 'invoice' })
 ], Invoice);

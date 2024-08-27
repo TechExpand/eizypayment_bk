@@ -18,6 +18,7 @@ const Users_1 = require("../models/Users");
 const configSetup_1 = __importDefault(require("../config/configSetup"));
 ;
 const notification_1 = require("../services/notification");
+const template_1 = require("../config/template");
 const Payment_1 = require("../models/Payment");
 const fs = require("fs");
 const util = require('util');
@@ -83,7 +84,12 @@ const createPaymentLink = (req, res) => __awaiter(void 0, void 0, void 0, functi
             userId: id,
             email: user === null || user === void 0 ? void 0 : user.email
         });
-        yield (0, notification_1.sendEmail)(user.email, "Payment request", `<div>payment request sent</div>`);
+        yield (0, notification_1.sendEmail)(user.email, "Payment request", (0, template_1.templateEmail)("Payment request", `<div
+        I hope this email finds you well.<br><br>
+        
+        I am reaching out to request a payment for ${description}. The amount requested is ${symbol}  ${price}.<br><br>
+        
+        Your prompt attention to this request would be greatly appreciated. If you have any questions or concerns regarding the payment, please feel free to reach out to me.</div>`));
         return (0, utility_1.successResponse)(res, "Successful", paymentLink);
     }
     catch (error) {
@@ -100,7 +106,11 @@ const createPaymentLink = (req, res) => __awaiter(void 0, void 0, void 0, functi
 exports.createPaymentLink = createPaymentLink;
 const fetchPaymenntRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
-    const request = yield Payment_1.PaymentRequests.findAll({ where: { userId: id, type: Payment_1.TypeState.PAYMENT_LINK } });
+    const request = yield Payment_1.PaymentRequests.findAll({
+        where: { userId: id, type: Payment_1.TypeState.PAYMENT_LINK }, order: [
+            ['createdAt', 'DESC']
+        ],
+    });
     return (0, utility_1.successResponse)(res, "Successful", request);
 });
 exports.fetchPaymenntRequest = fetchPaymenntRequest;

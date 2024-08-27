@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCustomer = exports.fetchCustomer = exports.createCustomer = void 0;
 const utility_1 = require("../helpers/utility");
 const configSetup_1 = __importDefault(require("../config/configSetup"));
-;
 const Customers_1 = require("../models/Customers");
 const fs = require("fs");
 const axios = require('axios');
@@ -62,7 +61,11 @@ const createCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.createCustomer = createCustomer;
 const fetchCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
-    const customer = yield Customers_1.Customers.findAll({ where: { userId: id } });
+    const customer = yield Customers_1.Customers.findAll({
+        where: { userId: id }, order: [
+            ['createdAt', 'DESC']
+        ],
+    });
     return (0, utility_1.successResponse)(res, "Successful", customer);
 });
 exports.fetchCustomer = fetchCustomer;

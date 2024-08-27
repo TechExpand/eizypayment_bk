@@ -13,6 +13,7 @@ exports.Users = exports.UserState = exports.UserStatus = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const uuid_1 = require("uuid");
 const UserToken_1 = require("./UserToken");
+const Wallet_1 = require("./Wallet");
 var UserStatus;
 (function (UserStatus) {
     UserStatus["ACTIVE"] = "ACTIVE";
@@ -56,6 +57,11 @@ __decorate([
 ], Users.prototype, "customerId", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.JSON),
+    __metadata("design:type", Object)
+], Users.prototype, "bitnumData", void 0);
+__decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)
 ], Users.prototype, "password", void 0);
@@ -64,6 +70,18 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)
 ], Users.prototype, "fcmToken", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Default)(false),
+    (0, sequelize_typescript_1.AllowNull)(true),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.BOOLEAN),
+    __metadata("design:type", Boolean)
+], Users.prototype, "kyc", void 0);
+__decorate([
+    (0, sequelize_typescript_1.Default)(false),
+    (0, sequelize_typescript_1.AllowNull)(true),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.BOOLEAN),
+    __metadata("design:type", Boolean)
+], Users.prototype, "kycComplete", void 0);
 __decorate([
     (0, sequelize_typescript_1.Default)(UserStatus.ACTIVE),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.ENUM(UserStatus.ACTIVE, UserStatus.INACTIVE, UserStatus.SUSPENDED)),
@@ -78,6 +96,10 @@ __decorate([
     (0, sequelize_typescript_1.HasMany)(() => UserToken_1.UserTokens, { onDelete: 'CASCADE' }),
     __metadata("design:type", Array)
 ], Users.prototype, "wallets", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasOne)(() => Wallet_1.Wallet, { onDelete: "CASCADE" }),
+    __metadata("design:type", Wallet_1.Wallet)
+], Users.prototype, "wallet", void 0);
 exports.Users = Users = __decorate([
     (0, sequelize_typescript_1.Table)({ timestamps: true, tableName: 'users' })
 ], Users);

@@ -25,6 +25,7 @@ var ServiceType;
     ServiceType["CROWD_FUND"] = "CROWD_FUND";
     ServiceType["WITHDRAWAL"] = "WITHDRAWAL";
     ServiceType["NOTIFICATION"] = "NOTIFICATION";
+    ServiceType["CRYPTO"] = "CRYPTO";
 })(ServiceType || (exports.ServiceType = ServiceType = {}));
 var TransactionDateType;
 (function (TransactionDateType) {
@@ -64,7 +65,7 @@ __decorate([
 ], Transactions.prototype, "type", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(true),
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.ENUM(ServiceType.INVOICE, ServiceType.PAYMENT_REQUEST, ServiceType.WITHDRAWAL, ServiceType.CROWD_FUND, ServiceType.NOTIFICATION)),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.ENUM(ServiceType.INVOICE, ServiceType.CRYPTO, ServiceType.PAYMENT_REQUEST, ServiceType.WITHDRAWAL, ServiceType.CROWD_FUND, ServiceType.NOTIFICATION)),
     __metadata("design:type", String)
 ], Transactions.prototype, "service", void 0);
 __decorate([

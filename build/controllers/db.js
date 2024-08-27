@@ -26,9 +26,11 @@ const UserToken_1 = require("../models/UserToken");
 const Withdrawal_1 = require("../models/Withdrawal");
 const Payment_1 = require("../models/Payment");
 const Transaction_1 = require("../models/Transaction");
-// // Import models
-// import {
-// } from './models';
+const Bank_1 = require("../models/Bank");
+const Admin_1 = require("../models/Admin");
+const Wallet_1 = require("../models/Wallet");
+const Card_1 = require("../models/Card");
+const Price_1 = require("../models/Price");
 const sequelize = new sequelize_typescript_1.Sequelize(configSetup_1.default.DBNAME, configSetup_1.default.DBUSERNAME, configSetup_1.default.DBPASSWORD, {
     host: configSetup_1.default.DBHOST,
     port: configSetup_1.default.DBPORT,
@@ -41,8 +43,13 @@ const sequelize = new sequelize_typescript_1.Sequelize(configSetup_1.default.DBN
     models: [
         Users_1.Users,
         Verify_1.Verify,
+        Admin_1.Admin,
+        Price_1.Price,
+        Card_1.Card,
+        Bank_1.Banks,
         Token_1.Tokens,
         UserToken_1.UserTokens,
+        Wallet_1.Wallet,
         Transaction_1.Transactions,
         Customers_1.Customers,
         Payment_1.PaymentRequests,
@@ -54,7 +61,6 @@ exports.sequelize = sequelize;
 const initDB = () => __awaiter(void 0, void 0, void 0, function* () {
     yield sequelize.authenticate();
     yield sequelize
-        // .sync({})
         .sync({ alter: true })
         .then(() => __awaiter(void 0, void 0, void 0, function* () {
         console.log('Database connected!');

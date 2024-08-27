@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteKey = exports.getDistanceFromLatLonInKm = exports.calculateDifferenceBetweenMinMax = exports.createRandomRef = exports.getRandom = exports.validateEmail = exports.randomId = exports.errorResponse = exports.successResponse = exports.handleResponse = exports.saltRounds = exports.TOKEN_SECRET = void 0;
+exports.deleteKey = exports.getDistanceFromLatLonInKm = exports.calculateDifferenceBetweenMinMax = exports.createRandomRef = exports.getRandom = exports.validateEmail = exports.randomId = exports.errorResponse = exports.successFalseResponse = exports.successResponse = exports.handleResponse = exports.saltRounds = exports.TOKEN_SECRET = void 0;
 exports.TOKEN_SECRET = "222hwhdhnnjduru838272@@$henncndbdhsjj333n33brnfn";
 exports.saltRounds = 10;
 const handleResponse = (res, statusCode, status, message, data) => {
@@ -19,6 +19,14 @@ const successResponse = (res, message = 'Operation successfull', data) => {
     });
 };
 exports.successResponse = successResponse;
+const successFalseResponse = (res, message = 'Operation successfull', data) => {
+    return res.status(200).json({
+        status: false,
+        message,
+        data,
+    });
+};
+exports.successFalseResponse = successFalseResponse;
 const errorResponse = (res, message = 'An error occured', data) => {
     return res.status(400).json({
         status: false,

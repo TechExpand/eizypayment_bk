@@ -91,7 +91,11 @@ const createCrowdFund = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.createCrowdFund = createCrowdFund;
 const fetchCrowdFund = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
-    const request = yield Payment_1.PaymentRequests.findAll({ where: { userId: id, type: Payment_1.TypeState.CROWD_FUND } });
+    const request = yield Payment_1.PaymentRequests.findAll({
+        where: { userId: id, type: Payment_1.TypeState.CROWD_FUND }, order: [
+            ['createdAt', 'DESC']
+        ],
+    });
     return (0, utility_1.successResponse)(res, "Successful", request);
 });
 exports.fetchCrowdFund = fetchCrowdFund;

@@ -9,11 +9,6 @@ const routes = (0, express_1.Router)();
 API CALL START
 *************************************************************************/
 // INDEX ROUTE TO SHOW API IS WORKING FINE.
-// routes.get('/user/country', fetchCountry);
-// routes.get('/user/platform', fetchPlaforms);
-// routes.get('/user/price', fetchPrice);
-// routes.get('/user/number', fetchNewNumber);
-// routes.get('/user/status', fetchNumberStatus);
 routes.post('/user/payment', paymentLink_1.createPaymentLink);
 routes.get('/user/payment', paymentLink_1.fetchPaymenntRequest);
 routes.get('/user/payment/:id', paymentLink_1.fetchSignlePaymenntRequest);

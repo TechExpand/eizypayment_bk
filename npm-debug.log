@@ -1,12 +1,12 @@
 0 info it worked if it ends with ok
 1 verbose cli [
-1 verbose cli   '/usr/local/Cellar/node@20/20.9.0/bin/node',
+1 verbose cli   '/usr/local/Cellar/node@20/20.14.0/bin/node',
 1 verbose cli   '/Users/mac/node_modules/.bin/npm',
 1 verbose cli   'run',
 1 verbose cli   'build'
 1 verbose cli ]
 2 info using npm@2.15.12
-3 info using node@v20.9.0
+3 info using node@v20.14.0
 4 verbose run-script [ 'prebuild', 'build', 'postbuild' ]
 5 info prebuild eizyapp@1.0.0
 6 info build eizyapp@1.0.0
@@ -15,16 +15,16 @@
 9 verbose stack Error: eizyapp@1.0.0 build: `tsc --project ./`
 9 verbose stack Exit status 2
 9 verbose stack     at EventEmitter.<anonymous> (/Users/mac/node_modules/npm/lib/utils/lifecycle.js:217:16)
-9 verbose stack     at EventEmitter.emit (node:events:514:28)
+9 verbose stack     at EventEmitter.emit (node:events:519:28)
 9 verbose stack     at ChildProcess.<anonymous> (/Users/mac/node_modules/npm/lib/utils/spawn.js:24:14)
-9 verbose stack     at ChildProcess.emit (node:events:514:28)
+9 verbose stack     at ChildProcess.emit (node:events:519:28)
 9 verbose stack     at maybeClose (node:internal/child_process:1105:16)
 9 verbose stack     at ChildProcess._handle.onexit (node:internal/child_process:305:5)
 10 verbose pkgid eizyapp@1.0.0
 11 verbose cwd /Users/mac/Downloads/NodejsProject/epayment_backend
 12 error Darwin 22.6.0
-13 error argv "/usr/local/Cellar/node@20/20.9.0/bin/node" "/Users/mac/node_modules/.bin/npm" "run" "build"
-14 error node v20.9.0
+13 error argv "/usr/local/Cellar/node@20/20.14.0/bin/node" "/Users/mac/node_modules/.bin/npm" "run" "build"
+14 error node v20.14.0
 15 error npm  v2.15.12
 16 error code ELIFECYCLE
 17 error eizyapp@1.0.0 build: `tsc --project ./`

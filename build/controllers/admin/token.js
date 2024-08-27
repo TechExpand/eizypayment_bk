@@ -9,9 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchTokens = exports.deleteToken = exports.createToken = void 0;
+exports.fetchPrices = exports.fetchTokens = exports.deleteToken = exports.createToken = void 0;
 const utility_1 = require("../../helpers/utility");
 const Token_1 = require("../../models/Token");
+const Price_1 = require("../../models/Price");
 // import { templateEmail } from ".";
 const fs = require("fs");
 const axios = require('axios');
@@ -38,8 +39,16 @@ exports.deleteToken = deleteToken;
 const fetchTokens = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = yield Token_1.Tokens.findAll({
         limit: 6,
+        order: [
+            ['createdAt', 'DESC']
+        ],
     });
     return (0, utility_1.successResponse)(res, "Successful", token.reverse());
 });
 exports.fetchTokens = fetchTokens;
+const fetchPrices = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const price = yield Price_1.Price.findOne();
+    return (0, utility_1.successResponse)(res, "Successful", price);
+});
+exports.fetchPrices = fetchPrices;
 //# sourceMappingURL=token.js.map
