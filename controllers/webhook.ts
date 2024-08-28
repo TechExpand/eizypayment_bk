@@ -85,48 +85,120 @@ export const webhookBitnom = async (req: Request, res: Response) => {
         else if (event.event === "virtualcard.topup.success") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Card Top Up Successful", {
+                description: `Your Card Top Up was Successful`,
+                title: "Card Top Up Successful",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Card Top Up Successful",
                 templateEmail("Card Top Up Successful", `<div>Card Top Up Successful</div>`));
         }
         else if (event.event === "virtualcard.topup.failed") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Card Top Up Failed", {
+                description: `Your Card Top Up Failed`,
+                title: "Card Top Up Failed",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Card Top Up Failed",
                 templateEmail("Card Top Up Failed", `<div>Card Top Up Failed</div>`));
         }
         else if (event.event === "virtualcard.withdrawal.success") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Card Withdrawal Successful", {
+                description: `Card Withdrawal Successful`,
+                title: "Card Withdrawal Successful",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Card Withdrawal Successful",
                 templateEmail("Card Withdrawal Successful", `<div>Card Withdrawal Successful</div>`));
         }
         else if (event.event === "virtualcard.withdrawal.failed") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Card Withdrawal Failed", {
+                description: `Card Withdrawal Failed`,
+                title: "Card Withdrawal Failed",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Card Withdrawal Failed",
                 templateEmail("Card Withdrawal Failed", `<div>Card Withdrawal Fail</div>`));
         }
         else if (event.event === "virtualcard.transaction.debit") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Cards Transaction: Debit", {
+                description: `Cards Transaction: Debit`,
+                title: "Cards Transaction: Debit",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Debit",
                 templateEmail("Cards Transaction: Debit", `<div>Cards Transaction: Debit</div>`));
         }
         else if (event.event === "virtualcard.transaction.declined") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Cards Transaction: Declined", {
+                description: `Cards Transaction: Declined`,
+                title: "Cards Transaction: Declined",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Declined",
                 templateEmail("Cards Transaction: Declined", `<div>Cards Transaction: Declined</div>`));
         }
         else if (event.event === "virtualcard.transaction.reversed") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Cards Transaction: Reversed", {
+                description: `Cards Transaction: Reversedd`,
+                title: "Cards Transaction: Reversed",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Reversed",
                 templateEmail("Cards Transaction: Reversed", `<div>Cards Transaction: Reversed</div>`));
         }
         else if (event.event === "virtualcard.transaction.declined.terminated") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Cards Transaction: Terminated", {
+                description: `Cards Transaction: Terminated`,
+                title: "Cards Transaction: Terminated",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Terminated",
                 templateEmail("Cards Transaction: Terminated", `<div>Cards Transaction: Terminated</div>`));
 
@@ -134,18 +206,45 @@ export const webhookBitnom = async (req: Request, res: Response) => {
         else if (event.event === "virtualcard.transaction.authorization.failed") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Cards Transaction: Failed", {
+                description: `Cards Transaction: Failed`,
+                title: "Cards Transaction: Failed",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Failed",
                 templateEmail("Cards Transaction: Failed", `<div>Cards Transaction: Failed</div>`));
         }
         else if (event.event === "virtualcard.created.success") {
             const card = await Card.findOne({ where: { cardId: event.data.id } })
             const user = await Users.findOne({ where: { id: card?.userId } })
-            await sendEmail(user!.email, "Cards Created Successfully",
-                templateEmail("Cards Created Successfully", `<div>Cards Created Successfully</div>`));
+            await sendFcmNotification("Card Created Successfully", {
+                description: `Card Created Successfully`,
+                title: "Card Created Successfully",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
+            await sendEmail(user!.email, "Card Created Successfully",
+                templateEmail("Card Created Successfully", `<div>Card Created Successfully</div>`));
         }
         else if (event.event === "virtualcard.created.failed") {
             const card = await Card.findOne({ where: { cardId: event.data.id } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            await sendFcmNotification("Error Creating Card", {
+                description: `Error Creating Card`,
+                title: "Error Creating Card",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
             await sendEmail(user!.email, "Error Creating Card",
                 templateEmail("Error Creating Card", `<div>Error Creating Card</div>`));
         }
