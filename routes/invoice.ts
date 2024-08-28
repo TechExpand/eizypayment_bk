@@ -23,7 +23,7 @@ routes.get('/user/invoice/:id', fetchSignleInvoice);
 routes.get('/user/network', fetchAllNetwork);
 routes.get('/user/update-invoice', updateInvoiceStatus);
 routes.get('/user/invoice-reminder', sendInvoiceReminder);
-routes.get('/user/invoice/summary', fetchInvoiceSummary);
+routes.get('/user/summary', fetchInvoiceSummary);
 routes.post('/user/webhook', webhook);
 routes.post('/user/webhook-moonpay', webhookMoonPay);
 routes.post('/user/webhook-bitnom', webhookBitnom);

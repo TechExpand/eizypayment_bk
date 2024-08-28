@@ -120,19 +120,27 @@ export const fetchInvoice = async (req: Request, res: Response) => {
 
 export const fetchInvoiceSummary = async (req: Request, res: Response) => {
   const { id } = req.user;
-  const paidInvoice = await Invoice.findAll({
-    where: { userId: id, status: `"paid"` }, order: [
+  const invoice = await Invoice.findAll({
+    where: { userId: id }, order: [
       ['createdAt', 'DESC']
     ],
-    attributes: [[Sequelize.literal('SUM(subTotal)'), 'result']],
   })
+  let paidInvoice: number = 0;
+  let overdueInvoice: number = 0;
+  let outStandingInvoice: number = 0;
 
-  const overdueInvoice = await Invoice.findAll({
-    where: { userId: id, status: `"overdue"` }, order: [
-      ['createdAt', 'DESC']
-    ],
-    attributes: [[Sequelize.literal('SUM(subTotal)'), 'result']],
-  })
+  for (let value of invoice) {
+    if (value.status.toString() == "paid") {
+      paidInvoice = paidInvoice + Number(value.subTotal)
+    }
+    if (value.status.toString() == "overdue") {
+      overdueInvoice = overdueInvoice + Number(value.subTotal)
+    }
+    if (value.status.toString() == "pending") {
+      outStandingInvoice = outStandingInvoice + Number(value.subTotal)
+    }
+  }
+
 
 
   const customers = await Customers.findAll({
@@ -141,16 +149,12 @@ export const fetchInvoiceSummary = async (req: Request, res: Response) => {
     ],
 
   })
-  console.log({
-    overdueInvoice: overdueInvoice[0],
-    paidInvoice: paidInvoice[0],
-    customers: customers.length
-  })
 
   return successResponse(res, "Successful",
     {
-      overdueInvoice: overdueInvoice[0],
-      paidInvoice: paidInvoice[0],
+      overdueInvoice,
+      paidInvoice,
+      outStandingInvoice,
       customers: customers.length
     });
 
