@@ -141,6 +141,11 @@ export const fetchInvoiceSummary = async (req: Request, res: Response) => {
     ],
 
   })
+  console.log({
+    overdueInvoice: overdueInvoice[0],
+    paidInvoice: paidInvoice[0],
+    customers: customers.length
+  })
 
   return successResponse(res, "Successful",
     {
