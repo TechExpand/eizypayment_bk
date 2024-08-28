@@ -41,6 +41,11 @@ export class Users extends Model {
 
 
 	@AllowNull(false)
+	@Column(DataType.STRING)
+	address!: string;
+
+
+	@AllowNull(false)
 	@Column(DataType.TEXT)
 	avater!: string;
 

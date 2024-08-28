@@ -42,6 +42,7 @@ export const createAddress = async (req: Request, res: Response) => {
                 data: { chain: 'TRX', customerEmail: user?.email, label: "Eisy Global USDC Wallet" }
             })
             console.log(response)
+            await user?.update({ address: response.data.data.address })
             return successResponse(res, "Successful", response.data.data);
         } else {
             const response = await axios({
@@ -54,6 +55,7 @@ export const createAddress = async (req: Request, res: Response) => {
                 },
                 data: { chain: 'TRX', customerEmail: user?.email, label: "Eisy Global USDT Wallet" }
             })
+            await user?.update({ address: response.data.data.address })
             console.log(response)
             return successResponse(res, "Successful", response.data.data);
         }

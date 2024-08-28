@@ -17,6 +17,8 @@ import { PaymentRequests, TypeState } from "../models/Payment";
 import { ServiceType, TransactionStatus, TransactionType, Transactions } from "../models/Transaction";
 import { templateEmail } from "../config/template";
 import { Card } from "../models/Card";
+import { Price } from "../models/Price";
+import { Wallet } from "../models/Wallet";
 const fs = require("fs");
 const axios = require('axios')
 
@@ -47,40 +49,68 @@ export const webhookBitnom = async (req: Request, res: Response) => {
             await sendEmail(user!.email, "Kyc Failed",
                 templateEmail("Kyc Failed", `<div>Kyc Failed</div>`));
         } else if (event.event === "stablecoin.usdc.received.success") {
+            const user = await Users.findOne({ where: { address: event.address } })
+            const wallet = await Wallet.findOne({
+                where: { userId: user?.id }
+            })
+            await wallet?.update({ balance: Number(wallet.balance) + Number(event.amount) })
 
-            // await Transactions.create({
-            //     ref: createRandomRef(8, "txt"),
-            //     description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
-            //     title: "Invoice Payment Successful",
-            //     type: TransactionType.CREDIT,
-            //     service: ServiceType.INVOICE,
-            //     amount: amountToCredit,
-            //     status: TransactionStatus.COMPLETE,
-            //     mata: invoice,
-            //     userId: invoice?.userId
-            // })
-            // const card = await Card.findOne({ where: { cardId: event.data.cardId } })
-            // const user = await Users.findOne({ where: { id: card?.userId } })
-            // await sendEmail(user!.email, "Wallet Funded",
-            //     templateEmail("Wallet Funded", `<div>Wallet Funded with USDC</div>`));
+            await sendFcmNotification("Card Wallet Top Up Successful", {
+                description: `Card Your Wallet Top Up was Successful`,
+                title: "Card Wallet Top Up Successful",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
+            await sendEmail(user!.email, "Your Card Wallet Top Up was Successful",
+                templateEmail("Your Card Wallet Top Up was Successful", `<div>Your Card Wallet Top Up was Successful</div>`));
+
+            await Transactions.create({
+                ref: createRandomRef(8, "txt"),
+                description: `You Recieved a card wallet top  up of $${event.amount} Successfully`,
+                title: "Card Wallet Topup Successful",
+                type: TransactionType.CREDIT,
+                service: ServiceType.NOTIFICATION,
+                amount: event.amount,
+                status: TransactionStatus.COMPLETE,
+                mata: {},
+                userId: user?.id
+            })
+
 
         } else if (event.event === "stablecoin.usdt.received.success") {
 
-            // await Transactions.create({
-            //     ref: createRandomRef(8, "txt"),
-            //     description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
-            //     title: "Invoice Payment Successful",
-            //     type: TransactionType.CREDIT,
-            //     service: ServiceType.INVOICE,
-            //     amount: amountToCredit,
-            //     status: TransactionStatus.COMPLETE,
-            //     mata: invoice,
-            //     userId: invoice?.userId
-            // })
-            // const card = await Card.findOne({ where: { cardId: event.data.cardId } })
-            // const user = await Users.findOne({ where: { id: card?.userId } })
-            // await sendEmail(user!.email, "Wallet Funded",
-            //     templateEmail("Wallet Funded", `<div>Wallet Funded with USDT</div>`));
+            const user = await Users.findOne({ where: { address: event.address } })
+            const wallet = await Wallet.findOne({
+                where: { userId: user?.id }
+            })
+            await wallet?.update({ balance: Number(wallet.balance) + Number(event.amount) })
+
+            await sendFcmNotification("Card Wallet Top Up Successful", {
+                description: `Card Your Wallet Top Up was Successful`,
+                title: "Card Wallet Top Up Successful",
+                type: TransactionType.NOTIFICATION,
+                service: ServiceType.NOTIFICATION,
+                mata: {
+
+                },
+            }, user!.fcmToken)
+            await sendEmail(user!.email, "Your Card Wallet Top Up was Successful",
+                templateEmail("Your Card Wallet Top Up was Successful", `<div>Your Card Wallet Top Up was Successful</div>`));
+
+            await Transactions.create({
+                ref: createRandomRef(8, "txt"),
+                description: `You Recieved a card wallet top  up of $${event.amount} Successfully`,
+                title: "Card Wallet Topup Successful",
+                type: TransactionType.CREDIT,
+                service: ServiceType.NOTIFICATION,
+                amount: event.amount,
+                status: TransactionStatus.COMPLETE,
+                mata: {},
+                userId: user?.id
+            })
         }
         else if (event.event === "virtualcard.topup.success") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
@@ -344,6 +374,9 @@ export const webhook = async (req: Request, res: Response) => {
 
     if (body.eventType == "managedPayment") {
         if (body.radomData.invoice) {
+
+
+
             const invoice = await Invoice.findOne({ where: { randoId: body.radomData.invoice.invoiceId } })
             if (!invoice) return res.sendStatus(200)
             if (invoice?.processed) return res.sendStatus(200)
@@ -377,6 +410,9 @@ export const webhook = async (req: Request, res: Response) => {
             let token = finalFormattedJson.managed.conversionRates[0].to
 
             let amountToCredit = body.eventData.managedPayment.amount
+            const priceFee = await Price.findOne()
+            const fee = ((Number(priceFee?.invoiceFeeValue) * Number(amountToCredit)) / 100)
+            amountToCredit = (Number(amountToCredit) - Number(fee))
             let getToken = await Tokens.findOne({ where: { currency: token } })
             if (getToken) {
                 const userToken = await UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice?.userId } })
@@ -622,6 +658,9 @@ export const webhook = async (req: Request, res: Response) => {
             const newRequest = await PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } })
             let token = request.symbol
             let amountToCredit = body.eventData.managedPayment.amount
+            const priceFee = await Price.findOne()
+            const fee = ((Number(priceFee?.invoiceFeeValue) * Number(amountToCredit)) / 100)
+            amountToCredit = (Number(amountToCredit) - Number(fee))
             if (request.type == TypeState.PAYMENT_LINK) {
                 let getToken = await Tokens.findOne({ where: { currency: token } })
                 if (getToken) {
