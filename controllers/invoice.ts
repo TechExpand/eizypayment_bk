@@ -1,7 +1,7 @@
 
 import { TOKEN_SECRET, createRandomRef, deleteKey, errorResponse, handleResponse, randomId, saltRounds, successResponse, validateEmail } from "../helpers/utility";
 import { Request, Response } from 'express';
-import { Op, where } from "sequelize";
+import { Op, Sequelize, where } from "sequelize";
 import { UserState, UserStatus, Users } from "../models/Users";
 import { compare, hash } from "bcryptjs"
 import config from '../config/configSetup';
@@ -22,6 +22,7 @@ import { sendFcmNotification, sendEmail, sendEmailWithdraw } from "../services/n
 import { PaymentRequests, TypeState } from "../models/Payment";
 import { ServiceType, TransactionStatus, TransactionType, Transactions } from "../models/Transaction";
 import { templateEmail } from "../config/template";
+import { Customers } from "../models/Customers";
 const fs = require("fs");
 const axios = require('axios')
 
@@ -112,6 +113,41 @@ export const fetchInvoice = async (req: Request, res: Response) => {
   })
   console.log(invoice);
   return successResponse(res, "Successful", invoice);
+
+}
+
+
+
+export const fetchInvoiceSummary = async (req: Request, res: Response) => {
+  const { id } = req.user;
+  const paidInvoice = await Invoice.findAll({
+    where: { userId: id, status: `"paid"` }, order: [
+      ['createdAt', 'DESC']
+    ],
+    attributes: [[Sequelize.literal('SUM(subTotal)'), 'result']],
+  })
+
+  const overdueInvoice = await Invoice.findAll({
+    where: { userId: id, status: `"overdue"` }, order: [
+      ['createdAt', 'DESC']
+    ],
+    attributes: [[Sequelize.literal('SUM(subTotal)'), 'result']],
+  })
+
+
+  const customers = await Customers.findAll({
+    where: { userId: id }, order: [
+      ['createdAt', 'DESC']
+    ],
+
+  })
+
+  return successResponse(res, "Successful",
+    {
+      overdueInvoice: overdueInvoice[0],
+      paidInvoice: paidInvoice[0],
+      customers: customers.length
+    });
 
 }
 
