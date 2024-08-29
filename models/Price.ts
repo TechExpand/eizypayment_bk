@@ -35,4 +35,9 @@ export class Price extends Model {
     fundWalletFeeValue!: number;
 
 
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    withdrawWalletFeeValue!: number;
+
+
 }

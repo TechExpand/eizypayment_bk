@@ -60,9 +60,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Card Wallet Top Up Successful",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Your Card Wallet Top Up was Successful",
                 templateEmail("Your Card Wallet Top Up was Successful", `<div>Your Card Wallet Top Up was Successful</div>`));
@@ -93,9 +91,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Card Wallet Top Up Successful",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Your Card Wallet Top Up was Successful",
                 templateEmail("Your Card Wallet Top Up was Successful", `<div>Your Card Wallet Top Up was Successful</div>`));
@@ -120,9 +116,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Card Top Up Successful",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Card Top Up Successful",
                 templateEmail("Card Top Up Successful", `<div>Card Top Up Successful</div>`));
@@ -135,9 +129,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Card Top Up Failed",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Card Top Up Failed",
                 templateEmail("Card Top Up Failed", `<div>Card Top Up Failed</div>`));
@@ -150,9 +142,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Card Withdrawal Successful",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Card Withdrawal Successful",
                 templateEmail("Card Withdrawal Successful", `<div>Card Withdrawal Successful</div>`));
@@ -165,9 +155,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Card Withdrawal Failed",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Card Withdrawal Failed",
                 templateEmail("Card Withdrawal Failed", `<div>Card Withdrawal Fail</div>`));
@@ -180,9 +168,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Cards Transaction: Debit",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Debit",
                 templateEmail("Cards Transaction: Debit", `<div>Cards Transaction: Debit</div>`));
@@ -195,9 +181,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Cards Transaction: Declined",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Declined",
                 templateEmail("Cards Transaction: Declined", `<div>Cards Transaction: Declined</div>`));
@@ -210,9 +194,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Cards Transaction: Reversed",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Reversed",
                 templateEmail("Cards Transaction: Reversed", `<div>Cards Transaction: Reversed</div>`));
@@ -225,9 +207,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Cards Transaction: Terminated",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Terminated",
                 templateEmail("Cards Transaction: Terminated", `<div>Cards Transaction: Terminated</div>`));
@@ -241,9 +221,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Cards Transaction: Failed",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Cards Transaction: Failed",
                 templateEmail("Cards Transaction: Failed", `<div>Cards Transaction: Failed</div>`));
@@ -256,9 +234,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Card Created Successfully",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Card Created Successfully",
                 templateEmail("Card Created Successfully", `<div>Card Created Successfully</div>`));
@@ -271,9 +247,7 @@ export const webhookBitnom = async (req: Request, res: Response) => {
                 title: "Error Creating Card",
                 type: TransactionType.NOTIFICATION,
                 service: ServiceType.NOTIFICATION,
-                mata: {
-
-                },
+                mata: {},
             }, user!.fcmToken)
             await sendEmail(user!.email, "Error Creating Card",
                 templateEmail("Error Creating Card", `<div>Error Creating Card</div>`));
@@ -336,9 +310,7 @@ export const webhookMoonPay = async (req: Request, res: Response) => {
                 description: `Invoice payment for #${invoice?.invoiceNo} has been received and is being processed by Eisy Global.`,
                 title: "Invoice Payment Processing",
                 type: TransactionType.CREDIT,
-                mata: {
-
-                },
+                mata: {},
                 service: ServiceType.WITHDRAWAL,
             }, user!.fcmToken)
 
