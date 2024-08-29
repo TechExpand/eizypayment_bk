@@ -27,6 +27,8 @@ const Payment_1 = require("../models/Payment");
 const Transaction_1 = require("../models/Transaction");
 const template_1 = require("../config/template");
 const Card_1 = require("../models/Card");
+const Price_1 = require("../models/Price");
+const Wallet_1 = require("../models/Wallet");
 const fs = require("fs");
 const axios = require('axios');
 const crypto = require('crypto');
@@ -51,92 +53,187 @@ const webhookBitnom = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             yield (0, notification_1.sendEmail)(user.email, "Kyc Failed", (0, template_1.templateEmail)("Kyc Failed", `<div>Kyc Failed</div>`));
         }
         else if (event.event === "stablecoin.usdc.received.success") {
-            // await Transactions.create({
-            //     ref: createRandomRef(8, "txt"),
-            //     description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
-            //     title: "Invoice Payment Successful",
-            //     type: TransactionType.CREDIT,
-            //     service: ServiceType.INVOICE,
-            //     amount: amountToCredit,
-            //     status: TransactionStatus.COMPLETE,
-            //     mata: invoice,
-            //     userId: invoice?.userId
-            // })
-            // const card = await Card.findOne({ where: { cardId: event.data.cardId } })
-            // const user = await Users.findOne({ where: { id: card?.userId } })
-            // await sendEmail(user!.email, "Wallet Funded",
-            //     templateEmail("Wallet Funded", `<div>Wallet Funded with USDC</div>`));
+            const user = yield Users_1.Users.findOne({ where: { address: event.address } });
+            const wallet = yield Wallet_1.Wallet.findOne({
+                where: { userId: user === null || user === void 0 ? void 0 : user.id }
+            });
+            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) + Number(event.amount) }));
+            yield (0, notification_1.sendFcmNotification)("Card Wallet Top Up Successful", {
+                description: `Card Your Wallet Top Up was Successful`,
+                title: "Card Wallet Top Up Successful",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
+            yield (0, notification_1.sendEmail)(user.email, "Your Card Wallet Top Up was Successful", (0, template_1.templateEmail)("Your Card Wallet Top Up was Successful", `<div>Your Card Wallet Top Up was Successful</div>`));
+            yield Transaction_1.Transactions.create({
+                ref: (0, utility_1.createRandomRef)(8, "txt"),
+                description: `You Recieved a card wallet top  up of $${event.amount} Successfully`,
+                title: "Card Wallet Topup Successful",
+                type: Transaction_1.TransactionType.CREDIT,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                amount: event.amount,
+                status: Transaction_1.TransactionStatus.COMPLETE,
+                mata: {},
+                userId: user === null || user === void 0 ? void 0 : user.id
+            });
         }
         else if (event.event === "stablecoin.usdt.received.success") {
-            // await Transactions.create({
-            //     ref: createRandomRef(8, "txt"),
-            //     description: `You Recieved an Invoice Payment of $${amountToCredit} Successfully`,
-            //     title: "Invoice Payment Successful",
-            //     type: TransactionType.CREDIT,
-            //     service: ServiceType.INVOICE,
-            //     amount: amountToCredit,
-            //     status: TransactionStatus.COMPLETE,
-            //     mata: invoice,
-            //     userId: invoice?.userId
-            // })
-            // const card = await Card.findOne({ where: { cardId: event.data.cardId } })
-            // const user = await Users.findOne({ where: { id: card?.userId } })
-            // await sendEmail(user!.email, "Wallet Funded",
-            //     templateEmail("Wallet Funded", `<div>Wallet Funded with USDT</div>`));
+            const user = yield Users_1.Users.findOne({ where: { address: event.address } });
+            const wallet = yield Wallet_1.Wallet.findOne({
+                where: { userId: user === null || user === void 0 ? void 0 : user.id }
+            });
+            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) + Number(event.amount) }));
+            yield (0, notification_1.sendFcmNotification)("Card Wallet Top Up Successful", {
+                description: `Card Your Wallet Top Up was Successful`,
+                title: "Card Wallet Top Up Successful",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
+            yield (0, notification_1.sendEmail)(user.email, "Your Card Wallet Top Up was Successful", (0, template_1.templateEmail)("Your Card Wallet Top Up was Successful", `<div>Your Card Wallet Top Up was Successful</div>`));
+            yield Transaction_1.Transactions.create({
+                ref: (0, utility_1.createRandomRef)(8, "txt"),
+                description: `You Recieved a card wallet top  up of $${event.amount} Successfully`,
+                title: "Card Wallet Topup Successful",
+                type: Transaction_1.TransactionType.CREDIT,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                amount: event.amount,
+                status: Transaction_1.TransactionStatus.COMPLETE,
+                mata: {},
+                userId: user === null || user === void 0 ? void 0 : user.id
+            });
         }
         else if (event.event === "virtualcard.topup.success") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Card Top Up Successful", {
+                description: `Your Card Top Up was Successful`,
+                title: "Card Top Up Successful",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Card Top Up Successful", (0, template_1.templateEmail)("Card Top Up Successful", `<div>Card Top Up Successful</div>`));
         }
         else if (event.event === "virtualcard.topup.failed") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Card Top Up Failed", {
+                description: `Your Card Top Up Failed`,
+                title: "Card Top Up Failed",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Card Top Up Failed", (0, template_1.templateEmail)("Card Top Up Failed", `<div>Card Top Up Failed</div>`));
         }
         else if (event.event === "virtualcard.withdrawal.success") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Card Withdrawal Successful", {
+                description: `Card Withdrawal Successful`,
+                title: "Card Withdrawal Successful",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Card Withdrawal Successful", (0, template_1.templateEmail)("Card Withdrawal Successful", `<div>Card Withdrawal Successful</div>`));
         }
         else if (event.event === "virtualcard.withdrawal.failed") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Card Withdrawal Failed", {
+                description: `Card Withdrawal Failed`,
+                title: "Card Withdrawal Failed",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Card Withdrawal Failed", (0, template_1.templateEmail)("Card Withdrawal Failed", `<div>Card Withdrawal Fail</div>`));
         }
         else if (event.event === "virtualcard.transaction.debit") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Cards Transaction: Debit", {
+                description: `Cards Transaction: Debit`,
+                title: "Cards Transaction: Debit",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Cards Transaction: Debit", (0, template_1.templateEmail)("Cards Transaction: Debit", `<div>Cards Transaction: Debit</div>`));
         }
         else if (event.event === "virtualcard.transaction.declined") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Cards Transaction: Declined", {
+                description: `Cards Transaction: Declined`,
+                title: "Cards Transaction: Declined",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Cards Transaction: Declined", (0, template_1.templateEmail)("Cards Transaction: Declined", `<div>Cards Transaction: Declined</div>`));
         }
         else if (event.event === "virtualcard.transaction.reversed") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Cards Transaction: Reversed", {
+                description: `Cards Transaction: Reversedd`,
+                title: "Cards Transaction: Reversed",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Cards Transaction: Reversed", (0, template_1.templateEmail)("Cards Transaction: Reversed", `<div>Cards Transaction: Reversed</div>`));
         }
         else if (event.event === "virtualcard.transaction.declined.terminated") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Cards Transaction: Terminated", {
+                description: `Cards Transaction: Terminated`,
+                title: "Cards Transaction: Terminated",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Cards Transaction: Terminated", (0, template_1.templateEmail)("Cards Transaction: Terminated", `<div>Cards Transaction: Terminated</div>`));
         }
         else if (event.event === "virtualcard.transaction.authorization.failed") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.cardId } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Cards Transaction: Failed", {
+                description: `Cards Transaction: Failed`,
+                title: "Cards Transaction: Failed",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Cards Transaction: Failed", (0, template_1.templateEmail)("Cards Transaction: Failed", `<div>Cards Transaction: Failed</div>`));
         }
         else if (event.event === "virtualcard.created.success") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.id } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
-            yield (0, notification_1.sendEmail)(user.email, "Cards Created Successfully", (0, template_1.templateEmail)("Cards Created Successfully", `<div>Cards Created Successfully</div>`));
+            yield (0, notification_1.sendFcmNotification)("Card Created Successfully", {
+                description: `Card Created Successfully`,
+                title: "Card Created Successfully",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
+            yield (0, notification_1.sendEmail)(user.email, "Card Created Successfully", (0, template_1.templateEmail)("Card Created Successfully", `<div>Card Created Successfully</div>`));
         }
         else if (event.event === "virtualcard.created.failed") {
             const card = yield Card_1.Card.findOne({ where: { cardId: event.data.id } });
             const user = yield Users_1.Users.findOne({ where: { id: card === null || card === void 0 ? void 0 : card.userId } });
+            yield (0, notification_1.sendFcmNotification)("Error Creating Card", {
+                description: `Error Creating Card`,
+                title: "Error Creating Card",
+                type: Transaction_1.TransactionType.NOTIFICATION,
+                service: Transaction_1.ServiceType.NOTIFICATION,
+                mata: {},
+            }, user.fcmToken);
             yield (0, notification_1.sendEmail)(user.email, "Error Creating Card", (0, template_1.templateEmail)("Error Creating Card", `<div>Error Creating Card</div>`));
         }
         // Do something with event  
@@ -240,6 +337,9 @@ const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             let finalFormattedJson = JSON.parse(formattedJson);
             let token = finalFormattedJson.managed.conversionRates[0].to;
             let amountToCredit = body.eventData.managedPayment.amount;
+            const priceFee = yield Price_1.Price.findOne();
+            const fee = ((Number(priceFee === null || priceFee === void 0 ? void 0 : priceFee.invoiceFeeValue) * Number(amountToCredit)) / 100);
+            amountToCredit = (Number(amountToCredit) - Number(fee));
             let getToken = yield Token_1.Tokens.findOne({ where: { currency: token } });
             if (getToken) {
                 const userToken = yield UserToken_1.UserTokens.findOne({ where: { tokenId: getToken.id, userId: invoice === null || invoice === void 0 ? void 0 : invoice.userId } });
@@ -460,6 +560,9 @@ const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const newRequest = yield Payment_1.PaymentRequests.findOne({ where: { randoId: body.radomData.paymentLink.paymentLinkId } });
             let token = request.symbol;
             let amountToCredit = body.eventData.managedPayment.amount;
+            const priceFee = yield Price_1.Price.findOne();
+            const fee = ((Number(priceFee === null || priceFee === void 0 ? void 0 : priceFee.invoiceFeeValue) * Number(amountToCredit)) / 100);
+            amountToCredit = (Number(amountToCredit) - Number(fee));
             if (request.type == Payment_1.TypeState.PAYMENT_LINK) {
                 let getToken = yield Token_1.Tokens.findOne({ where: { currency: token } });
                 if (getToken) {

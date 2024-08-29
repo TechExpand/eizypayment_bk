@@ -19,8 +19,8 @@ export const sendEmail = async (email: String, subject: String, template: String
     `https://api.brevo.com/v3/smtp/email`,
     {
       "sender": {
-        "name": "Eizy App",
-        "email": "support@eizyapp.com"
+        "name": "Eisy App",
+        "email": "support@eisyglobal.com"
       },
       "to": [
         {
@@ -61,8 +61,8 @@ export const sendEmailWithdraw = async (email: String, subject: String, template
     `https://api.brevo.com/v3/smtp/email`,
     {
       "sender": {
-        "name": "Eizy App",
-        "email": "support@eizyapp.com"
+        "name": "Eisy App",
+        "email": "support@eisyglobal.com"
       },
       "to": [
         {
@@ -152,6 +152,8 @@ export const sendWhatsapp = async (number: String, subject: String, template: an
 
 export const sendFcmNotification = async (title: string,
   data: any, token: string) => {
+  
+    
   const message = {
     notification: {
       title: "Eisy Payment",

@@ -14,13 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.confirmAddress = exports.fetchWithdrawal = exports.createWithdrawalCash = exports.fetchBank = exports.createBank = exports.createWithdrawal = void 0;
 const utility_1 = require("../helpers/utility");
+const Users_1 = require("../models/Users");
 const configSetup_1 = __importDefault(require("../config/configSetup"));
 ;
 const notification_1 = require("../services/notification");
+const template_1 = require("../config/template");
 const Token_1 = require("../models/Token");
 const UserToken_1 = require("../models/UserToken");
 const Withdrawal_1 = require("../models/Withdrawal");
 const Bank_1 = require("../models/Bank");
+const Transaction_1 = require("../models/Transaction");
 const fs = require("fs");
 const axios = require('axios');
 const WAValidator = require('multicoin-address-validator');
@@ -167,6 +170,16 @@ const fetchWithdrawal = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.fetchWithdrawal = fetchWithdrawal;
 const confirmAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { address, crypto } = req.query;
+    const { id } = req.user;
+    const user = yield Users_1.Users.findOne({ where: { id } });
+    yield (0, notification_1.sendFcmNotification)("Card Wallet Top Up Successful", {
+        description: `Card Your Wallet Top Up was Successful`,
+        title: "Card Wallet Top Up Successful",
+        type: Transaction_1.TransactionType.NOTIFICATION,
+        service: Transaction_1.ServiceType.NOTIFICATION,
+        mata: {},
+    }, user.fcmToken);
+    yield (0, notification_1.sendEmail)(user.email, "Your Card Wallet Top Up was Successful", (0, template_1.templateEmail)("Your Card Wallet Top Up was Successful", `<div>Your Card Wallet Top Up was Successful</div>`));
     const valid = WAValidator.validate(address, crypto === null || crypto === void 0 ? void 0 : crypto.toString().toLowerCase(), 'testnet');
     if (valid) {
         console.log('This is a valid address');

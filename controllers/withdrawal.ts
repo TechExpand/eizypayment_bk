@@ -13,13 +13,14 @@ import { compareTwoStrings } from 'string-similarity';
 import { StreamChat } from 'stream-chat';
 import { Sequelize } from "sequelize-typescript";
 import { Verify } from "../models/Verify";
-import { sendEmail, sendEmailWithdraw } from "../services/notification";
+import { sendEmail, sendEmailWithdraw, sendFcmNotification } from "../services/notification";
 import { templateEmail } from "../config/template";
 import { Tokens } from "../models/Token";
 import { Customers } from "../models/Customers";
 import { UserTokens } from "../models/UserToken";
 import { WithdrawTypeState, Withdrawal } from "../models/Withdrawal";
 import { Banks } from "../models/Bank";
+import { ServiceType, TransactionType } from "../models/Transaction";
 const fs = require("fs");
 const axios = require('axios')
 const WAValidator = require('multicoin-address-validator');
@@ -30,7 +31,7 @@ const WAValidator = require('multicoin-address-validator');
 export const createWithdrawal = async (req: Request, res: Response) => {
     const { id } = req.user;
     const { network, token, amount, withdrawalAddress, symbol } = req.body;
-   
+
     try {
         const tokens = await Tokens.findOne({ where: { symbol } })
         if (!tokens) return errorResponse(res, "Token Not found");
@@ -193,6 +194,18 @@ export const fetchWithdrawal = async (req: Request, res: Response) => {
 
 export const confirmAddress = async (req: Request, res: Response) => {
     const { address, crypto } = req.query
+    // const { id } = req.user
+    // const user = await Users.findOne({ where: { id } })
+    // console.log(user!.fcmToken)
+    // await sendFcmNotification("Wallet Top Up", {
+    //     description: `Card Your Wallet Top Up was Successful`,
+    //     title: "Wallet Top Up",
+    //     type: TransactionType.NOTIFICATION,
+    //     service: ServiceType.NOTIFICATION,
+    //     mata: {},
+    // }, user!.fcmToken)
+    // await sendEmail(user!.email, "Wallet Top Up",
+    //     templateEmail("Wallet Top Up", `<div>Your Card Wallet Top Up was Successful</div>`));
     const valid = WAValidator.validate(address, crypto?.toString().toLowerCase(), 'testnet');
     if (valid) {
         console.log('This is a valid address');

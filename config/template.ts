@@ -208,7 +208,7 @@ export const templateEmail = (subject: string, body: string) => {
       <tr>
         <td style="padding-right: 0px;padding-left: 0px;" align="center">
           
-          <img align="center" border="0" src="https://assets.unlayer.com/projects/108741/1666368786845-784983.png" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 180px;" width="180"/>
+          <img align="center" border="0" src="https://res.cloudinary.com/dqth56myg/image/upload/v1724895640/logo_1_bh4gyx.png" alt="" title="" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 100px;" width="100"/>
           
         </td>
       </tr>
@@ -365,7 +365,7 @@ export const templateEmail = (subject: string, body: string) => {
           <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:'Montserrat',sans-serif;" align="left">
             
       <div style="line-height: 140%; text-align: left; word-wrap: break-word;">
-        <p style="font-size: 14px; line-height: 140%;">Thanks for choosing us, Eis Global Team.</p>
+        <p style="font-size: 14px; line-height: 140%;">Thanks for choosing us, Eisy Global Team.</p>
       </div>
     
           </td>
@@ -492,34 +492,9 @@ export const templateEmail = (subject: string, body: string) => {
       </tbody>
     </table>
     
-    <table id="u_content_text_9" style="font-family:'Montserrat',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-      <tbody>
-        <tr>
-          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:20px 20px 0px;font-family:'Montserrat',sans-serif;" align="left">
-            
-      <div style="color: #000000; line-height: 140%; text-align: center; word-wrap: break-word;">
-        <p style="font-size: 14px; line-height: 140%;">Privacy policy | Terms and conditions | Support</p>
-    <p style="font-size: 14px; line-height: 140%;">Contact us | Help Center |About Us</p>
-      </div>
+ 
     
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <table id="u_content_text_10" style="font-family:'Montserrat',sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-      <tbody>
-        <tr>
-          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:20px 20px 0px;font-family:'Montserrat',sans-serif;" align="left">
-            
-      <div style="color: #000000; line-height: 140%; text-align: center; word-wrap: break-word;">
-        <p style="font-size: 14px; line-height: 140%;"><strong>Preferences | Unsubscribe  | View in browser</strong></p>
-      </div>
-    
-          </td>
-        </tr>
-      </tbody>
-    </table>
+   
     
       <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
       </div>

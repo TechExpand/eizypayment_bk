@@ -46,6 +46,11 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", Number)
 ], Price.prototype, "fundWalletFeeValue", void 0);
+__decorate([
+    (0, sequelize_typescript_1.AllowNull)(true),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", Number)
+], Price.prototype, "withdrawWalletFeeValue", void 0);
 exports.Price = Price = __decorate([
     (0, sequelize_typescript_1.Table)({ timestamps: true, tableName: 'price' })
 ], Price);

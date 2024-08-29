@@ -49,7 +49,7 @@ export const sendOtp = async (req: Request, res: Response) => {
     secret_key: createRandomRef(12, "eizyapp",),
   })
   console.log(codeEmail)
-  await sendEmail(email, "Eizy App otp code",
+  await sendEmail(email, "Eisy App otp code",
     templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
   return successResponse(res, "Successful", {
     status: true,

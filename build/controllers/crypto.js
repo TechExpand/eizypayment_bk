@@ -22,6 +22,7 @@ const Card_1 = require("../models/Card");
 const Wallet_1 = require("../models/Wallet");
 const Withdrawal_1 = require("../models/Withdrawal");
 const notification_1 = require("../services/notification");
+const Price_1 = require("../models/Price");
 const fs = require("fs");
 const axios = require('axios');
 const createAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -41,6 +42,7 @@ const createAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 data: { chain: 'TRX', customerEmail: user === null || user === void 0 ? void 0 : user.email, label: "Eisy Global USDC Wallet" }
             });
             console.log(response);
+            yield (user === null || user === void 0 ? void 0 : user.update({ address: response.data.data.address }));
             return (0, utility_1.successResponse)(res, "Successful", response.data.data);
         }
         else {
@@ -54,6 +56,7 @@ const createAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 },
                 data: { chain: 'TRX', customerEmail: user === null || user === void 0 ? void 0 : user.email, label: "Eisy Global USDT Wallet" }
             });
+            yield (user === null || user === void 0 ? void 0 : user.update({ address: response.data.data.address }));
             console.log(response);
             return (0, utility_1.successResponse)(res, "Successful", response.data.data);
         }
@@ -117,6 +120,10 @@ const createCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { type } = req.body;
     // BVN, NIN, PASSPORT
     const user = yield Users_1.Users.findOne({ where: { id } });
+    const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
+    const price = yield Price_1.Price.findOne();
+    if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) < Number(price === null || price === void 0 ? void 0 : price.cardCreation))
+        return (0, utility_1.errorResponse)(res, "Insufficient balance in card wallet");
     const [firstName, lastName] = user.fullname.split(" ");
     try {
         const response = yield axios({
@@ -142,6 +149,7 @@ const createCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             cardId: response.data.data.id,
             userId: user.id
         });
+        yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: (Number(wallet.balance)) - Number(price === null || price === void 0 ? void 0 : price.cardCreation) }));
         return (0, utility_1.successResponse)(res, "Successful", response.data.data);
     }
     catch (error) {
@@ -210,8 +218,16 @@ const topUpCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { cardId, amount } = req.body;
     try {
         const user = yield Users_1.Users.findOne({ where: { id } });
+        const price = yield Price_1.Price.findOne();
+        let fee = 0;
+        if (amount < 99) {
+            fee = Number(price === null || price === void 0 ? void 0 : price.fundFeePercent);
+        }
+        else {
+            fee = ((Number(price === null || price === void 0 ? void 0 : price.fundFeePercent) * Number(amount)) / 100);
+        }
         const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
-        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount)) {
+        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount + fee)) {
             const response = yield axios({
                 method: 'POST',
                 url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/topup',
@@ -226,7 +242,7 @@ const topUpCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     amount: Number(amount) * 100,
                 }
             });
-            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount) }));
+            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount + fee) }));
             return (0, utility_1.successResponse)(res, "Successful", response.data.data);
         }
         else {
@@ -323,10 +339,11 @@ const sendUsdt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
     const { amount, address } = req.body;
     const user = yield Users_1.Users.findOne({ where: { id } });
+    const price = yield Price_1.Price.findOne();
     const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
     // BVN, NIN, PASSPORT
     try {
-        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount)) {
+        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount + price.withdrawWalletFeeValue)) {
             const response = yield axios({
                 method: 'POST',
                 url: `https://sandboxapi.bitnob.co/api/v1/wallets/send-usdt`,
@@ -345,7 +362,7 @@ const sendUsdt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 }
             });
             const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
-            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount) }));
+            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount + price.withdrawWalletFeeValue) }));
             const withdrawal = yield Withdrawal_1.Withdrawal.create({
                 randoId: "",
                 network: "TRX",
@@ -372,10 +389,11 @@ const sendUsdc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
     const { amount, address, description } = req.body;
     // BVN, NIN, PASSPORT
+    const price = yield Price_1.Price.findOne();
     const user = yield Users_1.Users.findOne({ where: { id } });
     const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
     try {
-        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount)) {
+        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount + price.withdrawWalletFeeValue)) {
             const response = yield axios({
                 method: 'POST',
                 url: `https://sandboxapi.bitnob.co/api/v1/wallets/send-usdc`,
@@ -394,7 +412,7 @@ const sendUsdc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 }
             });
             const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
-            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount) }));
+            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount + price.withdrawWalletFeeValue) }));
             const withdrawal = yield Withdrawal_1.Withdrawal.create({
                 randoId: "",
                 network: "TRX",

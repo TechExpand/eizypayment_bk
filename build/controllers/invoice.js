@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendInvoiceReminder = exports.updateInvoiceStatus = exports.fetchAllNetwork = exports.fetchSignleInvoice = exports.fetchInvoice = exports.createInvoice = void 0;
+exports.sendInvoiceReminder = exports.updateInvoiceStatus = exports.fetchAllNetwork = exports.fetchSignleInvoice = exports.fetchInvoiceSummary = exports.fetchInvoice = exports.createInvoice = void 0;
 const utility_1 = require("../helpers/utility");
 const Users_1 = require("../models/Users");
 const configSetup_1 = __importDefault(require("../config/configSetup"));
@@ -23,6 +23,7 @@ const util = require('util');
 const Invoice_1 = require("../models/Invoice");
 const notification_1 = require("../services/notification");
 const template_1 = require("../config/template");
+const Customers_1 = require("../models/Customers");
 const fs = require("fs");
 const axios = require('axios');
 const createInvoice = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -107,6 +108,40 @@ const fetchInvoice = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     return (0, utility_1.successResponse)(res, "Successful", invoice);
 });
 exports.fetchInvoice = fetchInvoice;
+const fetchInvoiceSummary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.user;
+    const invoice = yield Invoice_1.Invoice.findAll({
+        where: { userId: id }, order: [
+            ['createdAt', 'DESC']
+        ],
+    });
+    let paidInvoice = 0;
+    let overdueInvoice = 0;
+    let outStandingInvoice = 0;
+    for (let value of invoice) {
+        if (value.status.toString() === "paid") {
+            paidInvoice = paidInvoice + Number(value.subTotal);
+        }
+        if (value.status.toString() === "overdue") {
+            overdueInvoice = overdueInvoice + Number(value.subTotal);
+        }
+        if (value.status.toString() === "pending") {
+            outStandingInvoice = outStandingInvoice + Number(value.subTotal);
+        }
+    }
+    const customers = yield Customers_1.Customers.findAll({
+        where: { userId: id }, order: [
+            ['createdAt', 'DESC']
+        ],
+    });
+    return (0, utility_1.successResponse)(res, "Successful", {
+        overdueInvoice,
+        paidInvoice,
+        outStandingInvoice,
+        customers: customers.length
+    });
+});
+exports.fetchInvoiceSummary = fetchInvoiceSummary;
 const fetchSignleInvoice = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const user = yield Users_1.Users.findOne({ where: { id } });
