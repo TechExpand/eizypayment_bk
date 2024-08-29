@@ -272,7 +272,7 @@ export const topUpCard = async (req: Request, res: Response) => {
             await wallet?.update({ balance: Number(wallet.balance) - Number(amount + fee) })
             return successResponse(res, "Successful", response.data.data);
         } else {
-            return errorResponse(res, "Insufficient Funds in Wallet");
+            return errorResponse(res, "Insufficient Funds in card wallet");
         }
 
     } catch (error: any) {
@@ -414,7 +414,7 @@ export const sendUsdt = async (req: Request, res: Response) => {
         }
 
         else {
-            return errorResponse(res, "Insufficient Funds in Wallet");
+            return errorResponse(res, "Insufficient Funds in card wallet");
         }
     } catch (error: any) {
         return errorResponse(res, error.response.data.message);
@@ -468,7 +468,7 @@ export const sendUsdc = async (req: Request, res: Response) => {
         }
 
         else {
-            return errorResponse(res, "Insufficient Funds in Wallet");
+            return errorResponse(res, "Insufficient Funds in card wallet");
         }
     } catch (error: any) {
         return errorResponse(res, error.response.data.message);
@@ -505,7 +505,7 @@ export const withdrawBank = async (req: Request, res: Response) => {
             return successResponse(res, "Successful", withdrawal);
         }
         else {
-            return errorResponse(res, "Insufficient Funds in Wallet");
+            return errorResponse(res, "Insufficient Funds in card wallet");
         }
     } catch (error: any) {
         return errorResponse(res, error);
