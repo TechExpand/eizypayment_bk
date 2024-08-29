@@ -130,9 +130,9 @@ export const webhookBitnom = async (req: Request, res: Response) => {
             if ((Number(event.data.amount) / 100) < 99) {
                 fee = Number(price?.fundCardFeeValue);
             } else {
-                fee = ((Number(price?.fundFeePercent) * (Number(event.data.amount) / 100) / 100))
+                fee = ((Number(price?.fundFeePercent) * (Number(event.data.amount) / 100) / (100)))
             }
-            await wallet?.update({ balance: Number(wallet.balance) + ((Number(event.data.amount) / 100) + Number(fee)) })
+            await wallet?.update({ balance: Number(wallet.balance) + ((Number(event.data.amount) / (100)) + Number(fee)) })
             await sendFcmNotification("Card Top Up", {
                 description: `Your Card Top Up Failed`,
                 title: "Card Top Up",
