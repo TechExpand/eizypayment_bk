@@ -253,10 +253,10 @@ export const topUpCard = async (req: Request, res: Response) => {
         }
         const wallet = await Wallet.findOne({ where: { userId: user?.id } })
         console.log(Number(wallet?.balance))
-        console.log(Number(amount + fee))
+        console.log((Number(amount) + Number(fee)))
         console.log(fee)
         console.log(amount)
-        if (Number(wallet?.balance) >= Number(amount + fee)) {
+        if (Number(wallet?.balance) >= (Number(amount) + Number(fee))) {
             const response = await axios({
                 method: 'POST',
                 url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/topup',
@@ -271,7 +271,7 @@ export const topUpCard = async (req: Request, res: Response) => {
                     amount: Number(amount) * 100,
                 }
             })
-            await wallet?.update({ balance: Number(wallet.balance) - Number(amount + fee) })
+            await wallet?.update({ balance: Number(wallet.balance) - (Number(amount) + Number(fee)) })
             return successResponse(res, "Successful", response.data.data);
         } else {
             return errorResponse(res, "Insufficient Funds in card wallet");
@@ -378,7 +378,7 @@ export const sendUsdt = async (req: Request, res: Response) => {
     const wallet = await Wallet.findOne({ where: { userId: user?.id } })
     // BVN, NIN, PASSPORT
     try {
-        if (Number(wallet?.balance) >= Number(amount + price!.withdrawWalletFeeValue)) {
+        if (Number(wallet?.balance) >= (Number(amount) + Number(price!.withdrawWalletFeeValue))) {
             const response = await axios({
                 method: 'POST',
                 url: `https://sandboxapi.bitnob.co/api/v1/wallets/send-usdt`,
@@ -398,7 +398,7 @@ export const sendUsdt = async (req: Request, res: Response) => {
             })
 
             const wallet = await Wallet.findOne({ where: { userId: user?.id } })
-            await wallet?.update({ balance: Number(wallet.balance) - Number(amount + price!.withdrawWalletFeeValue) })
+            await wallet?.update({ balance: Number(wallet.balance) - (Number(amount) + Number(price!.withdrawWalletFeeValue)) })
             const withdrawal = await Withdrawal.create({
                 randoId: "",
                 network:
@@ -433,7 +433,7 @@ export const sendUsdc = async (req: Request, res: Response) => {
     const user = await Users.findOne({ where: { id } })
     const wallet = await Wallet.findOne({ where: { userId: user?.id } })
     try {
-        if (Number(wallet?.balance) >= Number(amount + price!.withdrawWalletFeeValue)) {
+        if (Number(wallet?.balance) >= (Number(amount) + Number(price!.withdrawWalletFeeValue))) {
 
             const response = await axios({
                 method: 'POST',
@@ -453,7 +453,7 @@ export const sendUsdc = async (req: Request, res: Response) => {
                 }
             })
             const wallet = await Wallet.findOne({ where: { userId: user?.id } })
-            await wallet?.update({ balance: Number(wallet.balance) - Number(amount + price!.withdrawWalletFeeValue) })
+            await wallet?.update({ balance: Number(wallet.balance) - (Number(amount) + Number(price!.withdrawWalletFeeValue)) })
             const withdrawal = await Withdrawal.create({
                 randoId: "",
                 network:
