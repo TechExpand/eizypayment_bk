@@ -254,6 +254,8 @@ export const topUpCard = async (req: Request, res: Response) => {
         const wallet = await Wallet.findOne({ where: { userId: user?.id } })
         console.log(Number(wallet?.balance))
         console.log(Number(amount + fee))
+        console.log(fee)
+        console.log(amount)
         if (Number(wallet?.balance) >= Number(amount + fee)) {
             const response = await axios({
                 method: 'POST',
