@@ -425,7 +425,7 @@ export const webhook = async (req: Request, res: Response) => {
                             }
                         },
                     }, user!.fcmToken)
-                    await sendEmail(data.customer!.email, `Payment Received for Invoice ${invoice.randoId}`,
+                    await sendEmail(data.customer!.email.toString().replace("eisyappmail", ""), `Payment Received for Invoice ${invoice.randoId}`,
                         templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the invoice ${invoice.randoId}. Your prompt action is greatly appreciated.<br>
   
             Here are the details of your payment:<br><br>
@@ -491,7 +491,7 @@ export const webhook = async (req: Request, res: Response) => {
                     }, user!.fcmToken)
 
 
-                    await sendEmail(data.customer!.email, `Payment Received for Invoice ${invoice.randoId}`,
+                    await sendEmail(data.customer!.email.toString().replace("eisyappmail", ""), `Payment Received for Invoice ${invoice.randoId}`,
                         templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the invoice ${invoice.randoId}. Your prompt action is greatly appreciated.<br>
   
             Here are the details of your payment:<br><br>
@@ -575,7 +575,7 @@ export const webhook = async (req: Request, res: Response) => {
                         }
                     },
                 }, user!.fcmToken)
-                await sendEmail(data.customer!.email, `Payment Received for Invoice ${invoice.randoId}`,
+                await sendEmail(data.customer!.email.toString().replace("eisyappmail", ""), `Payment Received for Invoice ${invoice.randoId}`,
                     templateEmail(`Payment Received for Invoice ${invoice.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the invoice ${invoice.randoId}. Your prompt action is greatly appreciated.<br>
   
         Here are the details of your payment:<br><br>
@@ -673,7 +673,7 @@ export const webhook = async (req: Request, res: Response) => {
                             },
                             service: ServiceType.PAYMENT_REQUEST,
                         }, user!.fcmToken)
-                        await sendEmail(data.customer!.email, `Payment Received for Request ${newRequest!.randoId}`,
+                        await sendEmail(data.customer!.email.toString().replace("eisyappmail", ""), `Payment Received for Request ${newRequest!.randoId}`,
                             templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the request ${newRequest!.randoId}. Your prompt action is greatly appreciated.<br>
   
             Here are the details of your payment:<br><br>
@@ -739,7 +739,7 @@ export const webhook = async (req: Request, res: Response) => {
                             },
                             service: ServiceType.PAYMENT_REQUEST,
                         }, user!.fcmToken)
-                        await sendEmail(data.customer!.email, `Payment Received for Request ${newRequest!.randoId}`,
+                        await sendEmail(data.customer!.email.toString().replace("eisyappmail", ""), `Payment Received for Request ${newRequest!.randoId}`,
                             templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the request ${newRequest!.randoId}. Your prompt action is greatly appreciated.<br>
   
             Here are the details of your payment:<br><br>
@@ -818,7 +818,7 @@ export const webhook = async (req: Request, res: Response) => {
                         },
                         service: ServiceType.PAYMENT_REQUEST,
                     }, user!.fcmToken)
-                    await sendEmail(data.customer!.email, `Payment Received for Request ${newRequest!.randoId}`,
+                    await sendEmail(data.customer!.email.toString().replace("eisyappmail", ""), `Payment Received for Request ${newRequest!.randoId}`,
                         templateEmail(`Payment Received for Request ${newRequest!.randoId}`, `<div>We are pleased to inform you that we have successfully received your payment for the request ${newRequest!.randoId}. Your prompt action is greatly appreciated.<br>
   
           Here are the details of your payment:<br><br>

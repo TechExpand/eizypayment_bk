@@ -36,13 +36,13 @@ export const createCustomer = async (req: Request, res: Response) => {
             },
             data: {
                 "name": fullname,
-                "email": email
+                "email": email.toString().replace("@", "eisyappmail@")
             }
         })
         console.log(response.data);
         const customer = await Customers.create({
             randoId: response.data.id,
-            email: response.data.email,
+            email: response.data.email.toString().toString().replace("eisyappmail", ""),
             name: response.data.name,
             billingAddress: response.data.billingAddress,
             phone: response.data.phone,

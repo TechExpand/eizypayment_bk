@@ -84,7 +84,7 @@ export const createInvoice = async (req: Request, res: Response) => {
       payment: response.data[0].payment,
       userId: id
     })
-    await sendEmail(invoice?.customer.email, "Invoice", templateEmail("Invoice", `<div>An Invoice was sent to you from ${invoice.customer.email}.
+    await sendEmail(invoice?.customer.email.toString().replace("eisyappmail", ""), "Invoice", templateEmail("Invoice", `<div>An Invoice was sent to you from ${user?.email}.
     <br> Click the link below to view the invoice<br>
     <a href=https://eizypayment-bk.onrender.com/invoice?id=${invoice.randoId}> VIEW INVOICE <a/>
     </div>`));
