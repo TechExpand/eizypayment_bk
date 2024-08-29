@@ -50,7 +50,7 @@ export const sendOtp = async (req: Request, res: Response) => {
   })
   console.log(codeEmail)
   await sendEmail(email, "Eisy App otp code",
-    templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
+    templateEmail("Eisy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
   return successResponse(res, "Successful", {
     status: true,
     emailServiceId
@@ -144,7 +144,7 @@ export const register = async (req: Request, res: Response) => {
         client: email,
         secret_key: createRandomRef(12, "eizyapp",),
       })
-      await sendEmail(email, "Eizy Payment otp code", templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
+      await sendEmail(email, "Eisy Payment otp code", templateEmail("Eisy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
       //  sendEmailResend(email, codeEmail.toString());
       let token = sign({ id: user.id, email: user.email }, TOKEN_SECRET);
       const wallet = await Wallet.create({
@@ -188,7 +188,7 @@ export const register = async (req: Request, res: Response) => {
         client: email,
         secret_key: createRandomRef(12, "eizyapp",),
       })
-      await sendEmail(email, "Eizy Payment otp code", templateEmail("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
+      await sendEmail(email, "Eisy Payment otp code", templateEmail("Eszy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
 
       let token = sign({ id: userEmail!.id, email: userEmail!.email }, TOKEN_SECRET);
 
