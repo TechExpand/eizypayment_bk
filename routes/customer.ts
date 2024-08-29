@@ -20,7 +20,7 @@ API CALL START
 routes.post('/user/customer', createCustomer);
 routes.get('/user/customer', fetchCustomer);
 routes.delete('/user/customer/:id', deleteCustomer);
-routes.get('/test', testApi);
+
 
 
 

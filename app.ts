@@ -74,6 +74,7 @@ app.use(express.static(__dirname + '/public'));
 
 // use res.render to load up an ejs view file
 
+
 app.all('*', isAuthorized);
 app.use("/api", invoice);
 app.use("/api", auth);

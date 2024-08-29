@@ -16,7 +16,7 @@ routes.post('/user/crowdfund', createCrowdFund);
 routes.get('/user/crowdfund', fetchCrowdFund);
 routes.get('/user/crowdfund/:id', fetchSignleCrowdFund);
 
-routes.get('/test', testApi);
+
 
 
 

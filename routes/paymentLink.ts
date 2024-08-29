@@ -17,7 +17,7 @@ routes.post('/user/payment', createPaymentLink);
 routes.get('/user/payment', fetchPaymenntRequest);
 routes.get('/user/payment/:id', fetchSignlePaymenntRequest);
 
-routes.get('/test', testApi);
+
 
 
 

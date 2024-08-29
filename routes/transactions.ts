@@ -15,7 +15,7 @@ API CALL START
 routes.get('/user/transactions', fetchTransactions);
 routes.get('/user/admin', fetchAdmin);
 routes.get('/user/first-six-transactions', fetchFirstSixTransactions);
-routes.get('/test', testApi);
+
 
 
 

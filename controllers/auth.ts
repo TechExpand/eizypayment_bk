@@ -278,11 +278,11 @@ export const changePassword = async (req: Request, res: Response) => {
 
 
 export const testApi = async (req: Request, res: Response) => {
-  const { id } = req.user;
-  const { invoiceId } = req.query;
+  // const { id } = req.user;
+  // const { invoiceId } = req.query;
   // const invoice = await Invoice.findOne({ where: { randoId: invoiceId } })
 
-  const user = await Users.findOne({ where: { id } })
+  // const user = await Users.findOne({ where: { id } })
 
 
   // const token = await Tokens.findOne({ where: { symbol: invoice?.symbol } })
@@ -302,22 +302,22 @@ export const testApi = async (req: Request, res: Response) => {
   //   userId: id
   // })
 
-  await sendFcmNotification("Invoice Payment Successful", {
-    description: `You Recieved an Invoice Payment of Successfully`,
-    title: "Invoice Payment Successful",
-    type: TransactionType.CREDIT,
-    service: ServiceType.INVOICE,
-    mata: {
-      invoice: {}, token: {
-        title: "symbol",
-        tokenId: "symbol",
-        id: "symbol",
-        currency: "symbol",
-        amount: "symbol",
-        icon: "symbol"
-      }
-    },
-  }, user!.fcmToken)
+  // await sendFcmNotification("Invoice Payment Successful", {
+  //   description: `You Recieved an Invoice Payment of Successfully`,
+  //   title: "Invoice Payment Successful",
+  //   type: TransactionType.CREDIT,
+  //   service: ServiceType.INVOICE,
+  //   mata: {
+  //     invoice: {}, token: {
+  //       title: "symbol",
+  //       tokenId: "symbol",
+  //       id: "symbol",
+  //       currency: "symbol",
+  //       amount: "symbol",
+  //       icon: "symbol"
+  //     }
+  //   },
+  // }, user!.fcmToken)
   return successResponse(res, "Successful")
 };
 
