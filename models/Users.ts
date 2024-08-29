@@ -40,7 +40,7 @@ export class Users extends Model {
 	fullname!: string;
 
 
-	@AllowNull(false)
+	@AllowNull(true)
 	@Column(DataType.STRING)
 	address!: string;
 
