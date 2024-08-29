@@ -247,11 +247,13 @@ export const topUpCard = async (req: Request, res: Response) => {
         const price = await Price.findOne()
         let fee = 0;
         if (amount < 99) {
-            fee = Number(price?.fundFeePercent);
+            fee = Number(price?.fundCardFeeValue);
         } else {
             fee = ((Number(price?.fundFeePercent) * Number(amount)) / 100)
         }
         const wallet = await Wallet.findOne({ where: { userId: user?.id } })
+        console.log(Number(wallet?.balance))
+        console.log(Number(amount + fee))
         if (Number(wallet?.balance) >= Number(amount + fee)) {
             const response = await axios({
                 method: 'POST',
@@ -429,7 +431,7 @@ export const sendUsdc = async (req: Request, res: Response) => {
     const user = await Users.findOne({ where: { id } })
     const wallet = await Wallet.findOne({ where: { userId: user?.id } })
     try {
-        if (Number(wallet?.balance) >= Number(amount+price!.withdrawWalletFeeValue)) {
+        if (Number(wallet?.balance) >= Number(amount + price!.withdrawWalletFeeValue)) {
 
             const response = await axios({
                 method: 'POST',
@@ -449,7 +451,7 @@ export const sendUsdc = async (req: Request, res: Response) => {
                 }
             })
             const wallet = await Wallet.findOne({ where: { userId: user?.id } })
-            await wallet?.update({ balance: Number(wallet.balance) - Number(amount+price!.withdrawWalletFeeValue) })
+            await wallet?.update({ balance: Number(wallet.balance) - Number(amount + price!.withdrawWalletFeeValue) })
             const withdrawal = await Withdrawal.create({
                 randoId: "",
                 network:
