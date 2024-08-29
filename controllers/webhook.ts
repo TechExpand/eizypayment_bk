@@ -124,6 +124,15 @@ export const webhookBitnom = async (req: Request, res: Response) => {
         else if (event.event === "virtualcard.topup.failed") {
             const card = await Card.findOne({ where: { cardId: event.data.cardId } })
             const user = await Users.findOne({ where: { id: card?.userId } })
+            const wallet = await Wallet.findOne({ where: { userId: user?.id } })
+            const price = await Price.findOne()
+            let fee = 0;
+            if ((Number(event.data.amount) / 100) < 99) {
+                fee = Number(price?.fundCardFeeValue);
+            } else {
+                fee = ((Number(price?.fundFeePercent) * (Number(event.data.amount) / 100) / 100))
+            }
+            await wallet?.update({ balance: Number(wallet.balance) + ((Number(event.data.amount) / 100) + Number(fee)) })
             await sendFcmNotification("Card Top Up", {
                 description: `Your Card Top Up Failed`,
                 title: "Card Top Up",
