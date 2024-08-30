@@ -54,32 +54,11 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                     withdrawalAccountId: null
                 }
             })
-            console.log("before")
-            console.log(response.data)
-
-
+   
 
             await userToken.update({ balance: (Number(userToken.balance) - Number(amount)) })
-
-
-            const response2 = await axios({
-                method: 'GET',
-                url: 'https://api.radom.network/withdrawal',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `${config.RADON}`
-                },
-            })
-    
-            console.log("after")
-           let fomatedResponse = JSON.parse(response2.data)
-            console.log(fomatedResponse)
-            console.log(fomatedResponse[0])
-            // console.log(response2.data[0].id)
-            // console.log(userToken?.id)
-            // console.log(id)
-
-            // await sendEmailWithdraw("", "Withdrawal Request", `<div>recieved by you</div>`);
+           console.log(response.data)
+           console.log(response.data.withdrawalRequestId)
             // const withdrawal = await Withdrawal.create({
             //     randoId: response2.data[0].id,
             //     network,
