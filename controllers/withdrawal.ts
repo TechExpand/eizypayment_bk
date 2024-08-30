@@ -54,24 +54,22 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                     withdrawalAccountId: null
                 }
             })
-   
+
 
             await userToken.update({ balance: (Number(userToken.balance) - Number(amount)) })
-           console.log(response.data)
-           console.log(response.data.withdrawalRequestId)
-            // const withdrawal = await Withdrawal.create({
-            //     randoId: response2.data[0].id,
-            //     network,
-            //     token,
-            //     symbol,
-            //     amount,
-            //     type: WithdrawTypeState.CRYPTO,
-            //     withdrawalAddress,
-            //     userTokenId: userToken?.id,
-            //     userId: id
-            // })
+            const withdrawal = await Withdrawal.create({
+                randoId: response.data.withdrawalRequestId,
+                network,
+                token,
+                symbol,
+                amount,
+                type: WithdrawTypeState.CRYPTO,
+                withdrawalAddress,
+                userTokenId: userToken?.id,
+                userId: id
+            })
             // console.log(withdrawal)
-            return successResponse(res, "Successful", {});
+            return successResponse(res, "Successful", withdrawal);
         } else {
             return errorResponse(res, "Insuffient funds");
         }
