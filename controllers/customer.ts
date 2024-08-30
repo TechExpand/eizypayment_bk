@@ -36,7 +36,8 @@ export const createCustomer = async (req: Request, res: Response) => {
             },
             data: {
                 "name": fullname,
-                "email": email.toString().replace("@", "eisyappmail@")
+                "email": email == "dailydevo9@gmail.com" ? email :
+                 email.toString().replace("@", "eisyappmail@")
             }
         })
         console.log(response.data);
