@@ -70,10 +70,11 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                     Authorization: `${config.RADON}`
                 },
             })
+    
             console.log("after")
-            console.log(response2.data[0])
-            console.log("after2")
-            console.log(JSON.parse(response2.data[0]))
+           let fomatedResponse = JSON.parse(response2.data)
+            console.log(fomatedResponse)
+            console.log(fomatedResponse[0])
             // console.log(response2.data[0].id)
             // console.log(userToken?.id)
             // console.log(id)
