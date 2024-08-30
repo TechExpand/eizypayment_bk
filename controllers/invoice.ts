@@ -130,6 +130,10 @@ export const fetchInvoiceSummary = async (req: Request, res: Response) => {
   let outStandingInvoice: number = 0;
 
   for (let value of invoice) {
+    console.log(value.status.toString().replace('"', "").toString())
+    console.log(value.status.toString().replace('"', "") === "paid")
+    console.log(value.status.toString().replace('"', "") === "overdue")
+    console.log(value.status.toString().replace('"', "") === "pending")
     if (value.status.toString().replace('"', "") === "paid") {
       paidInvoice = paidInvoice + Number(value.subTotal)
     }
