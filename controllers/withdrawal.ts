@@ -54,6 +54,7 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                     withdrawalAccountId: null
                 }
             })
+            console.log("before")
             console.log(response.data)
 
 
@@ -69,6 +70,8 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                     Authorization: `${config.RADON}`
                 },
             })
+            console.log("after")
+            console.log(response2.data)
 
             // await sendEmailWithdraw("", "Withdrawal Request", `<div>recieved by you</div>`);
             const withdrawal = await Withdrawal.create({
