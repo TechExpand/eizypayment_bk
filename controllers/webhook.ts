@@ -49,11 +49,11 @@ export const webhookBitnom = async (req: Request, res: Response) => {
             await sendEmail(user!.email, "Kyc Status",
                 templateEmail("Kyc Status", `<div>Kyc Failed. Data Mismatch</div>`));
         } else if (event.event === "stablecoin.usdc.received.success") {
-            const user = await Users.findOne({ where: { address: event.address } })
+            const user = await Users.findOne({ where: { address: event.data.address } })
             const wallet = await Wallet.findOne({
                 where: { userId: user?.id }
             })
-            await wallet?.update({ balance: Number(wallet.balance) + Number(event.amount) })
+            await wallet?.update({ balance: Number(wallet.balance) + Number(event.data.amount) })
 
             await sendFcmNotification("Wallet Top Up", {
                 description: `Card Your Wallet Top Up was Successful`,
@@ -67,11 +67,11 @@ export const webhookBitnom = async (req: Request, res: Response) => {
 
             await Transactions.create({
                 ref: createRandomRef(8, "txt"),
-                description: `You Recieved a card wallet top  up of $${event.amount} Successfully`,
+                description: `You Recieved a card wallet top  up of $${event.data.amount} Successfully`,
                 title: "Card Wallet Topup Successful",
                 type: TransactionType.CREDIT,
                 service: ServiceType.NOTIFICATION,
-                amount: event.amount,
+                amount: event.data.amount,
                 status: TransactionStatus.COMPLETE,
                 mata: {},
                 userId: user?.id
@@ -80,11 +80,11 @@ export const webhookBitnom = async (req: Request, res: Response) => {
 
         } else if (event.event === "stablecoin.usdt.received.success") {
 
-            const user = await Users.findOne({ where: { address: event.address } })
+            const user = await Users.findOne({ where: { address: event.data.address } })
             const wallet = await Wallet.findOne({
                 where: { userId: user?.id }
             })
-            await wallet?.update({ balance: Number(wallet.balance) + Number(event.amount) })
+            await wallet?.update({ balance: Number(wallet.balance) + Number(event.data.amount) })
 
             await sendFcmNotification("Wallet Top Up", {
                 description: `Card Your Wallet Top Up was Successful`,
@@ -98,11 +98,11 @@ export const webhookBitnom = async (req: Request, res: Response) => {
 
             await Transactions.create({
                 ref: createRandomRef(8, "txt"),
-                description: `You Recieved a card wallet top  up of $${event.amount} Successfully`,
+                description: `You Recieved a card wallet top  up of $${event.data.amount} Successfully`,
                 title: "Card Wallet Topup Successful",
                 type: TransactionType.CREDIT,
                 service: ServiceType.NOTIFICATION,
-                amount: event.amount,
+                amount: event.data.amount,
                 status: TransactionStatus.COMPLETE,
                 mata: {},
                 userId: user?.id
@@ -1097,9 +1097,10 @@ export const webhook = async (req: Request, res: Response) => {
         })
         const user = await Users.findOne({ where: { id: withdrawal?.userId } })
         const tokenX = await Tokens.findOne({ where: { symbol: withdrawal?.symbol } })
-        const creditedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
-
-
+        const debitedToken = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+        await debitedToken?.update({ balance: (Number(debitedToken.balance) - Number(body.eventData.managedWithdrawal.receipt.networkFeeAmount)) })
+        const newd = await UserTokens.findOne({ where: { tokenId: tokenX?.id } })
+        console.log(newd?.balance)
         await Transactions.create({
             ref: createRandomRef(8, "txt"),
             description: `Withdrawal of ${withdrawal.symbol} ${withdrawal.amount} is Successful`,
@@ -1131,9 +1132,9 @@ export const webhook = async (req: Request, res: Response) => {
                 token: {
                     title: tokenX?.dataValues.symbol,
                     tokenId: tokenX?.dataValues.id,
-                    id: creditedToken?.dataValues.id,
+                    id: debitedToken?.dataValues.id,
                     currency: tokenX?.dataValues.currency,
-                    amount: creditedToken?.dataValues.balance,
+                    amount: debitedToken?.dataValues.balance,
                     icon: tokenX?.dataValues.url
                 }
             },

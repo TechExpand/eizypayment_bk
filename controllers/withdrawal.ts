@@ -82,6 +82,7 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                 userTokenId: userToken?.id,
                 userId: id
             })
+            console.log(withdrawal)
             return successResponse(res, "Successful", withdrawal);
         } else {
             return errorResponse(res, "Insuffient funds");
