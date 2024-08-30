@@ -71,7 +71,10 @@ export const createWithdrawal = async (req: Request, res: Response) => {
                 },
             })
             console.log("after")
-            console.log(response2.data)
+            console.log(response2.data[0])
+            console.log(response2.data[0].id)
+            console.log(userToken?.id)
+            console.log(id)
 
             // await sendEmailWithdraw("", "Withdrawal Request", `<div>recieved by you</div>`);
             const withdrawal = await Withdrawal.create({
