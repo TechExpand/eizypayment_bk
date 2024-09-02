@@ -34,6 +34,21 @@ export const createInvoice = async (req: Request, res: Response) => {
   const { lineItems, overdueAt, network, customerId, token, subTotal, symbol, business, title, invoiceNo, invoiceDate, noteHidden, noteVisible } = req.body;
   const user = await Users.findOne({ where: { id } })
 
+  console.log({
+    customerIds: [customerId],
+    products: [],
+    lineItems: lineItems,
+    overdueAt: new Date(overdueAt).toISOString(),
+    inputData: [{
+      "key": "name",
+      "value": user?.email
+    }],
+    memo: null,
+    gateway: {
+      managed: { methods: [{ network, token, discountPercentOff: null }] }
+    }
+  })
+
   try {
     const response = await axios({
       method: 'POST',
