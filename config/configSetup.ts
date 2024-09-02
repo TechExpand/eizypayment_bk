@@ -1,6 +1,9 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+
+
+
 type Config = {
 	NODE_ENV: string | undefined;
 	PORT: number | undefined;
@@ -96,7 +99,14 @@ const getSanitzedConfig = (config: Config) => {
 	return config as Config;
 };
 
+
+export let mainUrlBitnob = "api";
+export let sandboxUrlBitnob = "sandboxapi";
+
 const config = getConfig();
 const sanitizedConfig = getSanitzedConfig(config);
+
+
+
 
 export default sanitizedConfig;

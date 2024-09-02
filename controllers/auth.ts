@@ -9,7 +9,7 @@ import { compareTwoStrings } from 'string-similarity';
 const cloudinary = require("cloudinary").v2;
 // yarn add stream-chat
 import { StreamChat } from 'stream-chat';
-import config from '../config/configSetup';
+import config, { mainUrlBitnob } from '../config/configSetup';
 import { Verify } from "../models/Verify";
 // import { sendEmailResend } from "../services/sms";
 import { templateEmail } from "../config/template";
@@ -109,7 +109,7 @@ export const register = async (req: Request, res: Response) => {
   const [firstName, lastName] = fullname.split(' ');
   axios({
     method: 'POST',
-    url: 'https://sandboxapi.bitnob.co/api/v1/customers',
+    url: `https://${mainUrlBitnob}.bitnob.co/api/v1/customers`,
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',

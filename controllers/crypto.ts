@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { Op, where } from "sequelize";
 import { UserState, UserStatus, Users } from "../models/Users";
 import { compare, hash } from "bcryptjs"
-import config from '../config/configSetup';
+import config, { mainUrlBitnob } from '../config/configSetup';
 import network from "../config/network.json";
 import mainnet from "../config/paymentMainNet.json";
 import testnet from "../config/paymentTestNet.json";
@@ -34,7 +34,7 @@ export const createAddress = async (req: Request, res: Response) => {
         if (type === "USDC") {
             const response = await axios({
                 method: 'POST',
-                url: 'https://sandboxapi.bitnob.co/api/v1/addresses/generate/usdc',
+                url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/addresses/generate/usdc',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -48,7 +48,7 @@ export const createAddress = async (req: Request, res: Response) => {
         } else {
             const response = await axios({
                 method: 'POST',
-                url: 'https://sandboxapi.bitnob.co/api/v1/addresses/generate/usdt',
+                url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/addresses/generate/usdt',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -85,7 +85,7 @@ export const userKyc = async (req: Request, res: Response) => {
         const [firstName, lastName] = user!.fullname.split(" ");
         const response = await axios({
             method: 'POST',
-            url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/registercarduser',
+            url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/registercarduser',
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -133,7 +133,7 @@ export const createCard = async (req: Request, res: Response) => {
     try {
         const response = await axios({
             method: 'POST',
-            url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/create',
+            url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/create',
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -188,7 +188,7 @@ export const fetchCard = async (req: Request, res: Response) => {
         const response = await axios(
             {
                 method: 'GET',
-                url: `https://sandboxapi.bitnob.co/api/v1/virtualcards/cards/${cardId}`,
+                url: `https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/cards/${cardId}`,
                 headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${config.BITNOM}`
@@ -222,7 +222,7 @@ export const cardTransaction = async (req: Request, res: Response) => {
         const response = await axios(
             {
                 method: 'GET',
-                url: `https://sandboxapi.bitnob.co/api/v1/virtualcards/cards/${cardId}/transactions`,
+                url: `https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/cards/${cardId}/transactions`,
                 headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${config.BITNOM}`
@@ -252,11 +252,11 @@ export const topUpCard = async (req: Request, res: Response) => {
             fee = ((Number(price?.fundFeePercent) * Number(amount)) / 100)
         }
         const wallet = await Wallet.findOne({ where: { userId: user?.id } })
-  
+
         if (Number(wallet?.balance) >= (Number(amount) + Number(fee))) {
             const response = await axios({
                 method: 'POST',
-                url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/topup',
+                url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/topup',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -292,7 +292,7 @@ export const withdrawCard = async (req: Request, res: Response) => {
         const wallet = await Wallet.findOne({ where: { userId: user?.id } })
         const response = await axios({
             method: 'POST',
-            url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/withdraw',
+            url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/withdraw',
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -320,7 +320,7 @@ export const freezeCard = async (req: Request, res: Response) => {
     try {
         const response = await axios({
             method: 'POST',
-            url: `https://sandboxapi.bitnob.co/api/v1/virtualcards/freeze`,
+            url: `https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/freeze`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -347,7 +347,7 @@ export const unfreezeCard = async (req: Request, res: Response) => {
     try {
         const response = await axios({
             method: 'POST',
-            url: `https://sandboxapi.bitnob.co/api/v1/virtualcards/unfreeze`,
+            url: `https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/unfreeze`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -378,7 +378,7 @@ export const sendUsdt = async (req: Request, res: Response) => {
         if (Number(wallet?.balance) >= (Number(amount) + Number(price!.withdrawWalletFeeValue))) {
             const response = await axios({
                 method: 'POST',
-                url: `https://sandboxapi.bitnob.co/api/v1/wallets/send-usdt`,
+                url: `https://${mainUrlBitnob}.bitnob.co/api/v1/wallets/send-usdt`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -434,7 +434,7 @@ export const sendUsdc = async (req: Request, res: Response) => {
 
             const response = await axios({
                 method: 'POST',
-                url: `https://sandboxapi.bitnob.co/api/v1/wallets/send-usdc`,
+                url: `https://${mainUrlBitnob}.bitnob.co/api/v1/wallets/send-usdc`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
