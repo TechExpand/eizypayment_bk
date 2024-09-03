@@ -128,7 +128,7 @@ export const createCard = async (req: Request, res: Response) => {
     const user = await Users.findOne({ where: { id } })
     const wallet = await Wallet.findOne({ where: { userId: user?.id } })
     const price = await Price.findOne()
-    if (Number(wallet?.balance) < Number(price?.cardCreation)) return errorResponse(res, "Insufficient balance in card wallet");
+    if (Number(wallet?.balance) < (Number(price?.cardCreation) + Number(amount.toString()))) return errorResponse(res, "Insufficient balance in card wallet");
     const [firstName, lastName] = user!.fullname.split(" ");
     try {
         const response = await axios({
