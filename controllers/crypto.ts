@@ -121,7 +121,7 @@ export const userKyc = async (req: Request, res: Response) => {
 
 export const createCard = async (req: Request, res: Response) => {
     const { id } = req.user;
-    const { type } = req.body;
+    const { type, amount } = req.body;
     // BVN, NIN, PASSPORT
 
 
@@ -157,7 +157,7 @@ export const createCard = async (req: Request, res: Response) => {
             }
 
         )
-        await wallet?.update({ balance: (Number(wallet.balance)) - Number(price?.cardCreation) })
+        await wallet?.update({ balance: (Number(wallet.balance)) - Number(price?.cardCreation) - Number(amount.toString()) })
         return successResponse(res, "Successful", response.data.data);
     } catch (error: any) {
         return errorResponse(res, error.response.data.message);

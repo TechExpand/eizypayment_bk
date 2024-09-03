@@ -15,7 +15,7 @@ API CALL START
 // INDEX ROUTE TO SHOW API IS WORKING FINE.
 routes.get('/user/address', createAddress);
 routes.post('/user/kyc', userKyc);
-routes.post('/user/create-card', createCard)
+routes.post('/user/create-card', createCard) 
 routes.get('/user/card', fetchCard)
 routes.get('/user/allcard', fetchAllCard)
 routes.get('/user/card-transactions', cardTransaction)
