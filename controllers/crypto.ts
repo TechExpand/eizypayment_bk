@@ -409,7 +409,7 @@ export const sendUsdt = async (req: Request, res: Response) => {
                 userId: id
             })
 
-            return successResponse(res, "Successful", response.data.data);
+            return successResponse(res, "Successful");
         }
 
         else {
