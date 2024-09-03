@@ -34,7 +34,7 @@ export const createAddress = async (req: Request, res: Response) => {
         if (type === "USDC") {
             const response = await axios({
                 method: 'POST',
-                url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/addresses/generate/usdc',
+                url: `https://${mainUrlBitnob}.bitnob.co/api/v1/addresses/generate/usdc`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -48,7 +48,7 @@ export const createAddress = async (req: Request, res: Response) => {
         } else {
             const response = await axios({
                 method: 'POST',
-                url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/addresses/generate/usdt',
+                url: `https://${mainUrlBitnob}.bitnob.co/api/v1/addresses/generate/usdt`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -85,7 +85,7 @@ export const userKyc = async (req: Request, res: Response) => {
         const [firstName, lastName] = user!.fullname.split(" ");
         const response = await axios({
             method: 'POST',
-            url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/registercarduser',
+            url: `https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/registercarduser`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -133,7 +133,7 @@ export const createCard = async (req: Request, res: Response) => {
     try {
         const response = await axios({
             method: 'POST',
-            url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/create',
+            url: `https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/create`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -256,7 +256,7 @@ export const topUpCard = async (req: Request, res: Response) => {
         if (Number(wallet?.balance) >= (Number(amount) + Number(fee))) {
             const response = await axios({
                 method: 'POST',
-                url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/topup',
+                url: `https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/topup`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -292,7 +292,7 @@ export const withdrawCard = async (req: Request, res: Response) => {
         const wallet = await Wallet.findOne({ where: { userId: user?.id } })
         const response = await axios({
             method: 'POST',
-            url: 'https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/withdraw',
+            url: `https://${mainUrlBitnob}.bitnob.co/api/v1/virtualcards/withdraw`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
