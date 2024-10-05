@@ -128,7 +128,14 @@ export const createCard = async (req: Request, res: Response) => {
     const user = await Users.findOne({ where: { id } })
     const wallet = await Wallet.findOne({ where: { userId: user?.id } })
     const price = await Price.findOne()
-    if (Number(wallet?.balance) < (Number(price?.cardCreation) + Number(amount.toString()))) return errorResponse(res, "Insufficient balance in card wallet");
+    let fee = 0;
+    if (amount < 99) {
+        fee = Number(price?.fundCardFeeValue);
+    } else {
+        fee = ((Number(price?.fundFeePercent) * Number(amount)) / 100)
+    }
+    if(Number(amount) === 2) return errorResponse(res, "Minimum funding amount is 5 dollars");
+    if (Number(wallet?.balance) < (Number(price?.cardCreation) + Number(amount.toString()) + Number(fee))) return errorResponse(res, "Insufficient balance in card wallet");
     const [firstName, lastName] = user!.fullname.split(" ");
     try {
         const response = await axios({
@@ -143,7 +150,7 @@ export const createCard = async (req: Request, res: Response) => {
                 cardBrand: type,
                 cardType: 'virtual',
                 reference: randomId(8),
-                amount: 200,
+                amount: Number(amount) * 100,
                 firstName: firstName,
                 lastName: lastName,
                 customerEmail: user?.email
@@ -157,7 +164,7 @@ export const createCard = async (req: Request, res: Response) => {
             }
 
         )
-        await wallet?.update({ balance: (Number(wallet.balance)) - Number(price?.cardCreation) - Number(amount.toString()) })
+        await wallet?.update({ balance: (Number(wallet.balance)) - (Number(price?.cardCreation) + Number(amount.toString()) + Number(fee)) })
         return successResponse(res, "Successful", response.data.data);
     } catch (error: any) {
         return errorResponse(res, error.response.data.message);
