@@ -23,6 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sandboxUrlBitnob = exports.mainUrlBitnob = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 const getConfig = () => {
@@ -87,6 +88,8 @@ const getSanitzedConfig = (config) => {
     }
     return config;
 };
+exports.mainUrlBitnob = "api";
+exports.sandboxUrlBitnob = "sandboxapi";
 const config = getConfig();
 const sanitizedConfig = getSanitzedConfig(config);
 exports.default = sanitizedConfig;

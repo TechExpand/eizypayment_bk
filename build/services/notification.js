@@ -24,8 +24,8 @@ admin.initializeApp({
 const sendEmail = (email, subject, template) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield axios.post(`https://api.brevo.com/v3/smtp/email`, {
         "sender": {
-            "name": "Eizy App",
-            "email": "support@eizyapp.com"
+            "name": "Eisy App",
+            "email": "support@eisyglobal.com"
         },
         "to": [
             {
@@ -59,8 +59,8 @@ exports.sendEmail = sendEmail;
 const sendEmailWithdraw = (email, subject, template) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield axios.post(`https://api.brevo.com/v3/smtp/email`, {
         "sender": {
-            "name": "Eizy App",
-            "email": "support@eizyapp.com"
+            "name": "Eisy App",
+            "email": "support@eisyglobal.com"
         },
         "to": [
             {

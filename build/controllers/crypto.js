@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,14 +31,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withdrawBank = exports.sendUsdc = exports.sendUsdt = exports.unfreezeCard = exports.freezeCard = exports.withdrawCard = exports.topUpCard = exports.cardTransaction = exports.fetchCard = exports.fetchAllCard = exports.createCard = exports.userKyc = exports.createAddress = void 0;
 const utility_1 = require("../helpers/utility");
 const Users_1 = require("../models/Users");
-const configSetup_1 = __importDefault(require("../config/configSetup"));
+const configSetup_1 = __importStar(require("../config/configSetup"));
 // yarn add stream-chat
 const util = require('util');
 const Card_1 = require("../models/Card");
@@ -33,7 +53,7 @@ const createAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (type === "USDC") {
             const response = yield axios({
                 method: 'POST',
-                url: 'https://sandboxapi.bitnob.co/api/v1/addresses/generate/usdc',
+                url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/addresses/generate/usdc`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -48,7 +68,7 @@ const createAddress = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         else {
             const response = yield axios({
                 method: 'POST',
-                url: 'https://sandboxapi.bitnob.co/api/v1/addresses/generate/usdt',
+                url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/addresses/generate/usdt`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -82,7 +102,7 @@ const userKyc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const [firstName, lastName] = user.fullname.split(" ");
         const response = yield axios({
             method: 'POST',
-            url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/registercarduser',
+            url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/virtualcards/registercarduser`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -117,18 +137,18 @@ const userKyc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.userKyc = userKyc;
 const createCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
-    const { type } = req.body;
+    const { type, amount } = req.body;
     // BVN, NIN, PASSPORT
     const user = yield Users_1.Users.findOne({ where: { id } });
     const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
     const price = yield Price_1.Price.findOne();
-    if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) < Number(price === null || price === void 0 ? void 0 : price.cardCreation))
+    if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) < (Number(price === null || price === void 0 ? void 0 : price.cardCreation) + Number(amount.toString())))
         return (0, utility_1.errorResponse)(res, "Insufficient balance in card wallet");
     const [firstName, lastName] = user.fullname.split(" ");
     try {
         const response = yield axios({
             method: 'POST',
-            url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/create',
+            url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/virtualcards/create`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -149,7 +169,7 @@ const createCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             cardId: response.data.data.id,
             userId: user.id
         });
-        yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: (Number(wallet.balance)) - Number(price === null || price === void 0 ? void 0 : price.cardCreation) }));
+        yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: (Number(wallet.balance)) - Number(price === null || price === void 0 ? void 0 : price.cardCreation) - Number(amount.toString()) }));
         return (0, utility_1.successResponse)(res, "Successful", response.data.data);
     }
     catch (error) {
@@ -174,7 +194,7 @@ const fetchCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield axios({
             method: 'GET',
-            url: `https://sandboxapi.bitnob.co/api/v1/virtualcards/cards/${cardId}`,
+            url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/virtualcards/cards/${cardId}`,
             headers: {
                 accept: 'application/json',
                 Authorization: `Bearer ${configSetup_1.default.BITNOM}`
@@ -200,7 +220,7 @@ const cardTransaction = (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const response = yield axios({
             method: 'GET',
-            url: `https://sandboxapi.bitnob.co/api/v1/virtualcards/cards/${cardId}/transactions`,
+            url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/virtualcards/cards/${cardId}/transactions`,
             headers: {
                 accept: 'application/json',
                 Authorization: `Bearer ${configSetup_1.default.BITNOM}`
@@ -221,16 +241,16 @@ const topUpCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const price = yield Price_1.Price.findOne();
         let fee = 0;
         if (amount < 99) {
-            fee = Number(price === null || price === void 0 ? void 0 : price.fundFeePercent);
+            fee = Number(price === null || price === void 0 ? void 0 : price.fundCardFeeValue);
         }
         else {
             fee = ((Number(price === null || price === void 0 ? void 0 : price.fundFeePercent) * Number(amount)) / 100);
         }
         const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
-        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount + fee)) {
+        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= (Number(amount) + Number(fee))) {
             const response = yield axios({
                 method: 'POST',
-                url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/topup',
+                url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/virtualcards/topup`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -242,11 +262,11 @@ const topUpCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     amount: Number(amount) * 100,
                 }
             });
-            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount + fee) }));
+            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - (Number(amount) + Number(fee)) }));
             return (0, utility_1.successResponse)(res, "Successful", response.data.data);
         }
         else {
-            return (0, utility_1.errorResponse)(res, "Insufficient Funds in Wallet");
+            return (0, utility_1.errorResponse)(res, "Insufficient Funds in card wallet");
         }
     }
     catch (error) {
@@ -263,7 +283,7 @@ const withdrawCard = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
         const response = yield axios({
             method: 'POST',
-            url: 'https://sandboxapi.bitnob.co/api/v1/virtualcards/withdraw',
+            url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/virtualcards/withdraw`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -290,7 +310,7 @@ const freezeCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const response = yield axios({
             method: 'POST',
-            url: `https://sandboxapi.bitnob.co/api/v1/virtualcards/freeze`,
+            url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/virtualcards/freeze`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -316,7 +336,7 @@ const unfreezeCard = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const response = yield axios({
             method: 'POST',
-            url: `https://sandboxapi.bitnob.co/api/v1/virtualcards/unfreeze`,
+            url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/virtualcards/unfreeze`,
             headers: {
                 accept: 'application/json',
                 'content-type': 'application/json',
@@ -343,10 +363,10 @@ const sendUsdt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
     // BVN, NIN, PASSPORT
     try {
-        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount + price.withdrawWalletFeeValue)) {
+        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= (Number(amount) + Number(price.withdrawWalletFeeValue))) {
             const response = yield axios({
                 method: 'POST',
-                url: `https://sandboxapi.bitnob.co/api/v1/wallets/send-usdt`,
+                url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/wallets/send-usdt`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -362,7 +382,7 @@ const sendUsdt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 }
             });
             const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
-            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount + price.withdrawWalletFeeValue) }));
+            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - (Number(amount) + Number(price.withdrawWalletFeeValue)) }));
             const withdrawal = yield Withdrawal_1.Withdrawal.create({
                 randoId: "",
                 network: "TRX",
@@ -374,10 +394,10 @@ const sendUsdt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 // userTokenId: ,
                 userId: id
             });
-            return (0, utility_1.successResponse)(res, "Successful", response.data.data);
+            return (0, utility_1.successResponse)(res, "Successful");
         }
         else {
-            return (0, utility_1.errorResponse)(res, "Insufficient Funds in Wallet");
+            return (0, utility_1.errorResponse)(res, "Insufficient Funds in card wallet");
         }
     }
     catch (error) {
@@ -393,10 +413,10 @@ const sendUsdc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield Users_1.Users.findOne({ where: { id } });
     const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
     try {
-        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= Number(amount + price.withdrawWalletFeeValue)) {
+        if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) >= (Number(amount) + Number(price.withdrawWalletFeeValue))) {
             const response = yield axios({
                 method: 'POST',
-                url: `https://sandboxapi.bitnob.co/api/v1/wallets/send-usdc`,
+                url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/wallets/send-usdc`,
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -412,7 +432,7 @@ const sendUsdc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 }
             });
             const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
-            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - Number(amount + price.withdrawWalletFeeValue) }));
+            yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: Number(wallet.balance) - (Number(amount) + Number(price.withdrawWalletFeeValue)) }));
             const withdrawal = yield Withdrawal_1.Withdrawal.create({
                 randoId: "",
                 network: "TRX",
@@ -427,7 +447,7 @@ const sendUsdc = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return (0, utility_1.successResponse)(res, "Successful", response.data.data);
         }
         else {
-            return (0, utility_1.errorResponse)(res, "Insufficient Funds in Wallet");
+            return (0, utility_1.errorResponse)(res, "Insufficient Funds in card wallet");
         }
     }
     catch (error) {
@@ -461,7 +481,7 @@ const withdrawBank = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return (0, utility_1.successResponse)(res, "Successful", withdrawal);
         }
         else {
-            return (0, utility_1.errorResponse)(res, "Insufficient Funds in Wallet");
+            return (0, utility_1.errorResponse)(res, "Insufficient Funds in card wallet");
         }
     }
     catch (error) {

@@ -31,13 +31,14 @@ const createCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function*
             },
             data: {
                 "name": fullname,
-                "email": email
+                "email": email == "dailydevo9@gmail.com" ? email :
+                    email.toString().replace("@", "eisyappmail@")
             }
         });
         console.log(response.data);
         const customer = yield Customers_1.Customers.create({
             randoId: response.data.id,
-            email: response.data.email,
+            email: response.data.email.toString().toString().replace("eisyappmail", ""),
             name: response.data.name,
             billingAddress: response.data.billingAddress,
             phone: response.data.phone,

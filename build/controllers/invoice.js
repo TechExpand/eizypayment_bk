@@ -30,6 +30,20 @@ const createInvoice = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { id } = req.user;
     const { lineItems, overdueAt, network, customerId, token, subTotal, symbol, business, title, invoiceNo, invoiceDate, noteHidden, noteVisible } = req.body;
     const user = yield Users_1.Users.findOne({ where: { id } });
+    console.log({
+        customerIds: [customerId],
+        products: [],
+        lineItems: lineItems,
+        overdueAt: new Date(overdueAt).toISOString(),
+        inputData: [{
+                "key": "name",
+                "value": user === null || user === void 0 ? void 0 : user.email
+            }],
+        memo: null,
+        gateway: {
+            managed: { methods: [{ network, token, discountPercentOff: null }] }
+        }
+    });
     try {
         const response = yield axios({
             method: 'POST',
@@ -79,7 +93,7 @@ const createInvoice = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             payment: response.data[0].payment,
             userId: id
         });
-        yield (0, notification_1.sendEmail)(invoice === null || invoice === void 0 ? void 0 : invoice.customer.email, "Invoice", (0, template_1.templateEmail)("Invoice", `<div>An Invoice was sent to you from ${invoice.customer.email}.
+        yield (0, notification_1.sendEmail)(invoice === null || invoice === void 0 ? void 0 : invoice.customer.email.toString().replace("eisyappmail", ""), "Invoice", (0, template_1.templateEmail)("Invoice", `<div>An Invoice was sent to you from ${user === null || user === void 0 ? void 0 : user.email}.
     <br> Click the link below to view the invoice<br>
     <a href=https://eizypayment-bk.onrender.com/invoice?id=${invoice.randoId}> VIEW INVOICE <a/>
     </div>`));
@@ -119,13 +133,17 @@ const fetchInvoiceSummary = (req, res) => __awaiter(void 0, void 0, void 0, func
     let overdueInvoice = 0;
     let outStandingInvoice = 0;
     for (let value of invoice) {
-        if (value.status.toString() === "paid") {
+        console.log(value.status.toString().replace('"', '').replace('"', ''));
+        console.log(value.status.toString().replace('"', "") === "paid");
+        console.log(value.status.toString().replace('"', "") === "overdue");
+        console.log(value.status.toString().replace('"', "") === "pending");
+        if (value.status.toString().replace('"', '').replace('"', '') === "paid") {
             paidInvoice = paidInvoice + Number(value.subTotal);
         }
-        if (value.status.toString() === "overdue") {
+        if (value.status.toString().replace('"', '').replace('"', '') === "overdue") {
             overdueInvoice = overdueInvoice + Number(value.subTotal);
         }
-        if (value.status.toString() === "pending") {
+        if (value.status.toString().replace('"', '').replace('"', '') === "pending") {
             outStandingInvoice = outStandingInvoice + Number(value.subTotal);
         }
     }

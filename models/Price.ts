@@ -27,6 +27,11 @@ export class Price extends Model {
 
     @AllowNull(true)
     @Column(DataType.STRING)
+    invoiceFeeMinValue!: number;
+
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
     fundFeePercent!: number;
 
 

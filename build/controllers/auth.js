@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -20,7 +43,7 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
 // yarn add stream-chat
 const stream_chat_1 = require("stream-chat");
-const configSetup_1 = __importDefault(require("../config/configSetup"));
+const configSetup_1 = __importStar(require("../config/configSetup"));
 const Verify_1 = require("../models/Verify");
 // import { sendEmailResend } from "../services/sms";
 const template_1 = require("../config/template");
@@ -29,7 +52,6 @@ const axios_1 = __importDefault(require("axios"));
 const Token_1 = require("../models/Token");
 const UserToken_1 = require("../models/UserToken");
 const random_avatar_generator_1 = require("random-avatar-generator");
-const Transaction_1 = require("../models/Transaction");
 const Wallet_1 = require("../models/Wallet");
 const generator = new random_avatar_generator_1.AvatarGenerator();
 // instantiate your stream client using the API key and secret
@@ -48,7 +70,7 @@ const sendOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         secret_key: (0, utility_1.createRandomRef)(12, "eizyapp"),
     });
     console.log(codeEmail);
-    yield (0, notification_1.sendEmail)(email, "Eizy App otp code", (0, template_1.templateEmail)("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
+    yield (0, notification_1.sendEmail)(email, "Eisy App otp code", (0, template_1.templateEmail)("Eisy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
     return (0, utility_1.successResponse)(res, "Successful", {
         status: true,
         emailServiceId
@@ -95,7 +117,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const [firstName, lastName] = fullname.split(' ');
     (0, axios_1.default)({
         method: 'POST',
-        url: 'https://sandboxapi.bitnob.co/api/v1/customers',
+        url: `https://${configSetup_1.mainUrlBitnob}.bitnob.co/api/v1/customers`,
         headers: {
             accept: 'application/json',
             'content-type': 'application/json',
@@ -128,7 +150,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     client: email,
                     secret_key: (0, utility_1.createRandomRef)(12, "eizyapp"),
                 });
-                yield (0, notification_1.sendEmail)(email, "Eizy Payment otp code", (0, template_1.templateEmail)("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
+                yield (0, notification_1.sendEmail)(email, "Eisy Payment otp code", (0, template_1.templateEmail)("Eisy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
                 //  sendEmailResend(email, codeEmail.toString());
                 let token = (0, jsonwebtoken_1.sign)({ id: user.id, email: user.email }, utility_1.TOKEN_SECRET);
                 const wallet = yield Wallet_1.Wallet.create({
@@ -171,7 +193,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     client: email,
                     secret_key: (0, utility_1.createRandomRef)(12, "eizyapp"),
                 });
-                yield (0, notification_1.sendEmail)(email, "Eizy Payment otp code", (0, template_1.templateEmail)("Eizy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
+                yield (0, notification_1.sendEmail)(email, "Eisy Payment otp code", (0, template_1.templateEmail)("Eszy Payment otp code", `<div> Your Verification code is: ${codeEmail} <div/>`));
                 let token = (0, jsonwebtoken_1.sign)({ id: userEmail.id, email: userEmail.email }, utility_1.TOKEN_SECRET);
                 return (0, utility_1.successResponse)(res, "Successful", {
                     email, fullname, token, emailServiceId
@@ -242,10 +264,10 @@ const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.changePassword = changePassword;
 const testApi = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.user;
-    const { invoiceId } = req.query;
+    // const { id } = req.user;
+    // const { invoiceId } = req.query;
     // const invoice = await Invoice.findOne({ where: { randoId: invoiceId } })
-    const user = yield Users_1.Users.findOne({ where: { id } });
+    // const user = await Users.findOne({ where: { id } })
     // const token = await Tokens.findOne({ where: { symbol: invoice?.symbol } })
     // const creditedToken = await UserTokens.findOne({ where: { tokenId: token?.id } })
     // await creditedToken?.update({ balance: (Number(creditedToken?.balance) + Number(100)) })
@@ -260,22 +282,22 @@ const testApi = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //   mata: invoice,
     //   userId: id
     // })
-    yield (0, notification_1.sendFcmNotification)("Invoice Payment Successful", {
-        description: `You Recieved an Invoice Payment of Successfully`,
-        title: "Invoice Payment Successful",
-        type: Transaction_1.TransactionType.CREDIT,
-        service: Transaction_1.ServiceType.INVOICE,
-        mata: {
-            invoice: {}, token: {
-                title: "symbol",
-                tokenId: "symbol",
-                id: "symbol",
-                currency: "symbol",
-                amount: "symbol",
-                icon: "symbol"
-            }
-        },
-    }, user.fcmToken);
+    // await sendFcmNotification("Invoice Payment Successful", {
+    //   description: `You Recieved an Invoice Payment of Successfully`,
+    //   title: "Invoice Payment Successful",
+    //   type: TransactionType.CREDIT,
+    //   service: ServiceType.INVOICE,
+    //   mata: {
+    //     invoice: {}, token: {
+    //       title: "symbol",
+    //       tokenId: "symbol",
+    //       id: "symbol",
+    //       currency: "symbol",
+    //       amount: "symbol",
+    //       icon: "symbol"
+    //     }
+    //   },
+    // }, user!.fcmToken)
     return (0, utility_1.successResponse)(res, "Successful");
 });
 exports.testApi = testApi;

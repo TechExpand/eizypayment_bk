@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import packages
 const express_1 = require("express");
-const auth_1 = require("../controllers/auth");
 const customer_1 = require("../controllers/customer");
 const routes = (0, express_1.Router)();
 /*************************************************************************
@@ -17,6 +16,5 @@ API CALL START
 routes.post('/user/customer', customer_1.createCustomer);
 routes.get('/user/customer', customer_1.fetchCustomer);
 routes.delete('/user/customer/:id', customer_1.deleteCustomer);
-routes.get('/test', auth_1.testApi);
 exports.default = routes;
 //# sourceMappingURL=customer.js.map

@@ -392,7 +392,7 @@ export const webhook = async (req: Request, res: Response) => {
 
             let amountToCredit = body.eventData.managedPayment.amount
             const priceFee = await Price.findOne()
-            const fee = ((Number(priceFee?.invoiceFeeValue) * Number(amountToCredit)) / 100)
+            const fee = ((Number(amountToCredit)>=100?(Number(priceFee?.invoiceFeeValue)):(Number(priceFee?.invoiceFeeMinValue)) * Number(amountToCredit)) / 100)
             amountToCredit = (Number(amountToCredit) - Number(fee))
             let getToken = await Tokens.findOne({ where: { currency: token } })
             if (getToken) {
@@ -640,7 +640,7 @@ export const webhook = async (req: Request, res: Response) => {
             let token = request.symbol
             let amountToCredit = body.eventData.managedPayment.amount
             const priceFee = await Price.findOne()
-            const fee = ((Number(priceFee?.invoiceFeeValue) * Number(amountToCredit)) / 100)
+            const fee = ((Number(amountToCredit)>=100?(Number(priceFee?.invoiceFeeValue)):(Number(priceFee?.invoiceFeeMinValue)) * Number(amountToCredit)) / 100)
             amountToCredit = (Number(amountToCredit) - Number(fee))
             if (request.type == TypeState.PAYMENT_LINK) {
                 let getToken = await Tokens.findOne({ where: { currency: token } })

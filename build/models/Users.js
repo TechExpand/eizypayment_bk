@@ -46,7 +46,7 @@ __decorate([
     __metadata("design:type", String)
 ], Users.prototype, "fullname", void 0);
 __decorate([
-    (0, sequelize_typescript_1.AllowNull)(false),
+    (0, sequelize_typescript_1.AllowNull)(true),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", String)
 ], Users.prototype, "address", void 0);
