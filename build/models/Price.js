@@ -40,6 +40,11 @@ __decorate([
     (0, sequelize_typescript_1.AllowNull)(true),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
     __metadata("design:type", Number)
+], Price.prototype, "invoiceFeeMinValue", void 0);
+__decorate([
+    (0, sequelize_typescript_1.AllowNull)(true),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", Number)
 ], Price.prototype, "fundFeePercent", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(true),

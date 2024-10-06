@@ -347,7 +347,7 @@ const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             let token = finalFormattedJson.managed.conversionRates[0].to;
             let amountToCredit = body.eventData.managedPayment.amount;
             const priceFee = yield Price_1.Price.findOne();
-            const fee = ((Number(priceFee === null || priceFee === void 0 ? void 0 : priceFee.invoiceFeeValue) * Number(amountToCredit)) / 100);
+            const fee = ((Number(amountToCredit) >= 100 ? (Number(priceFee === null || priceFee === void 0 ? void 0 : priceFee.invoiceFeeValue)) : (Number(priceFee === null || priceFee === void 0 ? void 0 : priceFee.invoiceFeeMinValue)) * Number(amountToCredit)) / 100);
             amountToCredit = (Number(amountToCredit) - Number(fee));
             let getToken = yield Token_1.Tokens.findOne({ where: { currency: token } });
             if (getToken) {
@@ -570,7 +570,7 @@ const webhook = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             let token = request.symbol;
             let amountToCredit = body.eventData.managedPayment.amount;
             const priceFee = yield Price_1.Price.findOne();
-            const fee = ((Number(priceFee === null || priceFee === void 0 ? void 0 : priceFee.invoiceFeeValue) * Number(amountToCredit)) / 100);
+            const fee = ((Number(amountToCredit) >= 100 ? (Number(priceFee === null || priceFee === void 0 ? void 0 : priceFee.invoiceFeeValue)) : (Number(priceFee === null || priceFee === void 0 ? void 0 : priceFee.invoiceFeeMinValue)) * Number(amountToCredit)) / 100);
             amountToCredit = (Number(amountToCredit) - Number(fee));
             if (request.type == Payment_1.TypeState.PAYMENT_LINK) {
                 let getToken = yield Token_1.Tokens.findOne({ where: { currency: token } });

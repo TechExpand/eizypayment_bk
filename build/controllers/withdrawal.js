@@ -21,6 +21,7 @@ const Token_1 = require("../models/Token");
 const UserToken_1 = require("../models/UserToken");
 const Withdrawal_1 = require("../models/Withdrawal");
 const Bank_1 = require("../models/Bank");
+const Price_1 = require("../models/Price");
 const fs = require("fs");
 const axios = require('axios');
 const WAValidator = require('multicoin-address-validator');
@@ -29,12 +30,13 @@ const createWithdrawal = (req, res) => __awaiter(void 0, void 0, void 0, functio
     const { network, token, amount, withdrawalAddress, symbol } = req.body;
     try {
         const tokens = yield Token_1.Tokens.findOne({ where: { symbol } });
+        const price = yield Price_1.Price.findOne();
         if (!tokens)
             return (0, utility_1.errorResponse)(res, "Token Not found");
         const userToken = yield UserToken_1.UserTokens.findOne({ where: { tokenId: tokens === null || tokens === void 0 ? void 0 : tokens.id, userId: id } });
         if (!userToken)
             return (0, utility_1.errorResponse)(res, "User Token Not found");
-        if ((userToken === null || userToken === void 0 ? void 0 : userToken.balance) >= amount) {
+        if (Number(userToken === null || userToken === void 0 ? void 0 : userToken.balance) >= (Number(amount) + Number(price.withdrawWalletFeeValue))) {
             const response = yield axios({
                 method: 'POST',
                 url: 'https://api.radom.network/withdrawal',
@@ -50,7 +52,7 @@ const createWithdrawal = (req, res) => __awaiter(void 0, void 0, void 0, functio
                     withdrawalAccountId: null
                 }
             });
-            yield userToken.update({ balance: (Number(userToken.balance) - Number(amount)) });
+            yield userToken.update({ balance: (Number(userToken.balance) - (Number(amount) + Number(price.withdrawWalletFeeValue))) });
             const withdrawal = yield Withdrawal_1.Withdrawal.create({
                 randoId: response.data.withdrawalRequestId,
                 network,

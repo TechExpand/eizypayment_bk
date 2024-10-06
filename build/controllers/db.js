@@ -36,10 +36,10 @@ const sequelize = new sequelize_typescript_1.Sequelize(configSetup_1.default.DBN
     port: configSetup_1.default.DBPORT,
     dialect: 'mysql',
     logging: false,
-    // dialectOptions: {
-    // 	ssl: { require: true, rejectUnauthorized: false },
-    // },
-    ssl: false,
+    dialectOptions: {
+        // ssl: { require: true, rejectUnauthorized: false },
+        ssl: false
+    },
     models: [
         Users_1.Users,
         Verify_1.Verify,

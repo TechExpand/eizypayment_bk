@@ -25,10 +25,10 @@ const sequelize = new Sequelize(config.DBNAME, config.DBUSERNAME, config.DBPASSW
 	port: config.DBPORT,
 	dialect: 'mysql',
 	logging: false,
-	// dialectOptions: {
-	// 	ssl: { require: true, rejectUnauthorized: false },
-	// },
-	ssl: false,
+	dialectOptions: {
+		// ssl: { require: true, rejectUnauthorized: false },
+		ssl: false
+	},
 	models: [
 		Users,
 		Verify,

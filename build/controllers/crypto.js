@@ -142,7 +142,16 @@ const createCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const user = yield Users_1.Users.findOne({ where: { id } });
     const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: user === null || user === void 0 ? void 0 : user.id } });
     const price = yield Price_1.Price.findOne();
-    if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) < (Number(price === null || price === void 0 ? void 0 : price.cardCreation) + Number(amount.toString())))
+    let fee = 0;
+    if (amount < 99) {
+        fee = Number(price === null || price === void 0 ? void 0 : price.fundCardFeeValue);
+    }
+    else {
+        fee = ((Number(price === null || price === void 0 ? void 0 : price.fundFeePercent) * Number(amount)) / 100);
+    }
+    if (Number(amount) === 2)
+        return (0, utility_1.errorResponse)(res, "Minimum funding amount is 5 dollars");
+    if (Number(wallet === null || wallet === void 0 ? void 0 : wallet.balance) < (Number(price === null || price === void 0 ? void 0 : price.cardCreation) + Number(amount.toString()) + Number(fee)))
         return (0, utility_1.errorResponse)(res, "Insufficient balance in card wallet");
     const [firstName, lastName] = user.fullname.split(" ");
     try {
@@ -158,7 +167,7 @@ const createCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 cardBrand: type,
                 cardType: 'virtual',
                 reference: (0, utility_1.randomId)(8),
-                amount: 200,
+                amount: Number(amount) * 100,
                 firstName: firstName,
                 lastName: lastName,
                 customerEmail: user === null || user === void 0 ? void 0 : user.email
@@ -169,7 +178,7 @@ const createCard = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             cardId: response.data.data.id,
             userId: user.id
         });
-        yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: (Number(wallet.balance)) - Number(price === null || price === void 0 ? void 0 : price.cardCreation) - Number(amount.toString()) }));
+        yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({ balance: (Number(wallet.balance)) - (Number(price === null || price === void 0 ? void 0 : price.cardCreation) + Number(amount.toString()) + Number(fee)) }));
         return (0, utility_1.successResponse)(res, "Successful", response.data.data);
     }
     catch (error) {
