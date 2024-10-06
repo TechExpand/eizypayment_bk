@@ -21,6 +21,7 @@ import { UserTokens } from "../models/UserToken";
 import { WithdrawTypeState, Withdrawal } from "../models/Withdrawal";
 import { Banks } from "../models/Bank";
 import { ServiceType, TransactionType } from "../models/Transaction";
+import { Price } from "../models/Price";
 const fs = require("fs");
 const axios = require('axios')
 const WAValidator = require('multicoin-address-validator');
@@ -34,11 +35,15 @@ export const createWithdrawal = async (req: Request, res: Response) => {
 
     try {
         const tokens = await Tokens.findOne({ where: { symbol } })
+        const price = await Price.findOne()
         if (!tokens) return errorResponse(res, "Token Not found");
         const userToken = await UserTokens.findOne({ where: { tokenId: tokens?.id, userId: id } })
         if (!userToken) return errorResponse(res, "User Token Not found");
+       
 
-        if (userToken?.balance >= amount) {
+        if (
+            Number(userToken?.balance) >= (Number(amount) + Number(price!.withdrawWalletFeeValue))
+        ) {
             const response = await axios({
                 method: 'POST',
                 url: 'https://api.radom.network/withdrawal',
@@ -56,7 +61,7 @@ export const createWithdrawal = async (req: Request, res: Response) => {
             })
 
 
-            await userToken.update({ balance: (Number(userToken.balance) - Number(amount)) })
+            await userToken.update({ balance: (Number(userToken.balance) -  (Number(amount) + Number(price!.withdrawWalletFeeValue))) })
             const withdrawal = await Withdrawal.create({
                 randoId: response.data.withdrawalRequestId,
                 network,
@@ -70,7 +75,9 @@ export const createWithdrawal = async (req: Request, res: Response) => {
             })
             // console.log(withdrawal)
             return successResponse(res, "Successful", withdrawal);
-        } else {
+        }  
+       
+        else {
             return errorResponse(res, "Insuffient funds");
         }
 
