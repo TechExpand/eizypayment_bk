@@ -102,7 +102,7 @@ export const createInvoice = async (req: Request, res: Response) => {
     await sendEmail(invoice?.customer.email.toString().replace("eisyappmail", ""), "Invoice", templateEmail("Invoice", 
       `<div>An Invoice was sent to you from ${user?.email}.
     <br> Click the link below to view the invoice<br>
-    <a href=https://eizypayment-bk.onrender.com/invoice?id=${invoice.randoId}> VIEW INVOICE <a/>
+    <a href=https://app.eisyglobal.com/invoice?id=${invoice.randoId}> VIEW INVOICE <a/>
     </div>`));
     return successResponse(res, "Successful", invoice);
   } catch (error: any) {
@@ -267,7 +267,7 @@ export const sendInvoiceReminder = async (req: Request, res: Response) => {
   Invoice Date: ${invoice!.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br>
   Amount Due: ${invoice?.subTotal}<br>
   Due Date:  ${invoice!.overdueAt}<br><br>
-  <a href=https://eizypayment-bk.onrender.com/invoice?id=${invoice!.randoId}> VIEW INVOICE <a/>
+  <a href=https://app.eisyglobal.com/invoice?id=${invoice!.randoId}> VIEW INVOICE <a/>
   <br><br>
   We understand that oversight can happen, and we want to ensure that this matter is resolved promptly to avoid any inconvenience.<br>Please take a moment to review the invoice, and if you've already made the payment, kindly disregard this reminder.<br>
     
