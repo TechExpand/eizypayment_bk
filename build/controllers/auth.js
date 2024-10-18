@@ -42,7 +42,6 @@ const bcryptjs_1 = require("bcryptjs");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
 // yarn add stream-chat
-const stream_chat_1 = require("stream-chat");
 const configSetup_1 = __importStar(require("../config/configSetup"));
 const Verify_1 = require("../models/Verify");
 // import { sendEmailResend } from "../services/sms";
@@ -54,11 +53,6 @@ const UserToken_1 = require("../models/UserToken");
 const random_avatar_generator_1 = require("random-avatar-generator");
 const Wallet_1 = require("../models/Wallet");
 const generator = new random_avatar_generator_1.AvatarGenerator();
-// instantiate your stream client using the API key and secret
-// the secret is only used server side and gives you full access to the API
-const serverClient = stream_chat_1.StreamChat.getInstance('zzfb7h72xhc5', '5pfxakc5zasma3hw9awd2qsqgk2fxyr4a5qb3au4kkdt27d7ttnca7vnusfuztud');
-// you can still use new StreamChat('api_key', 'api_secret');
-// generate a token for the user with id 'john'
 const sendOtp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
     const emailServiceId = (0, utility_1.randomId)(12);

@@ -47,6 +47,12 @@ __decorate([
     __metadata("design:type", String)
 ], Wallet.prototype, "userId", void 0);
 __decorate([
+    (0, sequelize_typescript_1.AllowNull)(true),
+    (0, sequelize_typescript_1.Default)(0),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", Number)
+], Wallet.prototype, "pendingAmount", void 0);
+__decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => Users_1.Users, { onDelete: 'CASCADE' }),
     __metadata("design:type", Users_1.Users)
 ], Wallet.prototype, "user", void 0);

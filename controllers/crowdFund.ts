@@ -9,16 +9,7 @@ import config from '../config/configSetup';;
 import { sign } from "jsonwebtoken";
 import { compareTwoStrings } from 'string-similarity';
 
-// yarn add stream-chat
-import { StreamChat } from 'stream-chat';
-import { Sequelize } from "sequelize-typescript";
-import { Verify } from "../models/Verify";
-import { sendEmail } from "../services/notification";
-import { templateEmail } from "../config/template";
-import { Tokens } from "../models/Token";
-import { Customers } from "../models/Customers";
-import { UserTokens } from "../models/UserToken";
-import { Withdrawal } from "../models/Withdrawal";
+
 import { PaymentRequests, TypeState } from "../models/Payment";
 const fs = require("fs");
 const util = require('util')

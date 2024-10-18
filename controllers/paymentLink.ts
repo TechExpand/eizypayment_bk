@@ -10,7 +10,7 @@ import { sign } from "jsonwebtoken";
 import { compareTwoStrings } from 'string-similarity';
 
 // yarn add stream-chat
-import { StreamChat } from 'stream-chat';
+// import { StreamChat } from 'stream-chat';
 import { Sequelize } from "sequelize-typescript";
 import { Verify } from "../models/Verify";
 import { sendEmail } from "../services/notification";

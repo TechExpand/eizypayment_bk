@@ -29,6 +29,7 @@ const Transaction_1 = require("../models/Transaction");
 const Bank_1 = require("../models/Bank");
 const Admin_1 = require("../models/Admin");
 const Wallet_1 = require("../models/Wallet");
+const Order_1 = require("../models/Order");
 const Card_1 = require("../models/Card");
 const Price_1 = require("../models/Price");
 const sequelize = new sequelize_typescript_1.Sequelize(configSetup_1.default.DBNAME, configSetup_1.default.DBUSERNAME, configSetup_1.default.DBPASSWORD, {
@@ -49,6 +50,7 @@ const sequelize = new sequelize_typescript_1.Sequelize(configSetup_1.default.DBN
         Bank_1.Banks,
         Token_1.Tokens,
         UserToken_1.UserTokens,
+        Order_1.Order,
         Wallet_1.Wallet,
         Transaction_1.Transactions,
         Customers_1.Customers,

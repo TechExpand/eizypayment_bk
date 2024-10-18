@@ -12,6 +12,7 @@ routes.post('/admin/token', token_1.createToken);
 routes.delete('/admin/token/:id', token_1.deleteToken);
 routes.get('/admin/token', token_1.fetchTokens);
 routes.get('/admin/price', token_1.fetchPrices);
+routes.post('/admin/create-funding', token_1.createFunding);
 // routes.get('/sendemail', sendEmailTest);
 exports.default = routes;
 //# sourceMappingURL=token.js.map

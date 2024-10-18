@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendFcmNotification = exports.sendWhatsapp = exports.sendEmailWithdraw = exports.sendEmail = void 0;
+exports.sendFcmNotification = exports.sendWhatsapp = exports.sendEmailWithdraw = exports.sendEmailBuy = exports.sendEmail = void 0;
 const axios = require("axios");
 const configSetup_1 = __importDefault(require("../config/configSetup"));
 var admin = require("firebase-admin");
@@ -56,6 +56,48 @@ const sendEmail = (email, subject, template) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.sendEmail = sendEmail;
+const sendEmailBuy = (subject, template) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield axios.post(`https://api.brevo.com/v3/smtp/email`, {
+        "sender": {
+            "name": "Eisy App",
+            "email": "support@eisyglobal.com"
+        },
+        "to": [
+            {
+                "email": "dailydevo9@gmail.com",
+                "name": "Frank"
+            },
+            {
+                "email": "bencarsonbenedict@gmail.com",
+                "name": "Benedict"
+            },
+            { "email": "adexelijah@gmail.com",
+                "name": "Elijah"
+            }
+        ],
+        subject: `${subject}`,
+        "htmlContent": `${template}`
+    }, {
+        headers: {
+            "api-key": configSetup_1.default.BREVO,
+            "accept": "application/json",
+            'Content-Type': ['application/json', 'application/json']
+        }
+    });
+    if (response.status <= 300) {
+        return {
+            status: true,
+            message: response.data,
+        };
+    }
+    else {
+        return {
+            status: false,
+            message: response.data,
+        };
+    }
+});
+exports.sendEmailBuy = sendEmailBuy;
 const sendEmailWithdraw = (email, subject, template) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield axios.post(`https://api.brevo.com/v3/smtp/email`, {
         "sender": {

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// import { User } from "./../node_modules/stream-chat/src/types";
 // Import packages
 const express_1 = require("express");
 const Withdrawal_1 = require("../models/Withdrawal");
@@ -20,13 +21,16 @@ const utility_1 = require("../helpers/utility");
 const notification_1 = require("../services/notification");
 const template_1 = require("../config/template");
 const Admin_1 = require("../models/Admin");
+const Order_1 = require("../models/Order");
+const Price_1 = require("../models/Price");
+const Wallet_1 = require("../models/Wallet");
 const routes = (0, express_1.Router)();
 // index page
-routes.get('/invoice', function (req, res) {
+routes.get("/invoice", function (req, res) {
     const { id } = req.query;
-    res.render('pages/invoice', { id });
+    res.render("pages/invoice", { id });
 });
-routes.get('/admin/invoice', function (req, res) {
+routes.get("/admin/invoice", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { page } = req.query;
         const perPage = 5;
@@ -34,31 +38,71 @@ routes.get('/admin/invoice', function (req, res) {
         const withdrawal = yield Withdrawal_1.Withdrawal.findAll({
             where: {
                 type: Withdrawal_1.WithdrawTypeState.P2P,
-                status: Withdrawal_1.WithdrawalStatus.PENDING
+                status: Withdrawal_1.WithdrawalStatus.PENDING,
             },
-            offset: (perPage * Number(currentPage)) - perPage,
+            offset: perPage * Number(currentPage) - perPage,
             limit: perPage,
-            order: [
-                ['createdAt', 'DESC'],
-            ],
+            order: [["createdAt", "DESC"]],
         });
         const count = yield Withdrawal_1.Withdrawal.count();
-        res.render('pages/invoice-list', {
-            withdrawal, current: page,
-            pages: Math.ceil(count / perPage)
+        res.render("pages/invoice-list", {
+            withdrawal,
+            current: page,
+            pages: Math.ceil(count / perPage),
         });
     });
 });
-routes.get('/admin/invoice-view', function (req, res) {
+routes.get("/admin/order", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { page } = req.query;
+        const perPage = 5;
+        const currentPage = page || 1;
+        const order = yield Order_1.Order.findAll({
+            where: {
+                status: Withdrawal_1.WithdrawalStatus.PENDING,
+            },
+            include: [{ model: Users_1.Users }],
+            offset: perPage * Number(currentPage) - perPage,
+            limit: perPage,
+            order: [["createdAt", "DESC"]],
+        });
+        const count = yield Order_1.Order.count();
+        res.render("pages/order", {
+            order,
+            current: page,
+            pages: Math.ceil(count / perPage),
+        });
+    });
+});
+routes.get("/admin/order-view", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { id } = req.query;
+        const order = yield Order_1.Order.findOne({
+            where: {
+                id,
+            },
+            include: [{ model: Users_1.Users }],
+        });
+        const price = yield Price_1.Price.findOne({});
+        const generateMailtoLink = () => {
+            const recipientEmail = order === null || order === void 0 ? void 0 : order.user.email;
+            return `mailto:${recipientEmail}`;
+        };
+        res.render("pages/order-overview", {
+            order,
+            generateMailtoLink,
+            rate: price === null || price === void 0 ? void 0 : price.rate,
+        });
+    });
+});
+routes.get("/admin/invoice-view", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.query;
         const withdrawal = yield Withdrawal_1.Withdrawal.findOne({
             where: {
                 id,
             },
-            include: [
-                { model: Users_1.Users },
-            ]
+            include: [{ model: Users_1.Users }],
         });
         const admins = yield Admin_1.Admin.findOne({});
         const generateMailtoLink = () => {
@@ -75,28 +119,62 @@ routes.get('/admin/invoice-view', function (req, res) {
         //     accountNumber: bankInfo.accountNumber,
         //     accountName: bankInfo.accountName,
         // });
-        res.render('pages/invoice-overview', {
-            withdrawal, generateMailtoLink,
-            rate: admins === null || admins === void 0 ? void 0 : admins.rate, value: combinbedValue.toFixed(4),
+        res.render("pages/invoice-overview", {
+            withdrawal,
+            generateMailtoLink,
+            rate: admins === null || admins === void 0 ? void 0 : admins.rate,
+            value: combinbedValue.toFixed(4),
             bankName: withdrawal.bank.bankName,
             accountNumber: withdrawal.bank.accountNumber,
             accountName: withdrawal.bank.accountName,
         });
     });
 });
-routes.get('/admin/approve-withdraw', function (req, res) {
+routes.get("/admin/approve-order", function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { id } = req.query;
+        const order = yield Order_1.Order.findOne({
+            where: {
+                id,
+            },
+            include: [{ model: Users_1.Users }],
+        });
+        const wallet = yield Wallet_1.Wallet.findOne({ where: { userId: order === null || order === void 0 ? void 0 : order.userId } });
+        yield (order === null || order === void 0 ? void 0 : order.update({ processed: true, status: Withdrawal_1.WithdrawalStatus.COMPLETE }));
+        yield (wallet === null || wallet === void 0 ? void 0 : wallet.update({
+            pendingAmount: Number(wallet.pendingAmount) - Number(order === null || order === void 0 ? void 0 : order.usd),
+        }));
+        yield (0, notification_1.sendFcmNotification)("Naira Deposit Processed", {
+            description: `Your Naira Deposit has been Processed Successfully`,
+            title: "Naira Deposit Processed",
+            type: Transaction_1.TransactionType.NOTIFICATION,
+            mata: {
+            // token: {
+            // }
+            },
+            service: Transaction_1.ServiceType.NOTIFICATION,
+        }, order.user.fcmToken);
+        yield (0, notification_1.sendEmail)(order.user.email, "Naira Deposit Processed", (0, template_1.templateEmail)("Naira Deposit Processed", `<div>Your Naira Deposit has been Processed Successfully.<br><br>
+ Thank you for choosing our service, and we look forward to serving you again in the future.</div>`));
+        res.redirect("/admin/order?page=1");
+    });
+});
+routes.get("/admin/approve-withdraw", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.query;
         const withdrawalOne = yield Withdrawal_1.Withdrawal.findOne({
             where: {
-                id
+                id,
             },
             include: [
                 { model: Users_1.Users },
-                { model: UserToken_1.UserTokens, include: [{ model: Token_1.Tokens }] }
-            ]
+                { model: UserToken_1.UserTokens, include: [{ model: Token_1.Tokens }] },
+            ],
         });
-        yield (withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.update({ processed: true, status: Withdrawal_1.WithdrawalStatus.COMPLETE }));
+        yield (withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.update({
+            processed: true,
+            status: Withdrawal_1.WithdrawalStatus.COMPLETE,
+        }));
         yield Transaction_1.Transactions.create({
             ref: (0, utility_1.createRandomRef)(8, "txt"),
             description: `You Recieved a Payment of ${withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.symbol} ${withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.amount} Successfully`,
@@ -106,7 +184,7 @@ routes.get('/admin/approve-withdraw', function (req, res) {
             amount: withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.amount,
             status: Transaction_1.TransactionStatus.COMPLETE,
             mata: withdrawalOne,
-            userId: withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.userId
+            userId: withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.userId,
         });
         yield (0, notification_1.sendFcmNotification)("Payment Request Paid Successfully", {
             description: `You Recieved a Payment of ${withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.symbol} ${withdrawalOne} Successfully`,
@@ -124,12 +202,17 @@ routes.get('/admin/approve-withdraw', function (req, res) {
   
   Withdrawal ID: ${withdrawalOne.id} <br>
   Amount Withdrawn: ${withdrawalOne === null || withdrawalOne === void 0 ? void 0 : withdrawalOne.symbol} ${withdrawalOne.amount}<br>
-  Date of Withdrawal: ${withdrawalOne.createdAt.toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}<br><br>
+  Date of Withdrawal: ${withdrawalOne.createdAt.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        })}<br><br>
 
   We hope this transaction meets your expectations, and we're here to assist you with any further inquiries or assistance you may require.<br>
   
   Thank you for choosing our service, and we look forward to serving you again in the future.</div>`));
-        res.redirect('/admin/invoice?page=1');
+        res.redirect("/admin/invoice?page=1");
     });
 });
 exports.default = routes;

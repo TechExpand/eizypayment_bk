@@ -37,6 +37,11 @@ export class Wallet extends Model {
     @Column(DataType.UUID)
     userId!: string;
 
+    @AllowNull(true)
+    @Default(0)
+    @Column(DataType.STRING)
+    pendingAmount!: number;
+
     @BelongsTo(() => Users, { onDelete: 'CASCADE' })
     user!: Users;
 }

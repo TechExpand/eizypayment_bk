@@ -75,6 +75,11 @@ export const createAddress = async (req: Request, res: Response) => {
 
 
 
+
+
+
+
+
 export const userKyc = async (req: Request, res: Response) => {
     const { id } = req.user;
     const { idType, phoneNumber, idNumber, city, state, country,

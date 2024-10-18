@@ -8,7 +8,6 @@ import { sign } from "jsonwebtoken";
 import { compareTwoStrings } from 'string-similarity';
 const cloudinary = require("cloudinary").v2;
 // yarn add stream-chat
-import { StreamChat } from 'stream-chat';
 import config, { mainUrlBitnob } from '../config/configSetup';
 import { Verify } from "../models/Verify";
 // import { sendEmailResend } from "../services/sms";
@@ -23,18 +22,6 @@ import { Invoice } from "../models/Invoice";
 import { Wallet } from "../models/Wallet";
 
 const generator = new AvatarGenerator();
-
-
-// instantiate your stream client using the API key and secret
-// the secret is only used server side and gives you full access to the API
-const serverClient = StreamChat.getInstance('zzfb7h72xhc5',
-  '5pfxakc5zasma3hw9awd2qsqgk2fxyr4a5qb3au4kkdt27d7ttnca7vnusfuztud');
-// you can still use new StreamChat('api_key', 'api_secret');
-
-// generate a token for the user with id 'john'
-
-
-
 
 
 export const sendOtp = async (req: Request, res: Response) => {

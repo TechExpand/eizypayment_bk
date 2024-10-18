@@ -1,7 +1,7 @@
 // Import packages
 import { Router } from 'express';
 import { changePassword, getUser, login, register, sendOtp, updateUser, verifyOtp } from '../../controllers/auth';
-import { createToken, deleteToken, fetchPrices, fetchTokens } from '../../controllers/admin/token';
+import { createFunding, createToken, deleteToken, fetchPrices, fetchTokens } from '../../controllers/admin/token';
 
 
 const routes = Router();
@@ -15,6 +15,7 @@ routes.post('/admin/token', createToken);
 routes.delete('/admin/token/:id', deleteToken);
 routes.get('/admin/token', fetchTokens);
 routes.get('/admin/price', fetchPrices);
+routes.post('/admin/create-funding', createFunding)
 // routes.get('/sendemail', sendEmailTest);
 
 

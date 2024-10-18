@@ -1,7 +1,5 @@
-import { Table, Model, Column, DataType, HasOne, BelongsToMany, HasMany, AllowNull, Unique, Default, Index, BelongsTo, ForeignKey, PrimaryKey } from 'sequelize-typescript';
-import Sequelize from 'sequelize/types/sequelize';
+import { Table, Model, Column, DataType, AllowNull, Default, PrimaryKey } from 'sequelize-typescript';
 import { v4 as uuidv4 } from 'uuid';
-import { Users } from './Users';
 
 
 @Table({ timestamps: true, tableName: 'price' })
@@ -14,6 +12,16 @@ export class Price extends Model {
     @AllowNull(true)
     @Column(DataType.STRING)
     cardCreation!: number;
+
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    rate!: number;
+
+
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    gasFee!: number;
 
     @AllowNull(true)
     @Column(DataType.STRING)

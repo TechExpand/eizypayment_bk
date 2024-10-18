@@ -6,16 +6,7 @@ import { Op, where } from "sequelize";
 import { UserState, UserStatus, Users } from "../models/Users";
 import { compare, hash } from "bcryptjs"
 import config from '../config/configSetup';
-import { sign } from "jsonwebtoken";
-import { compareTwoStrings } from 'string-similarity';
 
-// yarn add stream-chat
-import { StreamChat } from 'stream-chat';
-import { Sequelize } from "sequelize-typescript";
-import { Verify } from "../models/Verify";
-import { sendEmail } from "../services/notification";
-import { templateEmail } from "../config/template";
-import { Tokens } from "../models/Token";
 import { Customers } from "../models/Customers";
 const fs = require("fs");
 const axios = require('axios')
